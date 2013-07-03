@@ -225,6 +225,20 @@ It only consist of 26 commands:
 The rest is handled in a special way. At the moment I cannot figure out in which way. 
 But it seems that it uses some noise (e. g. for "s") using a table with random values. 
 
+License
+=======
+
+The software is a reverse-engineered version of a commercial software published more than 30 years ago.
+The current copyright holder is SoftVoice, Inc. (www.text2speech.com)
+
+Any attempt to contact the company failed. The website was last updated in the year 2009.
+The status of the original software can therefore best described as Abandonware 
+(http://en.wikipedia.org/wiki/Abandonware)
+
+As long this is the case I cannot put my code under any specific open source software license
+Use it at your own risk.
+
+
 
 Contact
 =======
