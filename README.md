@@ -14,6 +14,8 @@ final output. It is so small that it will work also on embedded computers. On my
 less than 39KB (much smaller on embedded devices as the executable-overhead is not necessary) of disk space and is a fully stand alone program. 
 For immediate output it uses the SDL-library, otherwise it can save .wav files. 
 
+An online version and executables for Windows can be found on the web site: http://simulationcorner.net/index.php?page=sam
+
 Compile
 =======
 
