@@ -1459,58 +1459,74 @@ unsigned char trans(unsigned char mem39212, unsigned char mem39213)
 	return mem39215;
 }
 
+
+/*
+    SAM's voice can be altered by changing the frequencies of the
+    mouth formant (F1) and the throat formant (F2). Only the voiced
+    phonemes (5-29 and 48-53) are altered.
+*/
 void SetMouthThroat(unsigned char mouth, unsigned char throat)
 {
-
-	//unsigned char mem39216;
-	//unsigned char mem39212;
-	unsigned char mem39213;
-	unsigned char mem39215=0;
+	unsigned char initialFrequency;
+	unsigned char newFrequency = 0;
 	//unsigned char mouth; //mem38880
 	//unsigned char throat; //mem38881
 
-	unsigned char tab39140[30] = {0, 0, 0, 0, 0, 10,
+	// mouth formants (F1) 5..29
+	unsigned char mouthFormants5_29[30] = {
+		0, 0, 0, 0, 0, 10,
 		14, 19, 24, 27, 23, 21, 16, 20, 14, 18, 14, 18, 18,
 		16, 13, 15, 11, 18, 14, 11, 9, 6, 6, 6};
 
-	unsigned char tab39170[30] = {255, 255,
-		255, 255, 255, 84, 73, 67, 63, 40, 44, 31, 37, 45, 73, 49,
-		36, 30, 51, 37, 29, 69, 24, 50, 30, 24, 83, 46, 54, 86};
+	// throat formants (F2) 5..29
+	unsigned char throatFormants5_29[30] = {
+	255, 255,
+	255, 255, 255, 84, 73, 67, 63, 40, 44, 31, 37, 45, 73, 49,
+	36, 30, 51, 37, 29, 69, 24, 50, 30, 24, 83, 46, 54, 86};
 
-	//there must be no zeros in this 2 tables
-	unsigned char tab39200[6] = {19, 27, 21, 27, 18, 13};
-	unsigned char tab39206[6] = {72, 39, 31, 43, 30, 34};
+	// there must be no zeros in this 2 tables
+	// formant 1 frequencies (mouth) 48..53
+	unsigned char mouthFormants48_53[6] = {19, 27, 21, 27, 18, 13};
+       
+	// formant 2 frequencies (throat) 48..53
+	unsigned char throatFormants48_53[6] = {72, 39, 31, 43, 30, 34};
 
 	unsigned char pos = 5; //mem39216
-	//pos38942:
+//pos38942:
+	// recalculate formant frequencies 5..29 for the mouth (F1) and throat (F2)
 	while(pos != 30)
 	{
-		mem39213 = tab39140[pos];
-		if(mem39213 != 0) mem39215 = trans(mouth, mem39213);
-		freq1data[pos] = mem39215;
-		mem39213 = tab39170[pos];
-		if(mem39213 != 0) mem39215 = trans(throat, mem39213);
-		freq2data[pos] = mem39215;
+		// recalculate mouth frequency
+		initialFrequency = mouthFormants5_29[pos];
+		if (initialFrequency != 0) newFrequency = trans(mouth, initialFrequency);
+		freq1data[pos] = newFrequency;
+               
+		// recalculate throat frequency
+		initialFrequency = throatFormants5_29[pos];
+		if(initialFrequency != 0) newFrequency = trans(throat, initialFrequency);
+		freq2data[pos] = newFrequency;
 		pos++;
 	}
 
-	//pos39059:
+//pos39059:
+	// recalculate formant frequencies 48..53
 	pos = 48;
 	Y = 0;
-	while(pos != 54)
-	{
-		mem39213 = tab39200[Y];
-		mem39215 = trans(mouth, mem39213);
-		freq1data[pos] = mem39215;
-		mem39213 = tab39206[Y];
-		mem39215 = trans(throat, mem39213);
-		freq2data[pos] = mem39215;
+    while(pos != 54)
+    {
+		// recalculate F1 (mouth formant)
+		initialFrequency = mouthFormants48_53[Y];
+		newFrequency = trans(mouth, initialFrequency);
+		freq1data[pos] = newFrequency;
+           
+		// recalculate F2 (throat formant)
+		initialFrequency = throatFormants48_53[Y];
+		newFrequency = trans(throat, initialFrequency);
+		freq2data[pos] = newFrequency;
 		Y++;
 		pos++;
 	}
-
 }
-
 
 void PrintDebug()
 {
