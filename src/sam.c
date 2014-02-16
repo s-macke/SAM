@@ -240,7 +240,11 @@ int Code39771()
 
 	Code48547();
 
-	if (debug) PrintPhonemes(phonemeindex, phonemeLength, stress);
+	if (debug) 
+	{
+		PrintPhonemes(phonemeindex, phonemeLength, stress);
+		PrintOutput(tab44800, frequency1, frequency2, frequency3, amplitude1, amplitude2, amplitude3);
+	}
 
 	return 1;
 

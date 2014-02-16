@@ -138,10 +138,12 @@ void OutputSound()
 	}
 	
 	SDL_CloseAudio();
-	
 }
+
 #else
+
 void OutputSound() {}
+
 #endif	
 
 int main(int argc, char **argv)
@@ -229,10 +231,9 @@ int main(int argc, char **argv)
 	
 	if (!phonetic)
 	{
-
 		if (!TextToPhonemes(input)) return 1;
 		if (debug)
-		printf("phonetic input: %s\n", input);
+			printf("phonetic input: %s\n", input);
 	}
 	strcat(input, " \x9b\0");
 
