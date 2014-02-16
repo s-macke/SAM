@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "debug.h"
 #include "sam.h"
 #include "SamTabs.h"
 
@@ -10,7 +11,9 @@ unsigned char speed = 72;
 unsigned char pitch = 64;
 unsigned char mouth = 128;
 unsigned char throat = 128;
-int singmode = 0;
+static int singmode = 0;
+static int debug = 0;
+
 
 // contains the final soundbuffer
 int bufferpos=0;
@@ -37,7 +40,6 @@ unsigned char A, X, Y;
 unsigned char stress[256]; //numbers from 0 to 8
 unsigned char phonemeLength[256]; //tab40160
 unsigned char phonemeindex[256];
-
 
 unsigned char phonemeIndexOutput[60]; //tab47296
 unsigned char stressOutput[60]; //tab47365
@@ -77,11 +79,12 @@ void SetInput(char *_input)
 	input[l] = 0;
 }
 
-void SetSpeed(unsigned char _speed) {speed=_speed;};
-void SetPitch(unsigned char _pitch) {pitch=_pitch;};
-void SetMouth(unsigned char _mouth) {mouth=_mouth;};
-void SetThroat(unsigned char _throat) {throat=_throat;};
-void EnableSingmode(unsigned int sing) {singmode = sing;};
+void SetSpeed(unsigned char _speed) {speed = _speed;};
+void SetPitch(unsigned char _pitch) {pitch = _pitch;};
+void SetMouth(unsigned char _mouth) {mouth = _mouth;};
+void SetThroat(unsigned char _throat) {throat = _throat;};
+void EnableSingmode() {singmode = 1;};
+void EnableDebug() {debug = 1;};
 char* GetBuffer(){return buffer;};
 int GetBufferLength(){return bufferpos;};
 
@@ -213,7 +216,6 @@ int Code39771()
 	Init();
 	phonemeindex[255] = 32; //to prevent buffer overflow
 
-	//mem[39444] = 255;  //maybe errorposition
 	if (!Parser1()) return 0;
 	Parser2();
 	Code41883();
@@ -237,6 +239,8 @@ int Code39771()
 	//mem[40158] = 255;
 
 	Code48547();
+
+	if (debug) PrintPhonemes(phonemeindex, phonemeLength, stress);
 
 	return 1;
 
@@ -1526,32 +1530,6 @@ void SetMouthThroat(unsigned char mouth, unsigned char throat)
 		Y++;
 		pos++;
 	}
-}
-
-void PrintDebug()
-{
-	int pos = 0;
-	printf("phoneme  length  stress\n");
-	printf("-----------------------\n");
-
-	while((phonemeindex[pos] != 255) && (pos < 255))
-	{
-		
-		if (phonemeindex[pos] < 81)
-		{
-			printf(" %c%c       %3i       %i\n",
-			signInputTable1[phonemeindex[pos]],
-			signInputTable2[phonemeindex[pos]],
-			phonemeLength[pos],
-			stress[pos]
-			);
-		} else
-		{
-			printf("unknown %i\n", phonemeindex[pos]);
-		}
-		pos++;
-	}
-
 }
 
 

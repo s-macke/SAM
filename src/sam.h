@@ -6,10 +6,10 @@ void SetSpeed(unsigned char _speed);
 void SetPitch(unsigned char _pitch);
 void SetMouth(unsigned char _mouth);
 void SetThroat(unsigned char _throat);
-void EnableSingmode(unsigned int sing);
+void EnableSingmode();
+void EnableDebug();
 
 int Code39771();
-void PrintDebug();
 
 char* GetBuffer();
 int GetBufferLength();

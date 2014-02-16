@@ -2,9 +2,10 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
-#include "reciter.h"
 
+#include "reciter.h"
 #include "sam.h"
+#include "debug.h"
 
 #ifdef USESDL
 #include <SDL.h>
@@ -13,7 +14,6 @@
 
 void WriteWav(char* filename, char* buffer, int bufferlength)
 {
-
 	FILE *file = fopen(filename, "wb");
 	if (file == NULL) return;
 	//RIFF header
@@ -147,8 +147,8 @@ void OutputSound() {}
 int main(int argc, char **argv)
 {
 	int i;
-	int debug = 0;
 	int phonetic = 0;
+	int debug = 0;
 	char* wavfilename = NULL;
 	char input[256];
 	
@@ -177,7 +177,7 @@ int main(int argc, char **argv)
 			} else
 			if (strcmp(&argv[i][1], "sing")==0)
 			{
-				EnableSingmode(1);
+				EnableSingmode();
 			} else
 			if (strcmp(&argv[i][1], "phonetic")==0)
 			{
@@ -186,6 +186,7 @@ int main(int argc, char **argv)
 			if (strcmp(&argv[i][1], "debug")==0)
 			{
 				debug = 1;
+				EnableDebug();
 			} else
 			if (strcmp(&argv[i][1], "pitch")==0)
 			{
@@ -222,14 +223,16 @@ int main(int argc, char **argv)
 
 	if (debug)
 	{
-		printf("say: %s\n", input);
+		if (phonetic) printf("phonetic input: %s\n", input);
+		else printf("text input: %s\n", input); 
 	}
-
+	
 	if (!phonetic)
 	{
+
 		if (!TextToPhonemes(input)) return 1;
 		if (debug)
-		printf("text translation: %s\n", input);
+		printf("phonetic input: %s\n", input);
 	}
 	strcat(input, " \x9b\0");
 
@@ -253,8 +256,7 @@ int main(int argc, char **argv)
 		WriteWav(wavfilename, GetBuffer(), GetBufferLength()/50);
 	else
 		OutputSound();
-	
-	if (debug) PrintDebug();	
+
 	
 	return 0;
 
