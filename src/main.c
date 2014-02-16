@@ -46,7 +46,7 @@ void WriteWav(char* filename, char* buffer, int bufferlength)
 	fclose(file);
 }
 
-void printUsage()
+void PrintUsage()
 {
 	printf("usage: sam [options] Word1 Word2 ....\n");
 	printf("options\n");
@@ -114,7 +114,6 @@ void OutputSound()
 {
 	int bufferpos = GetBufferLength();
 	bufferpos /= 50;
-	//extern void mixaudio(void *unused, Uint8 *stream, int len);
 	SDL_AudioSpec fmt;
 
 	fmt.freq = 22050;
@@ -141,28 +140,26 @@ void OutputSound()
 	SDL_CloseAudio();
 	
 }
+#else
+void OutputSound() {}
 #endif	
-
-
 
 int main(int argc, char **argv)
 {
 	int i;
 	int debug = 0;
 	int phonetic = 0;
-	int wavfilenameposition = -1;
+	char* wavfilename = NULL;
 	char input[256];
 	
 	for(i=0; i<256; i++) input[i] = 0;
+	strcat(input, " ");
 
 	if (argc <= 1)
 	{
-		printUsage();
+		PrintUsage();
 		return 1;
 	}
-
-	input[0]=0;
-	strcat(input, " ");
 
 	i = 1;
 	while(i < argc)
@@ -175,7 +172,7 @@ int main(int argc, char **argv)
 		{
 			if (strcmp(&argv[i][1], "wav")==0)
 			{
-				wavfilenameposition = i+1;
+				wavfilename = argv[i+1];
 				i++;
 			} else
 			if (strcmp(&argv[i][1], "sing")==0)
@@ -211,7 +208,7 @@ int main(int argc, char **argv)
 				i++;
 			} else
 			{
-				printUsage();
+				PrintUsage();
 				return 1;
 			}
 		}
@@ -221,7 +218,7 @@ int main(int argc, char **argv)
 
 	strcat(input, " ");
 	for(i=0; input[i] != 0; i++)
-		input[i] = toupper(input[i]);
+		input[i] = toupper((int)input[i]);
 
 	if (debug)
 	{
@@ -248,18 +245,14 @@ int main(int argc, char **argv)
 	SetInput(input);
 	if (!Code39771())
 	{
-		printUsage();
+		PrintUsage();
 		return 1;
 	}
 	
-	if (wavfilenameposition > 0) 
-		WriteWav(argv[wavfilenameposition], GetBuffer(), GetBufferLength()/50);
+	if (wavfilename != NULL) 
+		WriteWav(wavfilename, GetBuffer(), GetBufferLength()/50);
 	else
-	{
-#ifdef USESDL
 		OutputSound();
-#endif	
-	}
 	
 	if (debug) PrintDebug();	
 	
