@@ -9,14 +9,15 @@ void PrintPhonemes(unsigned char *phonemeindex, unsigned char *phonemeLength, un
 	printf("===========================================\n");
 
 	printf("Internal Phoneme presentation:\n\n");
-	printf("phoneme  length  stress\n");
-	printf("-----------------------\n");
+	printf(" idx    phoneme  length  stress\n");
+	printf("------------------------------\n");
 
 	while((phonemeindex[i] != 255) && (i < 255))
 	{
 		if (phonemeindex[i] < 81)
 		{
-			printf(" %c%c       %3i       %i\n",
+			printf(" %3i      %c%c      %3i       %i\n",
+			phonemeindex[i],
 			signInputTable1[phonemeindex[i]],
 			signInputTable2[phonemeindex[i]],
 			phonemeLength[i],
@@ -24,7 +25,7 @@ void PrintPhonemes(unsigned char *phonemeindex, unsigned char *phonemeLength, un
 			);
 		} else
 		{
-			printf("unknown %i\n", phonemeindex[i]);
+			printf(" %3i      ??      %3i       %i\n", phonemeindex[i], phonemeLength[i], stress[i]);
 		}
 		i++;
 	}
