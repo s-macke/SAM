@@ -31,6 +31,12 @@ void Code37066(unsigned char mem58)
 unsigned char GetRuleByte(unsigned short mem62, unsigned char Y)
 {
 	unsigned int address = mem62;
+	
+	if (mem62 >= 37541) 
+	{
+		address -= 37541;
+		return rules2[address+Y];
+	}
 	address -= 32000;
 	return rules[address+Y];
 }
