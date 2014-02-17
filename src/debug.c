@@ -40,16 +40,17 @@ void PrintOutput(
 	unsigned char *f3,
 	unsigned char *a1, 
 	unsigned char *a2, 
-	unsigned char *a3)
+	unsigned char *a3,
+	unsigned char *p)
 {
 	printf("===========================================\n");
 	printf("Final data for speech output:\n\n");
 	int i = 0;
-	printf(" flags ampl1 freq1 ampl2 freq2 ampl3 freq3\n");
-	printf("------------------------------------------\n");
+	printf(" flags ampl1 freq1 ampl2 freq2 ampl3 freq3 pitch\n");
+	printf("------------------------------------------------\n");
 	while(i < 255)
 	{
-		printf("%5i %5i %5i %5i %5i %5i %5i\n", flag[i], a1[i], f1[i], a2[i], f2[i], a3[i], f3[i]);
+		printf("%5i %5i %5i %5i %5i %5i %5i %5i\n", flag[i], a1[i], f1[i], a2[i], f2[i], a3[i], f3[i], p[i]);
 		i++;
 	}
 	printf("===========================================\n");
