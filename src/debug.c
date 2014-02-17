@@ -55,4 +55,19 @@ void PrintOutput(
 
 }
 
+extern unsigned char GetRuleByte(unsigned short mem62, unsigned char Y);
+
+void PrintRule(int offset)
+{
+	int i = 1;
+	unsigned char A = 0;
+	printf("Applying rule: ");
+	do
+	{
+		A = GetRuleByte(offset, i);
+		if ((A&127) == '=') printf(" -> "); else printf("%c", A&127);
+		i++;
+	} while ((A&128)==0);
+	printf("\n");
+}
 

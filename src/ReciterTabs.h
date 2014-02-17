@@ -20,7 +20,6 @@ unsigned char tab36376[] =
 	163, 76, 138, 142
 };
 
-
 char rules[] =
 {
 ']','A'|0x80,

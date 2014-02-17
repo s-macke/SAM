@@ -12,7 +12,9 @@ unsigned char pitch = 64;
 unsigned char mouth = 128;
 unsigned char throat = 128;
 static int singmode = 0;
-static int debug = 0;
+
+extern int debug;
+
 
 
 // contains the final soundbuffer
@@ -84,7 +86,6 @@ void SetPitch(unsigned char _pitch) {pitch = _pitch;};
 void SetMouth(unsigned char _mouth) {mouth = _mouth;};
 void SetThroat(unsigned char _throat) {throat = _throat;};
 void EnableSingmode() {singmode = 1;};
-void EnableDebug() {debug = 1;};
 char* GetBuffer(){return buffer;};
 int GetBufferLength(){return bufferpos;};
 

@@ -2,16 +2,18 @@
 #include <string.h>
 #include "reciter.h"
 #include "ReciterTabs.h"
+#include "debug.h"
 
 unsigned char A, X, Y;
+extern int debug;
 
-unsigned char tab36096[256];   //secure copy of input
+static unsigned char inputtemp[256];   // secure copy of input tab36096
 
 void Code37055(unsigned char mem59)
 {
 	X = mem59;
 	X--;
-	A = tab36096[X];
+	A = inputtemp[X];
 	Y = A;
 	A = tab36376[Y];
 	return;
@@ -21,22 +23,19 @@ void Code37066(unsigned char mem58)
 {
 	X = mem58;
 	X++;
-	A = tab36096[X];
+	A = inputtemp[X];
 	Y = A;
 	A = tab36376[Y];
 }
 
-unsigned char GetRuleByte(unsigned char mem62, unsigned char mem63, unsigned char Y)
+unsigned char GetRuleByte(unsigned short mem62, unsigned char Y)
 {
-	unsigned int address = ((unsigned int)mem62+((unsigned int)mem63<<8));
+	unsigned int address = mem62;
 	address -= 32000;
-	//return mem[address+Y];
 	return rules[address+Y];
 }
 
-
-/*bool Code36484(char *input)*/
-int TextToPhonemes(char *input)
+int TextToPhonemes(char *input) // Code36484
 {
 	//unsigned char *tab39445 = &mem[39445];   //input and output
 	//unsigned char mem29;
@@ -46,14 +45,14 @@ int TextToPhonemes(char *input)
 	unsigned char mem59;
 	unsigned char mem60;
 	unsigned char mem61;
-	unsigned char mem62;
-	unsigned char mem63;
-	unsigned char mem64;	 // position of '=' or current character
+	unsigned short mem62;     // memory position of current rule
+
+	unsigned char mem64;      // position of '=' or current character
 	unsigned char mem65;     // position of ')'
 	unsigned char mem66;     // position of '('
 	unsigned char mem36653;
 
-	tab36096[0] = 32;
+	inputtemp[0] = 32;
 
 	// secure copy of input
 	// because input will be overwritten by phonemes
@@ -66,15 +65,14 @@ int TextToPhonemes(char *input)
 		if ( A >= 112) A = A & 95;
 		else if ( A >= 96) A = A & 79;
 		
-		tab36096[X] = A;
+		inputtemp[X] = A;
 		X++;
 		Y++;
 	} while (Y != 255);
 
 
 	X = 255;
-	A = 27;
-	tab36096[X] = 27;
+	inputtemp[X] = 27;
 	mem61 = 255;
 
 
@@ -88,9 +86,9 @@ pos36554:
 	{
 		mem61++;
 		X = mem61;
-		A = tab36096[X];
+		A = inputtemp[X];
 		mem64 = A;
-		if (A == 27)    // '['
+		if (A == '[')
 		{
 			mem56++;
 			X = mem56;
@@ -102,15 +100,15 @@ pos36554:
 		}
 
 		//pos36579:
-		if (A != 46) break;   // '.'
+		if (A != '.') break;
 		X++;
-		Y = tab36096[X];
+		Y = inputtemp[X];
 		A = tab36376[Y] & 1;
 		if(A != 0) break;
 		mem56++;
 		X = mem56;
-		A = 46;
-		input[X] = 46;
+		A = '.';
+		input[X] = '.';
 	} //while
 
 
@@ -121,8 +119,7 @@ pos36554:
 	mem57 = A;
 	if((A&2) != 0)
 	{
-		mem62 = 165;
-		mem63 = 146;
+		mem62 = 37541;
 		goto pos36700;
 	}
 
@@ -130,7 +127,7 @@ pos36554:
 	A = mem57;
 	if(A != 0) goto pos36677;
 	A = 32;
-	tab36096[X] = 32;
+	inputtemp[X] = ' ';
 	mem56++;
 	X = mem56;
 	if (X > 120) goto pos36654;
@@ -161,10 +158,9 @@ pos36677:
 		return 0;
 	}
 
-	// go to the right rule for this character.
-	X = mem64 - 65;
-	mem62 = tab37489[X];
-	mem63 = tab37515[X];
+	// go to the right rules for this character.
+	X = mem64 - 'A';
+	mem62 = tab37489[X] | (tab37515[X]<<8);
 
 	// -------------------------------------
 	// go to next rule
@@ -177,8 +173,7 @@ pos36700:
 	do
 	{
 		mem62 += 1;
-		mem63 += (mem62 == 0)?1:0;
-		A = GetRuleByte(mem62, mem63, Y);
+		A = GetRuleByte(mem62, Y);
 	} while ((A & 128) == 0);
 	Y++;
 
@@ -186,8 +181,8 @@ pos36700:
 	// find '('
 	while(1)
 	{
-		A = GetRuleByte(mem62, mem63, Y);
-		if (A == 40) break;      //'('
+		A = GetRuleByte(mem62, Y);
+		if (A == '(') break;
 		Y++;
 	}
 	mem66 = Y;
@@ -197,8 +192,8 @@ pos36700:
 	do
 	{
 		Y++;
-		A = GetRuleByte(mem62, mem63, Y);
-	} while(A != 41);
+		A = GetRuleByte(mem62, Y);
+	} while(A != ')');
 	mem65 = Y;
 
 	//pos36741:
@@ -206,22 +201,22 @@ pos36700:
 	do
 	{
 		Y++;
-		A = GetRuleByte(mem62, mem63, Y);
+		A = GetRuleByte(mem62, Y);
 		A = A & 127;
-
-	} while (A != 61);   // '='
+	} while (A != '=');
 	mem64 = Y;
 
 	X = mem61;
 	mem60 = X;
 
+	// compare the string within the bracket
 	Y = mem66;
 	Y++;
 	//pos36759:
 	while(1)
 	{
-		mem57 = tab36096[X];
-		A = GetRuleByte(mem62, mem63, Y);
+		mem57 = inputtemp[X];
+		A = GetRuleByte(mem62, Y);
 		if (A != mem57) goto pos36700;
 		Y++;
 		if(Y == mem65) break;
@@ -229,6 +224,7 @@ pos36700:
 		mem60 = X;
 	}
 
+// the string in the bracket is correct
 
 //pos36787:
 	A = mem61;
@@ -239,7 +235,7 @@ pos36791:
 	{
 		mem66--;
 		Y = mem66;
-		A = GetRuleByte(mem62, mem63, Y);
+		A = GetRuleByte(mem62, Y);
 		mem57 = A;
 		//36800: BPL 36805
 		if ((A & 128) != 0) goto pos37180;
@@ -247,22 +243,21 @@ pos36791:
 		A = tab36376[X] & 128;
 		if (A == 0) break;
 		X = mem59-1;
-		A = tab36096[X];
+		A = inputtemp[X];
 		if (A != mem57) goto pos36700;
 		mem59 = X;
 	}
 
-
 //pos36833:
 	A = mem57;
-	if (A == 32) goto pos36895;     // ' '
-	if (A == 35) goto pos36910;     // '#'
-	if (A == 46) goto pos36920;
-	if (A == 38) goto pos36935;
-	if (A == 64) goto pos36967;
-	if (A == 94) goto pos37004;
-	if (A == 43) goto pos37019;
-	if (A == 58) goto pos37040;
+	if (A == ' ') goto pos36895;
+	if (A == '#') goto pos36910;
+	if (A == '.') goto pos36920;
+	if (A == '&') goto pos36935;
+	if (A == '@') goto pos36967;
+	if (A == '^') goto pos37004;
+	if (A == '+') goto pos37019;
+	if (A == ':') goto pos37040;
 	//	Code42041();    //Error
 	//36894: BRK
 	return 0;
@@ -302,10 +297,10 @@ pos36935:
 	Code37055(mem59);
 	A = A & 16;
 	if(A != 0) goto pos36930;
-	A = tab36096[X];
+	A = inputtemp[X];
 	if (A != 72) goto pos36700;
 	X--;
-	A = tab36096[X];
+	A = inputtemp[X];
 	if ((A == 67) || (A == 83)) goto pos36930;
 	goto pos36700;
 
@@ -315,7 +310,7 @@ pos36967:
 	Code37055(mem59);
 	A = A & 4;
 	if(A != 0) goto pos36930;
-	A = tab36096[X];
+	A = inputtemp[X];
 	if (A != 72) goto pos36700;
 	if ((A != 84) && (A != 67) && (A != 83)) goto pos36700;
 	mem59 = X;
@@ -328,6 +323,7 @@ pos37004:
 	Code37055(mem59);
 	A = A & 32;
 	if(A == 0) goto pos36700;
+
 pos37014:
 	mem59 = X;
 	goto pos36791;
@@ -337,10 +333,9 @@ pos37014:
 pos37019:
 	X = mem59;
 	X--;
-	A = tab36096[X];
-	if ((A == 69) || (A == 73) || (A == 89)) goto pos37014; //'E' 'I' 'Y'
+	A = inputtemp[X];
+	if ((A == 'E') || (A == 'I') || (A == 'Y')) goto pos37014;
 	goto pos36700;
-
 	// --------------
 
 pos37040:
@@ -350,21 +345,21 @@ pos37040:
 	mem59 = X;
 	goto pos37040;
 
-	//---------------------------------------
+//---------------------------------------
 
 
 pos37077:
 	X = mem58+1;
-	A = tab36096[X];
-	if (A != 69) goto pos37157;   // 'E'
+	A = inputtemp[X];
+	if (A != 'E') goto pos37157;
 	X++;
-	Y = tab36096[X];
+	Y = inputtemp[X];
 	X--;
 	A = tab36376[Y] & 128;
 	if(A == 0) goto pos37108;
 	X++;
-	A = tab36096[X];
-	if (A != 82) goto pos37113;     // 'R'
+	A = inputtemp[X];
+	if (A != 'R') goto pos37113;
 pos37108:
 	mem58 = X;
 	goto pos37184;
@@ -372,27 +367,27 @@ pos37113:
 	if ((A == 83) || (A == 68)) goto pos37108;  // 'S' 'D'
 	if (A != 76) goto pos37135; // 'L'
 	X++;
-	A = tab36096[X];
+	A = inputtemp[X];
 	if (A != 89) goto pos36700;
 	goto pos37108;
 	
 pos37135:
 	if (A != 70) goto pos36700;
 	X++;
-	A = tab36096[X];
+	A = inputtemp[X];
 	if (A != 85) goto pos36700;
 	X++;
-	A = tab36096[X];
+	A = inputtemp[X];
 	if (A == 76) goto pos37108;
 	goto pos36700;
 
 pos37157:
 	if (A != 73) goto pos36700;
 	X++;
-	A = tab36096[X];
+	A = inputtemp[X];
 	if (A != 78) goto pos36700;
 	X++;
-	A = tab36096[X];
+	A = inputtemp[X];
 	if (A == 71) goto pos37108;
 	//pos37177:
 	goto pos36700;
@@ -400,6 +395,7 @@ pos37157:
 	// -----------------------------------------
 
 pos37180:
+
 	A = mem60;
 	mem58 = A;
 
@@ -411,13 +407,13 @@ pos37184:
 	if(Y == mem64) goto pos37455;
 	mem65 = Y;
 	//37196: LDA (62),y
-	A = GetRuleByte(mem62, mem63, Y);
+	A = GetRuleByte(mem62, Y);
 	mem57 = A;
 	X = A;
 	A = tab36376[X] & 128;
 	if(A == 0) goto pos37226;
 	X = mem58+1;
-	A = tab36096[X];
+	A = inputtemp[X];
 	if (A != mem57) goto pos36700;
 	mem58 = X;
 	goto pos37184;
@@ -472,10 +468,10 @@ pos37335:
 	Code37066(mem58);
 	A = A & 16;
 	if(A != 0) goto pos37330;
-	A = tab36096[X];
+	A = inputtemp[X];
 	if (A != 72) goto pos36700;
 	X++;
-	A = tab36096[X];
+	A = inputtemp[X];
 	if ((A == 67) || (A == 83)) goto pos37330;
 	goto pos36700;
 
@@ -486,7 +482,7 @@ pos37367:
 	Code37066(mem58);
 	A = A & 4;
 	if(A != 0) goto pos37330;
-	A = tab36096[X];
+	A = inputtemp[X];
 	if (A != 72) goto pos36700;
 	if ((A != 84) && (A != 67) && (A != 83)) goto pos36700;
 	mem58 = X;
@@ -507,13 +503,14 @@ pos37414:
 pos37419:
 	X = mem58;
 	X++;
-	A = tab36096[X];
+	A = inputtemp[X];
 	if ((A == 69) || (A == 73) || (A == 89)) goto pos37414;
 	goto pos36700;
 
-	// --------------
+// ----------------------
 
 pos37440:
+
 	Code37066(mem58);
 	A = A & 32;
 	if(A == 0) goto pos37184;
@@ -522,12 +519,16 @@ pos37440:
 pos37455:
 	Y = mem64;
 	mem61 = mem60;
+
+	if (debug)
+		PrintRule(mem62);
+
 pos37461:
 	//37461: LDA (62),y
-	A = GetRuleByte(mem62, mem63, Y);
+	A = GetRuleByte(mem62, Y);
 	mem57 = A;
 	A = A & 127;
-	if (A != 61)
+	if (A != '=')
 	{
 		mem56++;
 		X = mem56;
@@ -536,12 +537,11 @@ pos37461:
 
 	//37478: BIT 57
 	//37480: BPL 37485  //not negative flag
-	if ((mem57 & 128) == 0 )goto pos37485; //???
+	if ((mem57 & 128) == 0) goto pos37485; //???
 	goto pos36554;
 pos37485:
 	Y++;
 	goto pos37461;
-
 }
 
 

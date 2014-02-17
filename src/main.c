@@ -146,11 +146,13 @@ void OutputSound() {}
 
 #endif	
 
+int debug = 0;
+
 int main(int argc, char **argv)
 {
 	int i;
 	int phonetic = 0;
-	int debug = 0;
+
 	char* wavfilename = NULL;
 	char input[256];
 	
@@ -188,7 +190,6 @@ int main(int argc, char **argv)
 			if (strcmp(&argv[i][1], "debug")==0)
 			{
 				debug = 1;
-				EnableDebug();
 			} else
 			if (strcmp(&argv[i][1], "pitch")==0)
 			{
