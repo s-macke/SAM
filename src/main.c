@@ -157,7 +157,6 @@ int main(int argc, char **argv)
 	char input[256];
 	
 	for(i=0; i<256; i++) input[i] = 0;
-	strcat(input, " ");
 
 	if (argc <= 1)
 	{
@@ -220,7 +219,6 @@ int main(int argc, char **argv)
 		i++;
 	} //while
 
-	strcat(input, " ");
 	for(i=0; input[i] != 0; i++)
 		input[i] = toupper((int)input[i]);
 
@@ -232,11 +230,11 @@ int main(int argc, char **argv)
 	
 	if (!phonetic)
 	{
+		strcat(input, "[");
 		if (!TextToPhonemes(input)) return 1;
 		if (debug)
 			printf("phonetic input: %s\n", input);
-	}
-	strcat(input, " \x9b\0");
+	} else strcat(input, "\x9b");
 
 #ifdef USESDL
 	if ( SDL_Init(SDL_INIT_AUDIO) < 0 ) 

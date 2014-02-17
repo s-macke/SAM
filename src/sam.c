@@ -218,6 +218,8 @@ int Code39771()
 	phonemeindex[255] = 32; //to prevent buffer overflow
 
 	if (!Parser1()) return 0;
+	if (debug)
+		PrintPhonemes(phonemeindex, phonemeLength, stress);
 	Parser2();
 	Code41883();
 	SetPhonemeLength();
@@ -246,9 +248,7 @@ int Code39771()
 		PrintPhonemes(phonemeindex, phonemeLength, stress);
 		PrintOutput(tab44800, frequency1, frequency2, frequency3, amplitude1, amplitude2, amplitude3);
 	}
-
 	return 1;
-
 }
 
 
@@ -295,7 +295,6 @@ void Code48547()
 		X++;
 		Y++;
 	}
-
 }
 
 void Code48431()
@@ -335,7 +334,7 @@ void Code48431()
 			continue;
 		}
 		X = mem54;
-		phonemeindex[X] = 31;   // 'Q'
+		phonemeindex[X] = 31;   // 'Q*' glottal stop
 		phonemeLength[X] = 4;
 		stress[X] = 0;
 		X++;
@@ -397,16 +396,16 @@ int Parser1()
 	int i;
 	unsigned char sign1;
 	unsigned char sign2;
-	unsigned char position=0;
+	unsigned char position = 0;
 	X = 0;
 	A = 0;
 	Y = 0;
 	for(i=0; i<256; i++)
-	stress[i] = 0;
+		stress[i] = 0;
 
+	// pos41078:
 	while(1)
 	{
-		//pos41078:
 		sign1 = input[X];
 		if (sign1 == 155)
 		{
@@ -1095,11 +1094,10 @@ pos48406:
 	goto pos48398;
 }
 
-
 void Code47574()
 {
 	int k;
-	unsigned char phase1=0;  //mem43
+	unsigned char phase1 = 0;  //mem43
 	unsigned char phase2;
 	unsigned char phase3;
 	unsigned char mem66;
@@ -1114,11 +1112,14 @@ void Code47574()
 	A = 0;
 	X = 0;
 	mem44 = 0;
-pos47587:
+
+// pos47587:
+do
+{
 	Y = mem44;
 	A = phonemeIndexOutput[mem44];
 	mem56 = A;
-	if (A == 255) goto pos47694;
+	if (A == 255) break;
 	if (A == 1)
 	{
 		//pos48366:
@@ -1153,11 +1154,11 @@ pos47587:
 		X++;
 		phase2--;
 	} while(phase2 != 0);
+
 	mem44++;
-
-	if(mem44 != 0) goto pos47587;
-
-pos47694:
+} while(mem44 != 0);
+// -------------------
+//pos47694:
 
 	A = 0;
 	mem44 = 0;
@@ -1165,7 +1166,6 @@ pos47694:
 	X = 0;
 	while(1) //while No. 1
 	{
-
 		//pos47701:
 		Y = phonemeIndexOutput[X];
 		A = phonemeIndexOutput[X+1];
