@@ -17,12 +17,6 @@ extern int debug;
 
 
 
-// contains the final soundbuffer
-int bufferpos=0;
-int scale=50;
-char *buffer = NULL;
-
-
 unsigned char wait1 = 7;
 unsigned char wait2 = 6;
 
@@ -60,8 +54,6 @@ unsigned char amplitude2[256];
 unsigned char amplitude3[256];
 
 //timetable for more accurate c64 simulation
-unsigned oldtimetableindex = 0;
-
 int timetable[5][5] =
 {
 	{162, 167, 167, 127, 128},
@@ -70,6 +62,25 @@ int timetable[5][5] =
 	{200, 0, 0, 54, 55},
 	{199, 0, 0, 54, 54}
 };
+
+// contains the final soundbuffer
+int bufferpos=0;
+int scale = 50;
+char *buffer = NULL;
+
+void Output(int index, unsigned char A)
+{
+	static unsigned oldtimetableindex = 0;
+	int k;
+	bufferpos += timetable[oldtimetableindex][index];
+	oldtimetableindex = index;
+	// write a little bit in advance
+	for(k=0; k<5; k++)
+		buffer[bufferpos/scale + k] = (A & 15)*16;
+}
+
+
+
 
 void SetInput(char *_input)
 {
@@ -942,7 +953,6 @@ void Code47503(unsigned char mem52)
 
 void Code48227(unsigned char *mem66)
 {
-	int k;	
 	int tempA;
 	int i;
 	mem49 = Y;
@@ -971,19 +981,11 @@ pos48280:
 	{
 		X = mem53;
 		//mem[54296] = X;
-		//timetable 1
-		bufferpos += timetable[oldtimetableindex][1];
-		oldtimetableindex = 1;
-
-		for(k=0; k<5; k++)
-		buffer[bufferpos/scale + k] = (X & 15)*16;
+		Output(1, X);
 		if(X != 0) goto pos48296;
 	}
-	//timetable 2;
-	bufferpos += timetable[oldtimetableindex][2];
-	oldtimetableindex = 2;
-	for(k=0; k<5; k++)
-	buffer[bufferpos/scale + k] = (5 & 15)*16;
+	
+	Output(2, 5);
 
 	//48295: NOP
 pos48296:
@@ -1026,20 +1028,12 @@ pos48315:
 			if ((tempA & 128) != 0)
 			{
 				X = 26;
-				//timetable 3
-				bufferpos += timetable[oldtimetableindex][3];
-				oldtimetableindex = 3;
-				for(k=0; k<5; k++)
-				buffer[bufferpos/scale + k] = (X & 15)*16;
-
+				Output(3, X);
 			} else
 			{
 				//timetable 4
 				X=6;
-				bufferpos += timetable[oldtimetableindex][4];
-				oldtimetableindex = 4;
-				for(k=0; k<5; k++)
-				buffer[bufferpos/scale + k] = (X & 15)*16;
+				Output(4, X);
 			}
 
 			for(X = wait2; X>0; X--); //wait
@@ -1096,7 +1090,6 @@ pos48406:
 
 void Code47574()
 {
-	int k;
 	unsigned char phase1 = 0;  //mem43
 	unsigned char phase2;
 	unsigned char phase3;
@@ -1335,12 +1328,7 @@ do
 			A = mem56 + multtable[rectangle[phase3] | amplitude3[Y]] + (carry?1:0);
 			A = ((A + 136) & 255) >> 4; //there must be also a carry
 			//mem[54296] = A;
-			//timetable 0
-			bufferpos += timetable[oldtimetableindex][0];
-			oldtimetableindex = 0;
-
-			for(k=0; k<5; k++)
-			buffer[bufferpos/scale + k] = (A & 15)*16;
+			Output(0, A);
 			speedcounter--;
 			if (speedcounter != 0) goto pos48155;
 			Y++; //go to next amplitude
