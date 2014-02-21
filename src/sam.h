@@ -9,7 +9,7 @@ void SetThroat(unsigned char _throat);
 void EnableSingmode();
 void EnableDebug();
 
-int Code39771();
+int SAMMain();
 
 char* GetBuffer();
 int GetBufferLength();

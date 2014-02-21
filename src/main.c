@@ -246,7 +246,7 @@ int main(int argc, char **argv)
 #endif
 
 	SetInput(input);
-	if (!Code39771())
+	if (!SAMMain())
 	{
 		PrintUsage();
 		return 1;

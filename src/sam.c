@@ -65,7 +65,6 @@ int timetable[5][5] =
 
 // contains the final soundbuffer
 int bufferpos=0;
-int scale = 50;
 char *buffer = NULL;
 
 void Output(int index, unsigned char A)
@@ -76,11 +75,8 @@ void Output(int index, unsigned char A)
 	oldtimetableindex = index;
 	// write a little bit in advance
 	for(k=0; k<5; k++)
-		buffer[bufferpos/scale + k] = (A & 15)*16;
+		buffer[bufferpos/50 + k] = (A & 15)*16;
 }
-
-
-
 
 void SetInput(char *_input)
 {
@@ -103,19 +99,17 @@ int GetBufferLength(){return bufferpos;};
 void Init();
 int Parser1();
 void Parser2();
-int Code39771();
-void Code41883();
+int SAMMain();
+void AddStress();
 void SetPhonemeLength();
 void Code48619();
 void Code41240();
 void Insert(unsigned char position, unsigned char mem60, unsigned char mem59, unsigned char mem58);
 void Code48431();
-void Code47574();
-void Code48547();
+void Render();
+void PrepareOutput();
 void Code48227();
 void SetMouthThroat(unsigned char mouth, unsigned char throat);
-
-
 
 // 168=pitches 
 // 169=frequency1
@@ -223,7 +217,8 @@ void Write(unsigned char p, unsigned char Y, unsigned char value)
 	printf("Error writing to tables\n");
 }
 
-int Code39771()
+//int Code39771()
+int SAMMain()
 {
 	Init();
 	phonemeindex[255] = 32; //to prevent buffer overflow
@@ -232,7 +227,7 @@ int Code39771()
 	if (debug)
 		PrintPhonemes(phonemeindex, phonemeLength, stress);
 	Parser2();
-	Code41883();
+	AddStress();
 	SetPhonemeLength();
 	Code48619();
 	Code41240();
@@ -252,7 +247,7 @@ int Code39771()
 
 	//mem[40158] = 255;
 
-	Code48547();
+	PrepareOutput();
 
 	if (debug) 
 	{
@@ -263,8 +258,8 @@ int Code39771()
 }
 
 
-//seems to delete all zeros in table phoneme and copies it and 2 other tables
-void Code48547()
+//void Code48547()
+void PrepareOutput()
 {
 	A = 0;
 	X = 0;
@@ -278,7 +273,7 @@ void Code48547()
 		{
 			A = 255;
 			phonemeIndexOutput[Y] = 255;
-			Code47574();
+			Render();
 			return;
 		}
 		if (A == 254)
@@ -287,7 +282,7 @@ void Code48547()
 			int temp = X;
 			//mem[48546] = X;
 			phonemeIndexOutput[Y] = 255;
-			Code47574();
+			Render();
 			//X = mem[48546];
 			X=temp;
 			Y = 0;
@@ -359,7 +354,8 @@ void Code48431()
 
 
 //add 1 to stress under some circumstances
-void Code41883()
+//void Code41883()
+void AddStress()
 {
 	unsigned char pos=0; //mem66
 	while(1)
@@ -1088,7 +1084,8 @@ pos48406:
 	goto pos48398;
 }
 
-void Code47574()
+//void Code47574()
+void Render()
 {
 	unsigned char phase1 = 0;  //mem43
 	unsigned char phase2;

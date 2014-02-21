@@ -58,8 +58,7 @@ Some typical values written in the original manual are:
 
 
 It can even sing
-look at
-	sing.bat
+look at the file "sing"
 for a small example.
 
 For phoneme output look in the table in Appendix 1.
@@ -124,17 +123,17 @@ Output
 
 Here is the full tree of subroutine calls:
 
-Code39771
-	Parser1
-	Parser2
-		Insert
-	Code41883
-	SetPhonemeLength
-	Code48619
-	Code41240
-		Insert
-	Code48431
-		Insert
+SAMMain()
+	Parser1()
+	Parser2()
+		Insert()
+	AddStress()
+	SetPhonemeLength()
+	Code48619()
+	Code41240()
+		Insert()
+	Code48431()
+		Insert()
 		
 	Code48547
 		Code47574
@@ -143,7 +142,7 @@ Code39771
 			Code48227
 
 
-Code39771 is the entry routine and calls all further routines. 
+SAMMain() is the entry routine and calls all further routines. 
 Parser1 transforms the phoneme input and transforms it to three tables
 	phonemeindex[]
 	stress[]
@@ -152,7 +151,7 @@ Parser1 transforms the phoneme input and transforms it to three tables
 This tables are now changed: 
 
 Parser2 exchanges some phonemes by others and inserts new. 
-Code41883 adds 1 to the stress under some circumstances
+AddStress adds 1 to the stress under some circumstances
 SetPhonemeLength sets phoneme lengths. 
 Code48619 changes the phoneme lengths
 Code41240 adds some additional phonemes
@@ -163,7 +162,7 @@ Appendix 2 shows all possible phonemes and some flag fields.
 The final content of these tables can be seen with the -debug command.
 
 
-These tables is now partly copied into the small tables:
+In the function PrepareOutput() these tables are partly copied into the small tables:
 	phonemeindexOutput[]
 	stressOutput[]
 	phonemelengthOutput[]
@@ -182,7 +181,7 @@ where rect is a rectangular function with the same periodicity like sin.
 It seems really strange, but this is really enough for most types of phonemes. 
 
 Therefore the above phonemes are converted with some tables to 
-	tab43008[]
+	pitches[]
 	frequency1[]  =  f1
 	frequency2[]  =  f2
 	frequency3[]  =  f3
