@@ -1361,6 +1361,7 @@ pos48159:
 	} //while
 
 	//--------------------------
+	// I am sure, but I think the following code is never executed
 	//pos48315:
 	int tempA;
 	phase1 = A ^ 255;
@@ -1384,13 +1385,13 @@ pos48159:
 				X = 26;
 				// mem[54296] = X;
 				bufferpos += 150;
-				buffer[bufferpos/scale] = (X & 15)*16;
+				buffer[bufferpos/50] = (X & 15)*16;
 			} else
 			{
 				//mem[54296] = 6;
 				X=6; 
 				bufferpos += 150;
-				buffer[bufferpos/scale] = (X & 15)*16;
+				buffer[bufferpos/50] = (X & 15)*16;
 			}
 
 			for(X = wait2; X>0; X--); //wait
