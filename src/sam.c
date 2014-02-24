@@ -397,7 +397,57 @@ void Insert(unsigned char position/*var57*/, unsigned char mem60, unsigned char 
 	return;
 }
 
+// The input[] buffer contains a string of phonemes and stress markers along
+// the lines of:
+//
+//     DHAX KAET IHZ AH5GLIY. <0x9B>
+//
+// The byte 0x9B marks the end of the buffer. Some phonemes are 2 bytes 
+// long, such as "DH" and "AX". Others are 1 byte long, such as "T" and "Z". 
+// There are also stress markers, such as "5" and ".".
+//
+// The first character of the phonemes are stored in the table signInputTable1[].
+// The second character of the phonemes are stored in the table signInputTable2[].
+// The stress characters are arranged in low to high stress order in stressInputTable[].
+// 
+// The following process is used to parse the input[] buffer:
+// 
+// Repeat until the <0x9B> character is reached:
+//
+//        First, a search is made for a 2 character match for phonemes that do not
+//        end with the '*' (wildcard) character. On a match, the index of the phoneme 
+//        is added to phonemeIndex[] and the buffer position is advanced 2 bytes.
+//
+//        If this fails, a search is made for a 1 character match against all
+//        phoneme names ending with a '*' (wildcard). If this succeeds, the 
+//        phoneme is added to phonemeIndex[] and the buffer position is advanced
+//        1 byte.
+// 
+//        If this fails, search for a 1 character match in the stressInputTable[].
+//        If this succeeds, the stress value is placed in the last stress[] table
+//        at the same index of the last added phoneme, and the buffer position is
+//        advanced by 1 byte.
+//
+//        If this fails, return a 0.
+//
+// On success:
+//
+//    1. phonemeIndex[] will contain the index of all the phonemes.
+//    2. The last index in phonemeIndex[] will be 255.
+//    3. stress[] will contain the stress value for each phoneme
 
+// input[] holds the string of phonemes, each two bytes wide
+// signInputTable1[] holds the first character of each phoneme
+// signInputTable2[] holds te second character of each phoneme
+// phonemeIndex[] holds the indexes of the phonemes after parsing input[]
+//
+// The parser scans through the input[], finding the names of the phonemes
+// by searching signInputTable1[] and signInputTable2[]. On a match, it
+// copies the index of the phoneme into the phonemeIndexTable[].
+//
+// The character <0x9B> marks the end of text in input[]. When it is reached,
+// the index 255 is placed at the end of the phonemeIndexTable[], and the
+// function returns with a 1 indicating success.
 int Parser1()
 {
 	int i;
@@ -407,72 +457,124 @@ int Parser1()
 	X = 0;
 	A = 0;
 	Y = 0;
+	
+	// CLEAR THE STRESS TABLE
 	for(i=0; i<256; i++)
 		stress[i] = 0;
 
+  // THIS CODE MATCHES THE PHONEME LETTERS TO THE TABLE
 	// pos41078:
 	while(1)
 	{
+        // GET THE FIRST CHARACTER FROM THE PHONEME BUFFER
 		sign1 = input[X];
+		// TEST FOR 155 (›) END OF LINE MARKER
 		if (sign1 == 155)
 		{
+           // MARK ENDPOINT AND RETURN
 			phonemeindex[position] = 255;      //mark endpoint
+			// REACHED END OF PHONEMES, SO EXIT
 			return 1;       //all ok
 		}
+		
+		// GET THE NEXT CHARACTER FROM THE BUFFER
 		X++;
 		sign2 = input[X];
+		
+		// NOW sign1 = FIRST CHARACTER OF PHONEME, AND sign2 = SECOND CHARACTER OF PHONEME
 
+       // TRY TO MATCH PHONEMES ON TWO TWO-CHARACTER NAME
+       // IGNORE PHONEMES IN TABLE ENDING WITH WILDCARDS
+
+       // SET INDEX TO 0
 		Y = 0;
 pos41095:
+         
+         // GET FIRST CHARACTER AT POSITION Y IN signInputTable
+         // --> should change name to PhonemeNameTable1
 		A = signInputTable1[Y];
+		
+		// FIRST CHARACTER MATCHES?
 		if (A == sign1)
 		{
+           // GET THE CHARACTER FROM THE PhonemeSecondLetterTable
 			A = signInputTable2[Y];
+			// NOT A SPECIAL AND MATCHES SECOND CHARACTER?
 			if ((A != '*') && (A == sign2))
 			{
+               // STORE THE INDEX OF THE PHONEME INTO THE phomeneIndexTable
 				phonemeindex[position] = Y;
+				
+				// ADVANCE THE POINTER TO THE phonemeIndexTable
 				position++;
+				// ADVANCE THE POINTER TO THE phonemeInputBuffer
 				X++;
+
+				// CONTINUE PARSING
 				continue;
 			}
 		}
+		
+		// NO MATCH, TRY TO MATCH ON FIRST CHARACTER TO WILDCARD NAMES (ENDING WITH '*')
+		
+		// ADVANCE TO THE NEXT POSITION
 		Y++;
+		// IF NOT END OF TABLE, CONTINUE
 		if (Y != 81) goto pos41095;
 
+// REACHED END OF TABLE WITHOUT AN EXACT (2 CHARACTER) MATCH.
+// THIS TIME, SEARCH FOR A 1 CHARACTER MATCH AGAINST THE WILDCARDS
+
+// RESET THE INDEX TO POINT TO THE START OF THE PHONEME NAME TABLE
 		Y = 0;
 pos41134:
-
+// DOES THE PHONEME IN THE TABLE END WITH '*'?
 		if (signInputTable2[Y] == '*')
 		{
+// DOES THE FIRST CHARACTER MATCH THE FIRST LETTER OF THE PHONEME
 			if (signInputTable1[Y] == sign1)
 			{
+                // SAVE THE POSITION AND MOVE AHEAD
 				phonemeindex[position] = Y;
+				
+				// ADVANCE THE POINTER
 				position++;
+				
+				// CONTINUE THROUGH THE LOOP
 				continue;
 			}
 		}
 		Y++;
-		if (Y != 81) goto pos41134; //81 is size of table
+		if (Y != 81) goto pos41134; //81 is size of PHONEME NAME table
 
-		
+// FAILED TO MATCH WITH A WILDCARD. ASSUME THIS IS A STRESS
+// CHARACTER. SEARCH THROUGH THE STRESS TABLE
+
+        // SET INDEX TO POSITION 8 (END OF STRESS TABLE)
 		Y = 8;
+		
+       // WALK BACK THROUGH TABLE LOOKING FOR A MATCH
 		while( (sign1 != stressInputTable[Y]) && (Y>0))
 		{
+  // DECREMENT INDEX
 			Y--;
 		}
 
+        // REACHED THE END OF THE SEARCH WITHOUT BREAKING OUT OF LOOP?
 		if (Y == 0)
 		{
 			//mem[39444] = X;
 			//41181: JSR 42043 //Error
+           // FAILED TO MATCH ANYTHING, RETURN 0 ON FAILURE
 			return 0;
 		}
-
+// SET THE STRESS FOR THE PRIOR PHONEME
 		stress[position-1] = Y;
 	} //while
-
-
 }
+
+
+
 
 //change phonemelength depedendent on stress
 //void Code41203()
