@@ -20,9 +20,9 @@ Compile
 =======
 
 Simply type "make" in your command prompt.
-If you want to compile without SDL delete the "-DUSESDL" statement from the file "Makefile".
+In order to compile without SDL remove the SDL statements from the CFLAGS and LFLAGS variables in the file "Makefile".
 
-It should compile on every UNIX-like operating system. For Windows you need Cygwin or MinGW + libsdl.
+It should compile on every UNIX-like operating system. For Windows you need Cygwin or MinGW( + libsdl).
 
 
 Usage
@@ -38,7 +38,7 @@ If you have disabled SDL try
 
 	./sam -wav i_am_sam.wav I am Sam
 
-to get a wav file.
+to get a wav file. This file can be played by many media players available for the PC.
 
 you can try other options like
 	-pitch number
@@ -61,10 +61,10 @@ It can even sing
 look at the file "sing"
 for a small example.
 
-For phoneme output look in the table in Appendix 1.
+For the phoneme input table look in the Wiki.
 
 
-For additional features take a look at the original manual found at
+A description of additional features can be found in the original manual at
 	http://www.retrobits.net/atari/sam.shtml
 
 
@@ -99,7 +99,7 @@ For a complete understanding of the code I need more time and especially more ey
 Reciter
 -------
 
-It changes the english text to phonemes by a ruleset shown in Appendix 3.
+It changes the english text to phonemes by a ruleset shown in the wiki.
 
 The rule
 	" ANT(I)",	"AY",
@@ -115,7 +115,7 @@ There are some special signs in this rules like
 	%
 which can mean e. g. that there must be a vocal or a consonant or something else. 
 
-With the -debug option you will get the resulting phonemes for this translation.
+With the -debug option you will get the corresponding rules and the resulting phonemes.
 
 
 Output
@@ -127,7 +127,7 @@ SAMMain()
 	Parser1()
 	Parser2()
 		Insert()
-	AddStress()
+	CopyStress()
 	SetPhonemeLength()
 	Code48619()
 	Code41240()
@@ -151,14 +151,14 @@ Parser1 transforms the phoneme input and transforms it to three tables
 This tables are now changed: 
 
 Parser2 exchanges some phonemes by others and inserts new. 
-AddStress adds 1 to the stress under some circumstances
+CopyStress adds 1 to the stress under some circumstances
 SetPhonemeLength sets phoneme lengths. 
 Code48619 changes the phoneme lengths
 Code41240 adds some additional phonemes
 Code48431 has some extra rules
 
 
-Appendix 2 shows all possible phonemes and some flag fields.  
+The wiki shows all possible phonemes and some flag fields.  
 The final content of these tables can be seen with the -debug command.
 
 
