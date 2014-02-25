@@ -100,7 +100,7 @@ void Init();
 int Parser1();
 void Parser2();
 int SAMMain();
-void AddStress();
+void CopyStress();
 void SetPhonemeLength();
 void Code48619();
 void Code41240();
@@ -227,7 +227,7 @@ int SAMMain()
 	if (debug)
 		PrintPhonemes(phonemeindex, phonemeLength, stress);
 	Parser2();
-	AddStress();
+	CopyStress();
 	SetPhonemeLength();
 	Code48619();
 	Code41240();
@@ -352,28 +352,58 @@ void Code48431()
 
 }
 
+// Iterates through the phoneme buffer, copying the stress value from
+// the following phoneme under the following circumstance:
+       
+//     1. The current phoneme is voiced, excluding plosives and fricatives
+//     2. The following phoneme is voiced, excluding plosives and fricatives, and
+//     3. The following phoneme is stressed
+//
+//  In those cases, the stress value+1 from the following phoneme is copied.
+//
+// For example, the word LOITER is represented as LOY5TER, with as stress
+// of 5 on the dipthong OY. This routine will copy the stress value of 6 (5+1)
+// to the L that precedes it.
 
-//add 1 to stress under some circumstances
+
 //void Code41883()
-void AddStress()
+void CopyStress()
 {
+    // loop thought all the phonemes to be output
 	unsigned char pos=0; //mem66
 	while(1)
 	{
+        // get the phomene
 		Y = phonemeindex[pos];
+		
+	    // exit at end of buffer
 		if (Y == 255) return;
+		
+		// if CONSONANT_FLAG set, skip - only vowels get stress
 		if ((flags[Y] & 64) == 0) {pos++; continue;}
+		// get the next phoneme
 		Y = phonemeindex[pos+1];
 		if (Y == 255) //prevent buffer overflow
 		{
+            // FIXME: why bitwise and with 65?
 			if ((65 & 128) == 0)  {pos++; continue;}
 		} else
+		// if the following phoneme is a vowel, skip
 		if ((flags[Y] & 128) == 0)  {pos++; continue;}
 
+        // get the stress value at the next position
 		Y = stress[pos+1];
+		
+		// if next phoneme is not stressed, skip
 		if (Y == 0)  {pos++; continue;}
+
+		// if next phoneme is not a VOWEL OR ER, skip
 		if ((Y & 128) != 0)  {pos++; continue;}
+
+		// copy stress from prior phoneme to this one
 		stress[pos] = Y+1;
+		
+		// advance pointer
 		pos++;
 	}
 
@@ -1100,8 +1130,6 @@ pos41812:
 		pos++;
 
 	} // while
-
-
 }
 
 
