@@ -385,8 +385,7 @@ void CopyStress()
 		Y = phonemeindex[pos+1];
 		if (Y == 255) //prevent buffer overflow
 		{
-            // FIXME: why bitwise and with 65?
-			if ((65 & 128) == 0)  {pos++; continue;}
+			pos++; continue;
 		} else
 		// if the following phoneme is a vowel, skip
 		if ((flags[Y] & 128) == 0)  {pos++; continue;}
@@ -987,10 +986,9 @@ pos41611:
 			unsigned char index = phonemeindex[pos+1];
 			
 // At end of buffer?
-			if (index == 255)
+			if (index == 255) //prevent buffer overflow
 			{
-// This will always evaluate to true
-				if ((65 & 32) != 0) {pos++; continue;}//prevent buffer overflow
+				pos++; continue;
 			}
 			else
 // If dipthong ending with YX, move continue processing next phoneme
@@ -1119,10 +1117,10 @@ pos41812:
 		{
 			A = phonemeindex[X+1];
 			if (A == 255) //prevent buffer overflow
-			A = 65 & 128;
+				A = 65 & 128;
 			else
 // Is next phoneme a vowel or ER?
-			A = flags[A] & 128;
+				A = flags[A] & 128;
 			if (debug) if (A != 0) printf("RULE: Soften T or D following vowel or ER and preceding a pause -> DX\n");
 			if (A != 0) phonemeindex[pos] = 30;  // 'DX'
 		}
@@ -1195,9 +1193,9 @@ pos48644:
 			X++;
 			index = phonemeindex[X];
 			if (index == 255) 
-			mem56 = 65;
+				mem56 = 65;
 			else
-			mem56 = flags[index];
+				mem56 = flags[index];
 
 			if ((flags[index] & 64) == 0)
 			{
