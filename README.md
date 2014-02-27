@@ -66,6 +66,8 @@ For the phoneme input table look in the Wiki.
 
 A description of additional features can be found in the original manual at
 	http://www.retrobits.net/atari/sam.shtml
+or in the manual of the equivalent Apple II program
+	http://www.apple-iigs.info/newdoc/sam.pdf
 
 
 Adaption To C
