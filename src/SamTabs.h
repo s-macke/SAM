@@ -269,7 +269,7 @@ unsigned char ampl3data[] =
 };
 
 //tab45616???
-unsigned char phonemeLengthTable2[] = 
+unsigned char phonemeStressedLengthTable[] = 
 {
 	0x00 , 0x12 , 0x12 , 0x12 , 8 ,0xB , 9 ,0xB ,
 	0xE ,0xF ,0xB , 0x10 ,0xC , 6 , 6 ,0xE ,
@@ -284,7 +284,7 @@ unsigned char phonemeLengthTable2[] =
 };
 
 //tab45536???
-unsigned char phonemeLengthTable1[] = 
+unsigned char phonemeLengthTable[] = 
 {
 	0 , 0x12 , 0x12 , 0x12 , 8 , 8 , 8 , 8 ,
 	8 ,0xB , 6 ,0xC ,0xA , 5 , 5 ,0xB ,
