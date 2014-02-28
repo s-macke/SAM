@@ -1532,21 +1532,21 @@ do
 		X++;
 		if (A == 255) break;//goto pos47970;
 		X = A;
-		mem56 = tab45856[A];
-		A = tab45856[Y];
+		mem56 = blendRank[A];
+		A = blendRank[Y];
 		if (A == mem56)
 		{
-			phase1 = tab45696[Y];
-			phase2 = tab45696[X];
+			phase1 = outBlendLength[Y];
+			phase2 = outBlendLength[X];
 		} else
 		if (A < mem56)
 		{
-			phase1 = tab45776[X];
-			phase2 = tab45696[X];
+			phase1 = inBlendLength[X];
+			phase2 = outBlendLength[X];
 		} else
 		{
-			phase1 = tab45696[Y];
-			phase2 = tab45776[Y];
+			phase1 = outBlendLength[Y];
+			phase2 = inBlendLength[Y];
 		}
 
 		Y = mem44;

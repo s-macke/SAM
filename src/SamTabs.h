@@ -298,7 +298,9 @@ unsigned char phonemeLengthTable1[] =
 	6 , 1 , 4 , 6 , 1 , 4 , 0xC7 , 0xFF
 };
 
-unsigned char tab45696[] = 
+// Number of frames at the end of a phoneme devoted to interpolating to next phoneme's final value
+//tab45696
+unsigned char outBlendLength[] = 
 {
 	0 , 2 , 2 , 2 , 2 , 4 , 4 , 4 ,
 	4 , 4 , 4 , 4 , 4 , 4 , 4 , 4 ,
@@ -312,7 +314,9 @@ unsigned char tab45696[] =
 	3 , 0 , 2 , 3 , 0 , 2 , 0xA0 , 0xA0
 };
 
-unsigned char tab45776[] = 
+// Number of frames at beginning of a phoneme devoted to interpolating to phoneme's final value
+// tab45776
+unsigned char inBlendLength[] = 
 {
 	0 , 2 , 2 , 2 , 2 , 4 , 4 , 4 ,
 	4 , 4 , 4 , 4 , 4 , 4 , 4 , 4 ,
@@ -326,7 +330,9 @@ unsigned char tab45776[] =
 	3 , 0 , 3 , 3 , 0 , 3 , 0xB0 , 0xA0 
 };
 
-unsigned char tab45856[] = 
+// Used to decide which phoneme's blend lengths. The candidate with the lower score is selected.
+// tab45856 
+unsigned char blendRank[] = 
 {
 	0 , 0x1F , 0x1F , 0x1F , 0x1F , 2 , 2 , 2 ,
 	2 , 2 , 2 , 2 , 2 , 2 , 5 , 5 ,
