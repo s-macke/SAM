@@ -1780,7 +1780,7 @@ do
 		amplitude1[X] = ampl1data[Y];     // F1 amplitude
 		amplitude2[X] = ampl2data[Y];     // F2 amplitude
 		amplitude3[X] = ampl3data[Y];     // F3 amplitude
-		tab44800[X] = tab45936[Y];        // flags
+		tab44800[X] = noiseFlag[Y];        // flags
 		pitches[X] = pitch + phase1;      // pitch
 		X++;
 		phase2--;
