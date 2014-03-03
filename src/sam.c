@@ -108,7 +108,7 @@ void Insert(unsigned char position, unsigned char mem60, unsigned char mem59, un
 void Code48431();
 void Render();
 void PrepareOutput();
-void Code48227();
+void RenderSample();
 void SetMouthThroat(unsigned char mouth, unsigned char throat);
 
 // 168=pitches 
@@ -1530,54 +1530,145 @@ void Code47503(unsigned char mem52)
 }
 
 // -------------------------------------------------------------------------
+//Code48227
+// Render a sampled sound from the sampleTable.
+//
+//   Phoneme   Sample Start   Sample End
+//   32: S*    15             255
+//   33: SH    257            511
+//   34: F*    559            767
+//   35: TH    583            767
+//   36: /H    903            1023
+//   37: /X    1135           1279
+//   38: Z*    84             119
+//   39: ZH    340            375
+//   40: V*    596            639
+//   41: DH    596            631
+//
+//   42: CH
+//   43: **    399            511
+//
+//   44: J*
+//   45: **    257            276
+//   46: **
+// 
+//   66: P*
+//   67: **    743            767
+//   68: **
+//
+//   69: T*
+//   70: **    231            255
+//   71: **
+//
+// The SampledPhonemesTable[] holds flags indicating if a phoneme is
+// voiced or not. If the upper 5 bits are zero, the sample is voiced.
+//
+// Samples in the sampleTable are compressed, with bits being converted to
+// bytes from high bit to low, as follows:
+//
+//   unvoiced 0 bit   -> X
+//   unvoiced 1 bit   -> 5
+//
+//   voiced 0 bit     -> 6
+//   voiced 1 bit     -> 24
+//
+// Where X is a value from the table:
+//
+//   { 0x18, 0x1A, 0x17, 0x17, 0x17 };
+//
+// The index into this table is determined by masking off the lower
+// 3 bits from the SampledPhonemesTable:
+//
+//        index = (SampledPhonemesTable[i] & 7) - 1;
+//
+// For voices samples, samples are interleaved between voiced output.
 
 
-void Code48227(unsigned char *mem66)
-{
+// Code48227()
+void RenderSample(unsigned char *mem66)
+{     
 	int tempA;
-	int i;
+	// current phoneme's index
 	mem49 = Y;
+
+	// mask low three bits and subtract 1 get value to 
+	// convert 0 bits on unvoiced samples.
 	A = mem39&7;
 	X = A-1;
+
+    // store the result
 	mem56 = X;
+	
+	// determine which offset to use from table { 0x18, 0x1A, 0x17, 0x17, 0x17 }
+	// T, S, Z                0          0x18
+	// CH, J, SH, ZH          1          0x1A
+	// P, F*, V, TH, DH       2          0x17
+	// /H                     3          0x17
+	// /X                     4          0x17
+
+    // get value from the table
 	mem53 = tab48426[X];
 	mem47 = X;      //46016+mem[56]*256
+	
+	// voiced sample?
 	A = mem39 & 248;
 	if(A == 0)
 	{
+        // voiced phoneme: Z*, ZH, V*, DH
 		Y = mem49;
 		A = pitches[mem49] >> 4;
+		
+		// jump to voiced portion
 		goto pos48315;
 	}
+	
 	Y = A ^ 255;
 pos48274:
+         
+    // step through the 8 bits in the sample
 	mem56 = 8;
-	A = randomtable[mem47*256+Y];
+	
+	// get the next sample from the table
+    // mem47*256 = offset to start of samples
+	A = sampleTable[mem47*256+Y];
 pos48280:
 
+    // left shift to get the high bit
 	tempA = A;
 	A = A << 1;
 	//48281: BCC 48290
+	
+	// bit not set?
 	if ((tempA & 128) == 0)
 	{
+        // convert the bit to value from table
 		X = mem53;
 		//mem[54296] = X;
+        // output the byte
 		Output(1, X);
+		// if X != 0, exit loop
 		if(X != 0) goto pos48296;
 	}
 	
+	// output a 5 for the on bit
 	Output(2, 5);
 
 	//48295: NOP
 pos48296:
 
-	for(i=0; i<wait1; i++) //wait
 	X = 0;
 
+    // decrement counter
 	mem56--;
+	
+	// if not done, jump to top of loop
 	if (mem56 != 0) goto pos48280;
+	
+	// increment position
 	Y++;
 	if (Y != 0) goto pos48274;
+	
+	// restore values and return
 	mem44 = 1;
 	Y = mem49;
 	return;
@@ -1586,56 +1677,64 @@ pos48296:
 	unsigned char phase1;
 
 pos48315:
-	// Error Error Error
+// handle voiced samples here
 
+   // number of samples?
 	phase1 = A ^ 255;
+
 	Y = *mem66;
 	do
 	{
 		//pos48321:
 
+        // shift through all 8 bits
 		mem56 = 8;
 		//A = Read(mem47, Y);
-		A = randomtable[mem47*256+Y];     //???
+		
+		// fetch value from table
+		A = sampleTable[mem47*256+Y];
 
-
+        // loop 8 times
 		//pos48327:
 		do
 		{
 			//48327: ASL A
 			//48328: BCC 48337
+			
+			// left shift and check high bit
 			tempA = A;
 			A = A << 1;
 			if ((tempA & 128) != 0)
 			{
+                // if bit set, output 26
 				X = 26;
 				Output(3, X);
 			} else
 			{
 				//timetable 4
+				// bit is not set, output a 6
 				X=6;
 				Output(4, X);
 			}
 
-			for(X = wait2; X>0; X--); //wait
 			mem56--;
 		} while(mem56 != 0);
 
+        // move ahead in the table
 		Y++;
+		
+		// continue until counter done
 		phase1++;
 
 	} while (phase1 != 0);
 	//	if (phase1 != 0) goto pos48321;
+	
+	// restore values and return
 	A = 1;
 	mem44 = 1;
 	*mem66 = Y;
 	Y = mem49;
 	return;
-
-	//exit(1);
-
-
-	//Error Error Error
 }
 
 
@@ -1780,7 +1879,7 @@ do
 		amplitude1[X] = ampl1data[Y];     // F1 amplitude
 		amplitude2[X] = ampl2data[Y];     // F2 amplitude
 		amplitude3[X] = ampl3data[Y];     // F3 amplitude
-		tab44800[X] = noiseFlag[Y];        // flags
+		tab44800[X] = sampledConsonantFlags[Y];        // flags
 		pitches[X] = pitch + phase1;      // pitch
 		X++;
 		phase2--;
@@ -2049,7 +2148,7 @@ do
 		A = A & 248;
 		if(A != 0)
 		{
-			Code48227(&mem66);
+			RenderSample(&mem66);
 			Y += 2;
 			mem48 -= 2;
 		} else
@@ -2106,7 +2205,7 @@ pos48159:
 			phase3 += frequency3[Y];
 			continue;
 		}
-		Code48227(&mem66);
+		RenderSample(&mem66);
 		goto pos48159;
 	} //while
 

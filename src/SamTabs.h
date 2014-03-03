@@ -366,7 +366,7 @@ unsigned char blendRank[] =
 // 67: **    27          00011011
 // 70: **    25          00011001
 // tab45936
-unsigned char noiseFlag[] =
+unsigned char sampledConsonantFlags[] =
 {
     0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,
     0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,
@@ -399,7 +399,7 @@ unsigned char tab47492[] =
 unsigned char tab48426[5] = { 0x18, 0x1A, 0x17, 0x17, 0x17 };
 
 //random data ?
-unsigned char randomtable[0x500] =
+unsigned char sampleTable[0x500] =
 {
 	//00
 
