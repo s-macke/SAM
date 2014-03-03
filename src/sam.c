@@ -41,7 +41,7 @@ unsigned char phonemeIndexOutput[60]; //tab47296
 unsigned char stressOutput[60]; //tab47365
 unsigned char phonemeLengthOutput[60]; //tab47416
 
-unsigned char tab44800[256];
+unsigned char sampledConsonantFlag[256]; // tab44800
 
 unsigned char pitches[256]; // tab43008
 
@@ -163,7 +163,7 @@ void Init()
 		frequency3[i] = 0;
 		stress[i] = 0;
 		phonemeLength[i] = 0;
-		tab44800[i] = 0;
+		sampledConsonantFlag[i] = 0;
 	}
 	
 	for(i=0; i<60; i++)
@@ -252,7 +252,7 @@ int SAMMain()
 	if (debug) 
 	{
 		PrintPhonemes(phonemeindex, phonemeLength, stress);
-		PrintOutput(tab44800, frequency1, frequency2, frequency3, amplitude1, amplitude2, amplitude3, pitches);
+		PrintOutput(sampledConsonantFlag, frequency1, frequency2, frequency3, amplitude1, amplitude2, amplitude3, pitches);
 	}
 	return 1;
 }
@@ -1802,6 +1802,8 @@ pos48406:
 // 4. Render the each frame.
 
 
+
+//void Code47574()
 void Render()
 {
 	unsigned char phase1 = 0;  //mem43
@@ -1819,6 +1821,7 @@ void Render()
 	A = 0;
 	X = 0;
 	mem44 = 0;
+
 
 // CREATE FRAMES
 //
@@ -1879,7 +1882,7 @@ do
 		amplitude1[X] = ampl1data[Y];     // F1 amplitude
 		amplitude2[X] = ampl2data[Y];     // F2 amplitude
 		amplitude3[X] = ampl3data[Y];     // F3 amplitude
-		tab44800[X] = sampledConsonantFlags[Y];        // flags
+		sampledConsonantFlag[X] = sampledConsonantFlags[Y];        // phoneme data for sampled consonants
 		pitches[X] = pitch + phase1;      // pitch
 		X++;
 		phase2--;
@@ -1923,7 +1926,6 @@ do
 // The exception to this is the Pitch[] parameter, which is interpolates the
 // pitch from the center of the current phoneme to the center of the next
 // phoneme.
-
 
 	A = 0;
 	mem44 = 0;
@@ -2143,16 +2145,23 @@ do
 	//pos48078:
 	while(1)
 	{
-		A = tab44800[Y];
+        // get the sampled information on the phoneme
+		A = sampledConsonantFlag[Y];
 		mem39 = A;
+		
+		// unvoiced sampled phoneme?
 		A = A & 248;
 		if(A != 0)
 		{
+            // render the sample for the phoneme
 			RenderSample(&mem66);
+			
+			// skip ahead two in the phoneme buffer
 			Y += 2;
 			mem48 -= 2;
 		} else
 		{
+            // simulate the glottal pulse and formants
 			mem56 = multtable[sinus[phase1] | amplitude1[Y]];
 
 			carry = 0;
@@ -2197,20 +2206,32 @@ pos48159:
 			phase3 = 0;
 			continue;
 		}
+		
+		// decrement the count
 		mem38--;
+		
+		// is the count non-zero and the sampled flag is zero?
 		if((mem38 != 0) || (mem39 == 0))
 		{
+            // reset the phase of the formants to match the pulse
 			phase1 += frequency1[Y];
 			phase2 += frequency2[Y];
 			phase3 += frequency3[Y];
 			continue;
 		}
+		
+		// voiced sampled phonemes interleave the sample with the
+		// glottal pulse. The sample flag is non-zero, so render
+		// the sample for the phoneme.
 		RenderSample(&mem66);
 		goto pos48159;
 	} //while
 
-	//--------------------------
-	// I am sure, but I think the following code is never executed
+
+    // The following code is never reached. It's left over from when
+    // the voiced sample code was part of this loop, instead of part
+    // of RenderSample();
+
 	//pos48315:
 	int tempA;
 	phase1 = A ^ 255;
@@ -2258,7 +2279,6 @@ pos48159:
 	Y = mem49;
 	return;
 }
-
 
 
 //return = (mem39212*mem39213) >> 1
