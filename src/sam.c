@@ -72,7 +72,7 @@ void SetPhonemeLength();
 void AdjustLengths();
 void Code41240();
 void Insert(unsigned char position, unsigned char mem60, unsigned char mem59, unsigned char mem58);
-void Code48431();
+void InsertBreath();
 void PrepareOutput();
 void SetMouthThroat(unsigned char mouth, unsigned char throat);
 
@@ -160,7 +160,7 @@ int SAMMain()
 	} while (X != 0);
 
 	//pos39848:
-	Code48431();
+	InsertBreath();
 
 	//mem[40158] = 255;
 	if (debug) 
@@ -219,7 +219,8 @@ void PrepareOutput()
 	}
 }
 
-void Code48431()
+//void Code48431()
+void InsertBreath()
 {
 	unsigned char mem54;
 	unsigned char mem55;
