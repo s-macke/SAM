@@ -438,40 +438,134 @@ do
 // -------------------
 //pos47694:
 
-
 // CREATE TRANSITIONS
 //
-// Linear transitions are now created to smoothly connect each
-// phoeneme. This transition is spread between the ending frames
-// of the old phoneme (outBlendLength), and the beginning frames 
-// of the new phoneme (inBlendLength).
+// Linear transitions are now created to smoothly connect the
+// end of one sustained portion of a phoneme to the following
+// phoneme. 
+//
+// To do this, three tables are used:
+//
+//  Table         Purpose
+//  =========     ==================================================
+//  blendRank     Determines which phoneme's blend values are used.
+//
+//  blendOut      The number of frames at the end of the phoneme that
+//                will be used to transition to the following phoneme.
+//
+//  blendIn       The number of frames of the following phoneme that
+//                will be used to transition into that phoneme.
+//
+// In creating a transition between two phonemes, the phoneme
+// with the HIGHEST rank is used. Phonemes are ranked on how much
+// their identity is based on their transitions. For example, 
+// vowels are and diphthongs are identified by their sustained portion, 
+// rather than the transitions, so they are given low values. In contrast,
+// stop consonants (P, B, T, K) and glides (Y, L) are almost entirely
+// defined by their transitions, and are given high rank values.
+//
+// Here are the rankings used by SAM:
+//
+//     Rank    Type                         Phonemes
+//     2       All vowels                   IY, IH, etc.
+//     5       Diphthong endings            YX, WX, ER
+//     8       Terminal liquid consonants   LX, WX, YX, N, NX
+//     9       Liquid consonants            L, RX, W
+//     10      Glide                        R, OH
+//     11      Glide                        WH
+//     18      Voiceless fricatives         S, SH, F, TH
+//     20      Voiced fricatives            Z, ZH, V, DH
+//     23      Plosives, stop consonants    P, T, K, KX, DX, CH
+//     26      Stop consonants              J, GX, B, D, G
+//     27-29   Stop consonants (internal)   **
+//     30      Unvoiced consonants          /H, /X and Q*
+//     160     Nasal                        M
 //
 // To determine how many frames to use, the two phonemes are 
 // compared using the blendRank[] table. The phoneme with the 
-// smaller score is used. In case of a tie, a blend of each is used:
+// higher rank is selected. In case of a tie, a blend of each is used:
 //
 //      if blendRank[phoneme1] ==  blendRank[phomneme2]
 //          // use lengths from each phoneme
 //          outBlendFrames = outBlend[phoneme1]
 //          inBlendFrames = outBlend[phoneme2]
-//      else if blendRank[phoneme1] < blendRank[phoneme2]
+//      else if blendRank[phoneme1] > blendRank[phoneme2]
 //          // use lengths from first phoneme
 //          outBlendFrames = outBlendLength[phoneme1]
 //          inBlendFrames = inBlendLength[phoneme1]
 //      else
 //          // use lengths from the second phoneme
-//          // note that in and out are swapped around!
+//          // note that in and out are SWAPPED!
 //          outBlendFrames = inBlendLength[phoneme2]
 //          inBlendFrames = outBlendLength[phoneme2]
 //
-//  Blend lengths can't be less than zero.
+// Blend lengths can't be less than zero.
+//
+// Transitions are assumed to be symetrical, so if the transition 
+// values for the second phoneme are used, the inBlendLength and 
+// outBlendLength values are SWAPPED.
 //
 // For most of the parameters, SAM interpolates over the range of the last
 // outBlendFrames-1 and the first inBlendFrames.
 //
 // The exception to this is the Pitch[] parameter, which is interpolates the
-// pitch from the center of the current phoneme to the center of the next
+// pitch from the CENTER of the current phoneme to the CENTER of the next
 // phoneme.
+//
+// Here are two examples. First, For example, consider the word "SUN" (S AH N)
+//
+//    Phoneme   Duration    BlendWeight    OutBlendFrames    InBlendFrames
+//    S         2           18             1                 3
+//    AH        8           2              4                 4
+//    N         7           8              1                 2
+//
+// The formant transitions for the output frames are calculated as follows:
+//
+//     flags ampl1 freq1 ampl2 freq2 ampl3 freq3 pitch
+//    ------------------------------------------------
+// S
+//    241     0     6     0    73     0    99    61   Use S (weight 18) for transition instead of AH (weight 2)
+//    241     0     6     0    73     0    99    61   <-- (OutBlendFrames-1) = (1-1) = 0 frames
+// AH
+//      0     2    10     2    66     0    96    59 * <-- InBlendFrames = 3 frames
+//      0     4    14     3    59     0    93    57 *
+//      0     8    18     5    52     0    90    55 *
+//      0    15    22     9    44     1    87    53
+//      0    15    22     9    44     1    87    53   
+//      0    15    22     9    44     1    87    53   Use N (weight 8) for transition instead of AH (weight 2).
+//      0    15    22     9    44     1    87    53   Since N is second phoneme, reverse the IN and OUT values.
+//      0    11    17     8    47     1    98    56 * <-- (InBlendFrames-1) = (2-1) = 1 frames
+// N
+//      0     8    12     6    50     1   109    58 * <-- OutBlendFrames = 1
+//      0     5     6     5    54     0   121    61
+//      0     5     6     5    54     0   121    61
+//      0     5     6     5    54     0   121    61
+//      0     5     6     5    54     0   121    61
+//      0     5     6     5    54     0   121    61
+//      0     5     6     5    54     0   121    61
+//
+// Now, consider the reverse "NUS" (N AH S):
+//
+//     flags ampl1 freq1 ampl2 freq2 ampl3 freq3 pitch
+//    ------------------------------------------------
+// N
+//     0     5     6     5    54     0   121    61
+//     0     5     6     5    54     0   121    61
+//     0     5     6     5    54     0   121    61
+//     0     5     6     5    54     0   121    61
+//     0     5     6     5    54     0   121    61   
+//     0     5     6     5    54     0   121    61   Use N (weight 8) for transition instead of AH (weight 2)
+//     0     5     6     5    54     0   121    61   <-- (OutBlendFrames-1) = (1-1) = 0 frames
+// AH
+//     0     8    11     6    51     0   110    59 * <-- InBlendFrames = 2
+//     0    11    16     8    48     0    99    56 *
+//     0    15    22     9    44     1    87    53   Use S (weight 18) for transition instead of AH (weight 2)
+//     0    15    22     9    44     1    87    53   Since S is second phoneme, reverse the IN and OUT values.
+//     0     9    18     5    51     1    90    55 * <-- (InBlendFrames-1) = (3-1) = 2
+//     0     4    14     3    58     1    93    57 *
+// S
+//   241     2    10     2    65     1    96    59 * <-- OutBlendFrames = 1
+//   241     0     6     0    73     0    99    61
 
 	A = 0;
 	mem44 = 0;
