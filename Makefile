@@ -23,4 +23,5 @@ clean:
 	rm *.o
 
 archive:
-	zip sam_windows.zip	sam.exe SDL.dll README.md demos/*.bat
+	rm -f sam_windows.zip
+	cd ..; zip SAM/sam_windows.zip	SAM/sam.exe SAM/SDL.dll SAM/README.md SAM/demos/*.bat
