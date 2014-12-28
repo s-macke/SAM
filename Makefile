@@ -22,3 +22,5 @@ package:
 clean:
 	rm *.o
 
+archive:
+	zip sam_windows.zip	sam.exe SDL.dll README.md demos/*.bat
