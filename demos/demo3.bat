@@ -1,3 +1,4 @@
+cd ..
 sam -pitch 64 -speed 74 -phonetic "/HEHLOW3 EH5VRIXWAHN. IHT SHUH4R IHZ NAY3S - TAX BIY /HIY4R TUH7DEY."
 sam -pitch 64 -speed 74 -phonetic "AY3 AEM SAE4M -"
 sam -pitch 64 -speed 74 -phonetic "DHAX BRAE4ND NUW5 VOY4S FOHR DHAX KAA4MIXDOH6R"
