@@ -231,17 +231,16 @@ But it seems that it uses some noise (e. g. for "s") using a table with random v
 License
 =======
 
-The software is a reverse-engineered version of a commercial software published more than 30 years ago.
-The current copyright holder is SoftVoice, Inc. (www.text2speech.com)
+The software is a reverse-engineered version of a software 
+published more than 34 years ago by "Don't ask Software".
 
-Any attempt to contact the company failed. The website was last updated in the year 2009.
-The status of the original software can therefore best described as Abandonware 
+The company no longer exists. Any attempt to contact the original
+authors failed. Hence S.A.M. can be best described as Abandonware
 (http://en.wikipedia.org/wiki/Abandonware)
 
-As long this is the case I cannot put my code under any specific open source software license
-Use it at your own risk.
-
-
+As long this is the case I cannot put my code under any specific open
+source software license. However the software might be used under the
+"Fair Use" act (https://en.wikipedia.org/wiki/FAIR_USE_Act) in the USA.
 
 Contact
 =======
