@@ -5,8 +5,9 @@
 #include "sam.h"
 #include "render.h"
 #include "SamTabs.h"
-
+#define samsound 4
 char input[256]; //tab39445
+#if samsound == 0
 //standard sam sound
 unsigned char speed = 72;
 unsigned char pitch = 64;
@@ -14,6 +15,49 @@ unsigned char mouth = 128;
 unsigned char throat = 128;
 int singmode = 0;
 
+#elif samsound == 1
+//Little Old Lady
+unsigned char speed = 82;
+unsigned char pitch = 32;
+unsigned char mouth = 145;
+unsigned char throat = 145;
+int singmode = 0;
+
+#elif samsound == 2
+//Elf
+unsigned char speed = 72;
+unsigned char pitch = 64;
+unsigned char mouth = 160;
+unsigned char throat = 110;
+int singmode = 0;
+//
+#elif samsound == 3
+//Little Robot
+unsigned char speed = 92;
+unsigned char pitch = 60;
+unsigned char mouth = 190;
+unsigned char throat = 190;
+int singmode = 0;
+
+#elif samsound == 4
+//Stuff Guy
+unsigned char speed = 82;
+unsigned char pitch = 72;
+unsigned char mouth = 110;
+unsigned char throat = 105;
+int singmode = 0;
+//
+
+#elif samsound == 5
+//Extra Terrestrial
+unsigned char speed = 100;
+unsigned char pitch = 64;
+unsigned char mouth = 200;
+unsigned char throat = 150;
+int singmode = 0;
+//
+
+#endif
 extern int debug;
 
 unsigned char mem39;
