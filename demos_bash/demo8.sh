@@ -6,7 +6,7 @@
 ../sam "Back. car payments.";
 ../sam "What we need is to get back. to the basics.";
 
-../sam "And say children: What does it all mean.";
+../sam "And say chilldren: What does it all mean.";
 
 ../sam "And remember.";
 ../sam "If you want to see a comic strip? You should see me in the shouwer.";
