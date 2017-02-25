@@ -36,4 +36,3 @@ int GetBufferLength();
 
 
 #endif
-

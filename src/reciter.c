@@ -31,8 +31,8 @@ void Code37066(unsigned char mem58)
 unsigned char GetRuleByte(unsigned short mem62, unsigned char Y)
 {
 	unsigned int address = mem62;
-	
-	if (mem62 >= 37541) 
+
+	if (mem62 >= 37541)
 	{
 		address -= 37541;
 		return rules2[address+Y];
@@ -70,7 +70,7 @@ int TextToPhonemes(char *input) // Code36484
 		A = input[Y] & 127;
 		if ( A >= 112) A = A & 95;
 		else if ( A >= 96) A = A & 79;
-		
+
 		inputtemp[X] = A;
 		X++;
 		Y++;
@@ -376,7 +376,7 @@ pos37113:
 	A = inputtemp[X];
 	if (A != 89) goto pos36700;
 	goto pos37108;
-	
+
 pos37135:
 	if (A != 70) goto pos36700;
 	X++;
@@ -505,7 +505,7 @@ pos37414:
 	goto pos37184;
 
 	// --------------
-	
+
 pos37419:
 	X = mem58;
 	X++;
@@ -549,6 +549,3 @@ pos37485:
 	Y++;
 	goto pos37461;
 }
-
-
-
