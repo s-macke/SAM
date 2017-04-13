@@ -60,7 +60,7 @@ void PrintUsage()
 	printf("	-debug			print additional debug messages\n");
 	printf("\n");
 
-	
+
 	printf("     VOWELS                            VOICED CONSONANTS	\n");
 	printf("IY           f(ee)t                    R        red		\n");
 	printf("IH           p(i)n                     L        allow		\n");
@@ -89,7 +89,7 @@ void PrintUsage()
 	printf("UL           sett(le) (=AXL)           T         talk		\n");
 	printf("UM           astron(omy) (=AXM)        K         cake		\n");
 	printf("UN           functi(on) (=AXN)         CH        speech		\n");
-	printf("Q            kitt-en (glottal stop)    /H        a(h)ead	\n");	
+	printf("Q            kitt-en (glottal stop)    /H        a(h)ead	\n");
 }
 
 #ifdef USESDL
@@ -124,19 +124,19 @@ void OutputSound()
 	fmt.userdata = NULL;
 
 	/* Open the audio device and start playing sound! */
-	if ( SDL_OpenAudio(&fmt, NULL) < 0 ) 
+	if ( SDL_OpenAudio(&fmt, NULL) < 0 )
 	{
 		printf("Unable to open audio: %s\n", SDL_GetError());
 		exit(1);
 	}
 	SDL_PauseAudio(0);
 	//SDL_Delay((bufferpos)/7);
-	
+
 	while (pos < bufferpos)
 	{
 		SDL_Delay(100);
 	}
-	
+
 	SDL_CloseAudio();
 }
 
@@ -144,7 +144,7 @@ void OutputSound()
 
 void OutputSound() {}
 
-#endif	
+#endif
 
 int debug = 0;
 
@@ -155,7 +155,7 @@ int main(int argc, char **argv)
 
 	char* wavfilename = NULL;
 	char input[256];
-	
+
 	for(i=0; i<256; i++) input[i] = 0;
 
 	if (argc <= 1)
@@ -215,7 +215,7 @@ int main(int argc, char **argv)
 				return 1;
 			}
 		}
-		
+
 		i++;
 	} //while
 
@@ -225,9 +225,9 @@ int main(int argc, char **argv)
 	if (debug)
 	{
 		if (phonetic) printf("phonetic input: %s\n", input);
-		else printf("text input: %s\n", input); 
+		else printf("text input: %s\n", input);
 	}
-	
+
 	if (!phonetic)
 	{
 		strncat(input, "[", 256);
@@ -237,7 +237,7 @@ int main(int argc, char **argv)
 	} else strncat(input, "\x9b", 256);
 
 #ifdef USESDL
-	if ( SDL_Init(SDL_INIT_AUDIO) < 0 ) 
+	if ( SDL_Init(SDL_INIT_AUDIO) < 0 )
 	{
 		printf("Unable to init SDL: %s\n", SDL_GetError());
 		exit(1);
@@ -251,19 +251,13 @@ int main(int argc, char **argv)
 		PrintUsage();
 		return 1;
 	}
-	
-	if (wavfilename != NULL) 
+
+	if (wavfilename != NULL)
 		WriteWav(wavfilename, GetBuffer(), GetBufferLength()/50);
 	else
 		OutputSound();
 
-	
+
 	return 0;
 
 }
-
-
-
-
-
-

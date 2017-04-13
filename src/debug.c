@@ -34,12 +34,12 @@ void PrintPhonemes(unsigned char *phonemeindex, unsigned char *phonemeLength, un
 }
 
 void PrintOutput(
-	unsigned char *flag, 
-	unsigned char *f1, 
-	unsigned char *f2, 
+	unsigned char *flag,
+	unsigned char *f1,
+	unsigned char *f2,
 	unsigned char *f3,
-	unsigned char *a1, 
-	unsigned char *a2, 
+	unsigned char *a1,
+	unsigned char *a2,
 	unsigned char *a3,
 	unsigned char *p)
 {
@@ -72,4 +72,3 @@ void PrintRule(int offset)
 	} while ((A&128)==0);
 	printf("\n");
 }
-
