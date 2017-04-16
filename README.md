@@ -77,7 +77,7 @@ or in the manual of the equivalent Apple II program
 Adaption To C
 =============
 
-This program was converted semi-automatic into C by converting each assembler opcode.
+This program (disassembly at http://hitmen.c02.at/html/tools_sam.html) was converted semi-automatic into C by converting each assembler opcode.
 e. g. 
 
 	lda 56		=>	A = mem[56];
@@ -90,8 +90,7 @@ Then it was manually rewritten to remove most of the
 jumps and register variables in the code and rename the variables to proper names. 
 Most of the description below is a result of this rewriting process.
 
-Unfortunately its still a not very good readable. But you should see where I started :)
-
+Unfortunately it is still unreadable. But you should see from where I started :)
 
 
 Short description
