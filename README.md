@@ -24,6 +24,10 @@ In order to compile without SDL remove the SDL statements from the CFLAGS and LF
 
 It should compile on every UNIX-like operating system. For Windows you need Cygwin or MinGW( + libsdl).
 
+Fork
+====
+
+Take a look at https://github.com/vidarh/SAM for a more refactored and cleaner version of the code.
 
 Usage
 =====
