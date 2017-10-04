@@ -1394,7 +1394,7 @@ if (debug) printf("phoneme %d (%c%c) length %d\n", debugX-1, signInputTable1[pho
             index = phonemeindex[X-1];
 
             // prior phoneme a stop consonant>
-            if((flags[index] & 2) != 0)
+            if((flags[index] & 2) != 0) {
                              // Rule: <LIQUID CONSONANT> <DIPHTONG>
 
 if (debug) printf("RULE: <LIQUID CONSONANT> <DIPHTONG> - decrease by 2\n");
@@ -1406,6 +1406,7 @@ if (debug) printf("phoneme %d (%c%c) length %d\n", X, signInputTable1[phonemeind
 
 if (debug) printf("POST\n");
 if (debug) printf("phoneme %d (%c%c) length %d\n", X, signInputTable1[phonemeindex[X]], signInputTable2[phonemeindex[X]], phonemeLength[X]);
+		}
          }
 
          // move to next phoneme
