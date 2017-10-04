@@ -361,7 +361,6 @@ void Render()
 	unsigned char speedcounter; //mem45
 	unsigned char mem48;
 	int i;
-	int carry;
 	if (phonemeIndexOutput[0] == 255) return; //exit if no data
 
 	A = 0;
@@ -806,13 +805,16 @@ if (debug)
 		} else
 		{
             // simulate the glottal pulse and formants
-			mem56 = multtable[sinus[phase1] | amplitude1[Y]];
-
-			carry = 0;
-			if ((mem56+multtable[sinus[phase2] | amplitude2[Y]] ) > 255) carry = 1;
-			mem56 += multtable[sinus[phase2] | amplitude2[Y]];
-			A = mem56 + multtable[rectangle[phase3] | amplitude3[Y]] + (carry?1:0);
-			A = ((A + 136) & 255) >> 4; //there must be also a carry
+			signed char sp1 = (signed char)sinus[phase1];
+			signed char sp2 = (signed char)sinus[phase2];
+			signed char rp3 = (signed char)rectangle[phase3];
+			signed int sin1 = sp1 * ((unsigned char)amplitude1[Y] & 0x0f);
+			signed int sin2 = sp2 * ((unsigned char)amplitude2[Y] & 0x0f);
+			signed int rect = rp3 * ((unsigned char)amplitude3[Y] & 0x0f);
+			signed int mux = sin1 + sin2 + rect;
+			mux /= 32;
+			mux += 128; // Go from signed to unsigned amplitude
+			A = (mux>>4) & 0x0f;
 			//mem[54296] = A;
 
 			// output the accumulated value
