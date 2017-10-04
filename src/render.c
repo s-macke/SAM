@@ -63,16 +63,22 @@ int timetable[5][5] =
 	{199, 0, 0, 54, 54}
 };
 
-void Output(int index, unsigned char A)
+static unsigned oldtimetableindex = 0;
+void Output8BitAry(int index, unsigned char ary[5])
 {
-	static unsigned oldtimetableindex = 0;
 	int k;
 	bufferpos += timetable[oldtimetableindex][index];
 	oldtimetableindex = index;
 	// write a little bit in advance
 	for(k=0; k<5; k++)
-		buffer[bufferpos/50 + k] = (A & 15)*16;
+		buffer[bufferpos/50 + k] = ary[k];
 }
+void Output8Bit(int index, unsigned char A)
+{
+	unsigned char ary[5] = {A,A,A,A,A};
+	Output8BitAry(index, ary);
+}
+
 
 
 
@@ -239,13 +245,13 @@ pos48280:
 		X = mem53;
 		//mem[54296] = X;
         // output the byte
-		Output(1, X);
+		Output8Bit(1, (X&0x0f) * 16);
 		// if X != 0, exit loop
 		if(X != 0) goto pos48296;
 	}
 
 	// output a 5 for the on bit
-	Output(2, 5);
+	Output8Bit(2, 5 * 16);
 
 	//48295: NOP
 pos48296:
@@ -302,13 +308,13 @@ pos48315:
 			{
                 // if bit set, output 26
 				X = 26;
-				Output(3, X);
+				Output8Bit(3, (X&0xf)*16);
 			} else
 			{
 				//timetable 4
 				// bit is not set, output a 6
 				X=6;
-				Output(4, X);
+				Output8Bit(4, (X&0xf)*16);
 			}
 
 			mem56--;
@@ -805,20 +811,28 @@ if (debug)
 		} else
 		{
             // simulate the glottal pulse and formants
-			signed char sp1 = (signed char)sinus[phase1];
-			signed char sp2 = (signed char)sinus[phase2];
-			signed char rp3 = (signed char)rectangle[phase3];
-			signed int sin1 = sp1 * ((unsigned char)amplitude1[Y] & 0x0f);
-			signed int sin2 = sp2 * ((unsigned char)amplitude2[Y] & 0x0f);
-			signed int rect = rp3 * ((unsigned char)amplitude3[Y] & 0x0f);
-			signed int mux = sin1 + sin2 + rect;
-			mux /= 32;
-			mux += 128; // Go from signed to unsigned amplitude
-			A = (mux>>4) & 0x0f;
-			//mem[54296] = A;
+			unsigned char ary[5];
+			unsigned int p1 = phase1 * 256; // Fixed point integers because we need to divide later on
+			unsigned int p2 = phase2 * 256;
+			unsigned int p3 = phase3 * 256;
 
+			for (int k=0; k<5; k++) {
+				signed char sp1 = (signed char)sinus[0xff & (p1>>8)];
+				signed char sp2 = (signed char)sinus[0xff & (p2>>8)];
+				signed char rp3 = (signed char)rectangle[0xff & (p3>>8)];
+				signed int sin1 = sp1 * ((unsigned char)amplitude1[Y] & 0x0f);
+				signed int sin2 = sp2 * ((unsigned char)amplitude2[Y] & 0x0f);
+				signed int rect = rp3 * ((unsigned char)amplitude3[Y] & 0x0f);
+				signed int mux = sin1 + sin2 + rect;
+				mux /= 32;
+				mux += 128; // Go from signed to unsigned amplitude
+				ary[k] = mux;
+				p1 += frequency1[Y] * 256 / 4; // Compromise, this becomes a shift and works well
+				p2 += frequency2[Y] * 256 / 4;
+				p3 += frequency3[Y] * 256 / 4;
+			}
 			// output the accumulated value
-			Output(0, A);
+			Output8BitAry(0, ary);
 			speedcounter--;
 			if (speedcounter != 0) goto pos48155;
 			Y++; //go to next amplitude
