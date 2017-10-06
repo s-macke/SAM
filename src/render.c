@@ -678,7 +678,7 @@ do
 			// ML : Code47503 is division with remainder, and mem50 gets the sign
 
 			// calculate change per frame
-			mem50 = (((char)(mem53) < 0) ? 128 : 0);
+			mem50 = mem53 & 128;
 			mem51 = abs((char)mem53) % mem40;
 			mem53 = (unsigned char)((char)(mem53) / mem40);
 

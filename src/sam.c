@@ -55,13 +55,13 @@ void SetInput(char *_input)
 	input[l] = 0;
 }
 
-void SetSpeed(unsigned char _speed) {speed = _speed;};
-void SetPitch(unsigned char _pitch) {pitch = _pitch;};
-void SetMouth(unsigned char _mouth) {mouth = _mouth;};
-void SetThroat(unsigned char _throat) {throat = _throat;};
-void EnableSingmode() {singmode = 1;};
-char* GetBuffer(){return buffer;};
-int GetBufferLength(){return bufferpos;};
+void SetSpeed(unsigned char _speed) {speed = _speed;}
+void SetPitch(unsigned char _pitch) {pitch = _pitch;}
+void SetMouth(unsigned char _mouth) {mouth = _mouth;}
+void SetThroat(unsigned char _throat) {throat = _throat;}
+void EnableSingmode() {singmode = 1;}
+char* GetBuffer(){return buffer;}
+int GetBufferLength(){return bufferpos;}
 
 void Init();
 int Parser1();

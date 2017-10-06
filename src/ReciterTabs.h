@@ -20,7 +20,7 @@ unsigned char tab36376[] =
 	163, 76, 138, 142
 };
 
-char rules[] =
+unsigned char rules[] =
 {
 ']','A'|0x80,
 ' ','(','A','.',')',                    '=','E','H','4','Y','.',' '|0x80,
@@ -478,7 +478,7 @@ char rules[] =
 'j'|0x80
 };
 
-char rules2[] =
+unsigned char rules2[] =
 {
 '(','A',')',                            '='|0x80,
 '(','!',')',                            '=','.'|0x80,
