@@ -359,13 +359,13 @@ pos48315:
 void Render()
 {
 	unsigned char phase1 = 0;  //mem43
-	unsigned char phase2;
-	unsigned char phase3;
-	unsigned char mem66;
-	unsigned char mem38;
-	unsigned char mem40;
-	unsigned char speedcounter; //mem45
-	unsigned char mem48;
+	unsigned char phase2=0;
+	unsigned char phase3=0;
+	unsigned char mem66=0;
+	unsigned char mem38=0;
+	unsigned char mem40=0;
+	unsigned char speedcounter=0; //mem45
+	unsigned char mem48=0;
 	int i;
 	if (phonemeIndexOutput[0] == 255) return; //exit if no data
 
