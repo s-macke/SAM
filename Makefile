@@ -20,7 +20,7 @@ package:
 	tar -cvzf sam.tar.gz README.md Makefile sing src/
 
 clean:
-	rm *.o
+	rm -f *.o
 
 archive:
 	rm -f sam_windows.zip
