@@ -678,9 +678,11 @@ do
 			// ML : Code47503 is division with remainder, and mem50 gets the sign
 
 			// calculate change per frame
+			signed char m53 = (signed char)mem53;
 			mem50 = mem53 & 128;
-			mem51 = abs((char)mem53) % mem40;
-			mem53 = (unsigned char)((char)(mem53) / mem40);
+			unsigned char m53abs = abs(m53);
+			mem51 = m53abs % mem40; //abs((char)m53) % mem40;
+			mem53 = (unsigned char)((signed char)(m53) / mem40);
 
             // interpolation range
 			X = mem40; // number of frames to interpolate over
