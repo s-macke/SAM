@@ -41,7 +41,7 @@ unsigned char GetRuleByte(unsigned short mem62, unsigned char Y)
 	return rules[address+Y];
 }
 
-int TextToPhonemes(char *input) // Code36484
+int TextToPhonemes(unsigned char *input) // Code36484
 {
 	//unsigned char *tab39445 = &mem[39445];   //input and output
 	//unsigned char mem29;

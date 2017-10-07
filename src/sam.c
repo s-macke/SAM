@@ -55,13 +55,13 @@ void SetInput(char *_input)
 	input[l] = 0;
 }
 
-void SetSpeed(unsigned char _speed) {speed = _speed;};
-void SetPitch(unsigned char _pitch) {pitch = _pitch;};
-void SetMouth(unsigned char _mouth) {mouth = _mouth;};
-void SetThroat(unsigned char _throat) {throat = _throat;};
-void EnableSingmode() {singmode = 1;};
-char* GetBuffer(){return buffer;};
-int GetBufferLength(){return bufferpos;};
+void SetSpeed(unsigned char _speed) {speed = _speed;}
+void SetPitch(unsigned char _pitch) {pitch = _pitch;}
+void SetMouth(unsigned char _mouth) {mouth = _mouth;}
+void SetThroat(unsigned char _throat) {throat = _throat;}
+void EnableSingmode() {singmode = 1;}
+char* GetBuffer(){return buffer;}
+int GetBufferLength(){return bufferpos;}
 
 void Init();
 int Parser1();
@@ -1394,7 +1394,7 @@ if (debug) printf("phoneme %d (%c%c) length %d\n", debugX-1, signInputTable1[pho
             index = phonemeindex[X-1];
 
             // prior phoneme a stop consonant>
-            if((flags[index] & 2) != 0)
+            if((flags[index] & 2) != 0) {
                              // Rule: <LIQUID CONSONANT> <DIPHTONG>
 
 if (debug) printf("RULE: <LIQUID CONSONANT> <DIPHTONG> - decrease by 2\n");
@@ -1406,6 +1406,7 @@ if (debug) printf("phoneme %d (%c%c) length %d\n", X, signInputTable1[phonemeind
 
 if (debug) printf("POST\n");
 if (debug) printf("phoneme %d (%c%c) length %d\n", X, signInputTable1[phonemeindex[X]], signInputTable2[phonemeindex[X]], phonemeLength[X]);
+		}
          }
 
          // move to next phoneme

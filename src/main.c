@@ -169,8 +169,8 @@ int main(int argc, char **argv)
 	{
 		if (argv[i][0] != '-')
 		{
-			strncat(input, argv[i], 256);
-			strncat(input, " ", 256);
+			strncat(input, argv[i], 255);
+			strncat(input, " ", 255);
 		} else
 		{
 			if (strcmp(&argv[i][1], "wav")==0)
@@ -231,7 +231,7 @@ int main(int argc, char **argv)
 	if (!phonetic)
 	{
 		strncat(input, "[", 256);
-		if (!TextToPhonemes(input)) return 1;
+		if (!TextToPhonemes((unsigned char *)input)) return 1;
 		if (debug)
 			printf("phonetic input: %s\n", input);
 	} else strncat(input, "\x9b", 256);

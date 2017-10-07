@@ -2,7 +2,7 @@
 #define RECITERTABS_H
 
 //some flags
-unsigned char tab36376[] =
+const unsigned char tab36376[] =
 {
 	0, 0, 0, 0, 0, 0, 0, 0, // 0-7
 	0, 0, 0, 0, 0, 0, 0, 0, // 8-15
@@ -20,7 +20,7 @@ unsigned char tab36376[] =
 	163, 76, 138, 142
 };
 
-char rules[] =
+const unsigned char rules[] =
 {
 ']','A'|0x80,
 ' ','(','A','.',')',                    '=','E','H','4','Y','.',' '|0x80,
@@ -478,7 +478,7 @@ char rules[] =
 'j'|0x80
 };
 
-char rules2[] =
+const unsigned char rules2[] =
 {
 '(','A',')',                            '='|0x80,
 '(','!',')',                            '=','.'|0x80,
@@ -527,7 +527,7 @@ char rules2[] =
 
 //26 items. From 'A' to 'Z'
 // positions for mem62 and mem63 for each character
-unsigned char tab37489[] =
+const unsigned char tab37489[] =
 {
 0, 149, 247, 162, 57, 197, 6, 126,
 199, 38, 55, 78, 145, 241, 85, 161,
@@ -535,7 +535,7 @@ unsigned char tab37489[] =
 71, 218
 };
 
-unsigned char tab37515[] =
+const unsigned char tab37515[] =
 {
 125, 126, 126, 127, 128, 129, 130, 130,
 130, 132, 132, 132, 132, 132, 133, 135,
