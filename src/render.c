@@ -817,8 +817,8 @@ if (debug)
 			unsigned int p1 = phase1 * 256; // Fixed point integers because we need to divide later on
 			unsigned int p2 = phase2 * 256;
 			unsigned int p3 = phase3 * 256;
-
-			for (int k=0; k<5; k++) {
+            int k;
+			for (k=0; k<5; k++) {
 				signed char sp1 = (signed char)sinus[0xff & (p1>>8)];
 				signed char sp2 = (signed char)sinus[0xff & (p2>>8)];
 				signed char rp3 = (signed char)rectangle[0xff & (p3>>8)];

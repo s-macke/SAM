@@ -3,12 +3,12 @@ OBJS = reciter.o sam.o render.o main.o debug.o
 CC = gcc
 
 # libsdl present
-CFLAGS =  -Wall -Wpedantic -O2 -DUSESDL `sdl-config --cflags`
+CFLAGS =  -Wall -Os -DUSESDL `sdl-config --cflags`
 LFLAGS = `sdl-config --libs`
 
 # no libsdl present
-#CFLAGS =  -Wall -O2
-#LFLAGS = 
+#CFLAGS =  -Wall -Os
+#LFLAGS =
 
 sam: $(OBJS)
 	$(CC) -o sam $(OBJS) $(LFLAGS)
@@ -16,7 +16,7 @@ sam: $(OBJS)
 %.o: src/%.c
 	$(CC) $(CFLAGS) -c $<
 
-package: 
+package:
 	tar -cvzf sam.tar.gz README.md Makefile sing src/
 
 clean:
