@@ -1,0 +1,33 @@
+18.11.2018
+----------
+sudo apt-get install libsdl1.2-dev
+make
+
+sdl-config ist ein Programm, das die Parameter ausgibt, die dann im Makefile benutzt werden.
+
+sdl-config --cflags
+-I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT
+
+sdl-config --libs
+-L/usr/lib/x86_64-linux-gnu -lSDL
+
+./sam -wav sam.wav My name is sam.
+play sam.wav
+
+oder direkt
+
+./sam My name is sam.
+
+
+Amiga
+-----
+Im Makefile erst mal das SDL-Zeug auskommentieren. -noixemul bei Compiler- und Linker-Flags! (newlib hat falsches argc !???)
+make CC=~/opt/m68k-amigaos_24Oct18/bin/m68k-amigaos-gcc
+
+Das erzeugte Wav-File hat Endian-Fehler. Alles wird direkt geschrieben, ohne auf Endianes zu achten!
+
+20.11.2018
+----------
+* eigenes Makefile fuer Amiga (wegen -noixemul un anderer SDL-Einstellungen)
+* make CC=~/opt/m68k-amigaos_14Nov18/bin/m68k-amigaos-gcc -f Makefile.amiga
+

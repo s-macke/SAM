@@ -12,35 +12,39 @@
 #include <SDL_audio.h>
 #endif
 
+#include "endian.h"                                                 // AF, Endian
+
 void WriteWav(char* filename, char* buffer, int bufferlength)
 {
     FILE *file = fopen(filename, "wb");
+    unsigned int le_bufferlength;                                   // AF, Endian
     if (file == NULL) return;
     //RIFF header
     fwrite("RIFF", 4, 1,file);
-    unsigned int filesize=bufferlength + 12 + 16 + 8 - 8;
+    unsigned int filesize=htolew(bufferlength + 12 + 16 + 8 - 8);   // AF, Endian
     fwrite(&filesize, 4, 1, file);
     fwrite("WAVE", 4, 1, file);
 
     //format chunk
     fwrite("fmt ", 4, 1, file);
-    unsigned int fmtlength = 16;
+    unsigned int fmtlength = htolew(16);                            // AF, Endian
     fwrite(&fmtlength, 4, 1, file);
-    unsigned short int format=1; //PCM
+    unsigned short int format=htoles(1); //PCM                      // AF, Endian
     fwrite(&format, 2, 1, file);
-    unsigned short int channels=1;
+    unsigned short int channels=htoles(1);                          // AF, Endian
     fwrite(&channels, 2, 1, file);
-    unsigned int samplerate = 22050;
+    unsigned int samplerate = htolew(22050);                        // AF, Endian
     fwrite(&samplerate, 4, 1, file);
     fwrite(&samplerate, 4, 1, file); // bytes/second
-    unsigned short int blockalign = 1;
+    unsigned short int blockalign = htoles(1);                      // AF, Endian
     fwrite(&blockalign, 2, 1, file);
-    unsigned short int bitspersample=8;
+    unsigned short int bitspersample=htoles(8);                     // AF, Endian
     fwrite(&bitspersample, 2, 1, file);
 
     //data chunk
     fwrite("data", 4, 1, file);
-    fwrite(&bufferlength, 4, 1, file);
+    le_bufferlength=htolew(bufferlength);                           // AF, Endian
+    fwrite(&le_bufferlength, 4, 1, file);
     fwrite(buffer, bufferlength, 1, file);
 
     fclose(file);
