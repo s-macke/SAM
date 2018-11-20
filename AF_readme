@@ -31,3 +31,13 @@ Das erzeugte Wav-File hat Endian-Fehler. Alles wird direkt geschrieben, ohne auf
 * eigenes Makefile fuer Amiga (wegen -noixemul un anderer SDL-Einstellungen)
 * make CC=~/opt/m68k-amigaos_14Nov18/bin/m68k-amigaos-gcc -f Makefile.amiga
 
+Fixed WriteWav() in main.c (changed endianess where necessary)
+-> Amiga Executable works!
+
+enabled SDL. -> Funktioniert!
+ABER: sam wird viel groesser.
+
+ohne SDL (gestripped) 44 kBytes
+mit SDL (gestripped) 256 kBytes !
+
+Der linkt alles moegliche ran, z.B. sind Youstick-Meldungen im Executable...

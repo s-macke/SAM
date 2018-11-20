@@ -3,12 +3,12 @@ OBJS = reciter.o sam.o render.o main.o debug.o endian.o
 CC = gcc
 
 # libsdl present
-#CFLAGS =  -Wall -Os -DUSESDL `sdl-config --cflags`
-#LFLAGS = `sdl-config --libs`
+CFLAGS =  -DPLATFORM_IS_BIG_ENDIAN -Wall -Os -noixemul -g -DUSESDL -I/home/osboxes/opt/m68k-amigaos_14Nov18/include/SDL #`sdl-config --cflags`
+LFLAGS = -g -noixemul -Wl,-Map=sam.map,--trace -lSDL -ldebug #`sdl-config --libs`
 
 # no libsdl present
-CFLAGS =  -DPLATFORM_IS_BIG_ENDIAN -Wall -Os -noixemul -g
-LFLAGS =  -g -noixemul -Wl,-Map=sam.map,--trace 
+#CFLAGS =  -DPLATFORM_IS_BIG_ENDIAN -Wall -Os -noixemul -g
+#LFLAGS =  -g -noixemul -Wl,-Map=sam.map,--trace 
 
 sam: $(OBJS)
 	$(CC) -o sam $(OBJS) $(LFLAGS)
