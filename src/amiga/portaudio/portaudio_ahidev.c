@@ -123,7 +123,7 @@ struct MsgPort    *AHImp     = NULL;
 extern struct Device* TimerBase;           // nur zum Benchmarking
 static struct IORequest timereq;    // nur zum Benchmarking
 
-VOID /*__asm __saveds*/ EspeakAudioTask_AHI(VOID)
+VOID /*__asm __saveds*/ SamAudioTask_AHI(VOID)
 {
 	//	KPrintF("%s() called\n",__FUNCTION__);
 
@@ -639,7 +639,7 @@ PaError Pa_OpenDefaultStream_ahidev( PortAudioStream** stream,
 								{
 									//KPrintF("Zeile %ld\n",__LINE__);
 
-									StreamStruct->st = SpawnSubTask("EspeakAudioTask_AHI",EspeakAudioTask_AHI,StreamStruct);
+									StreamStruct->st = SpawnSubTask("EspeakAudioTask_AHI",SamAudioTask_AHI,StreamStruct);
 									if (StreamStruct->st)
 									{
 										//KPrintF("Zeile %ld\n",__LINE__);
