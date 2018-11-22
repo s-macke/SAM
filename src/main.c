@@ -14,6 +14,13 @@
 
 #include "endian.h"                                                 // AF, Endian
 
+#ifdef __AMIGA__                                                    // AF, use ahi.device instead pf audio.device
+	void set_ahi_devide(unsigned int unit);
+#endif
+
+#define DBG(x)
+//#define DBG(x) x
+
 void WriteWav(char* filename, char* buffer, int bufferlength)
 {
     FILE *file = fopen(filename, "wb");
@@ -62,6 +69,9 @@ void PrintUsage()
     printf("    -wav filename        output to wav instead of libsdl\n");
     printf("    -sing            special treatment of pitch\n");
     printf("    -debug            print additional debug messages\n");
+#ifdef __AMIGA__
+    printf("    -ahi unit         use Amiga AHI-device\n");
+#endif
     printf("\n");
 
 
@@ -105,7 +115,7 @@ void MixAudio(void *unused, Uint8 *stream, int len)
     char *buffer = GetBuffer();
     int i;
 
- KPrintF("%s(%ld) bufferpos=%ld\n",__FUNCTION__,len,bufferpos);
+ DBG(KPrintF("%s(%ld) bufferpos=%ld\n",__FUNCTION__,len,bufferpos));
 
     if (pos >= bufferpos) return;
     if ((bufferpos-pos) < len) len = (bufferpos-pos);
@@ -141,7 +151,6 @@ void OutputSound()
 
     while (pos < bufferpos)
     {
-    	 KPrintF("%s() pos=%ld  bufferpos=%ld\n",__FUNCTION__,pos,bufferpos);
         SDL_Delay(100);
     }
 
@@ -165,8 +174,10 @@ int main(int argc, char **argv)
     char input[256];
 
 #ifdef USESDL
+#ifndef __AMIGA__
         freopen("CON", "w", stdout);
         freopen("CON", "w", stderr);
+#endif
 #endif
 
     for(i=0; i<256; i++) input[i] = 0;
@@ -223,6 +234,39 @@ int main(int argc, char **argv)
                 SetThroat(atoi(argv[i+1]));
                 i++;
             } else
+#ifdef __AMIGA__
+			if (strcmp(&argv[i][1], "ahi")==0)
+			{
+				unsigned int unit;
+				if(argc>i+1)
+				{
+					if(argv[i+1])
+					{
+						unit=strtoul(argv[i+1],NULL,10);
+						if(unit<4)
+						{
+							set_ahi_devide(strtol(argv[i+1],NULL,10));
+						}
+						else
+						{
+							printf("AHI-unit %d out of range (0...3)\n",unit);
+							return 1;
+						}
+					}
+					else
+					{
+						printf("AHI-unit is NULL-Ptr!\n");
+						return 1;
+					}
+				}
+				else
+				{
+					printf("missing AHI unit\n");
+					return 1;
+				}
+				i++;
+			} else
+#endif
             {
                 PrintUsage();
                 return 1;
