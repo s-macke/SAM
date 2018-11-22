@@ -104,6 +104,9 @@ void MixAudio(void *unused, Uint8 *stream, int len)
     int bufferpos = GetBufferLength();
     char *buffer = GetBuffer();
     int i;
+
+ KPrintF("%s(%ld) bufferpos=%ld\n",__FUNCTION__,len,bufferpos);
+
     if (pos >= bufferpos) return;
     if ((bufferpos-pos) < len) len = (bufferpos-pos);
     for(i=0; i<len; i++)
@@ -138,6 +141,7 @@ void OutputSound()
 
     while (pos < bufferpos)
     {
+    	 KPrintF("%s() pos=%ld  bufferpos=%ld\n",__FUNCTION__,pos,bufferpos);
         SDL_Delay(100);
     }
 

@@ -1,14 +1,22 @@
-OBJS = reciter.o sam.o render.o main.o debug.o endian.o
+OBJS = reciter.o sam.o render.o main.o debug.o endian.o sdlwrapper.o portaudio_ahidev.o  portaudio_audev.o  portaudio.o  subtask_support.o 
 
-CC = gcc
+CC = ~/opt/m68k-amigaos_14Nov18/bin/m68k-amigaos-gcc #gcc
 
-# libsdl present
-CFLAGS =  -DPLATFORM_IS_BIG_ENDIAN -Wall -Os -noixemul -g -DUSESDL -I/home/osboxes/opt/m68k-amigaos_14Nov18/include/SDL #`sdl-config --cflags`
-LFLAGS = -g -noixemul -Wl,-Map=sam.map,--trace -lSDL -ldebug #`sdl-config --libs`
+
+CFLAGS =  -DPLATFORM_IS_BIG_ENDIAN -DSTATIC_FUNC= -Iamiga/ -Iamiga/portaudio/ -I. -Wall -Os -noixemul -g -DUSESDL -I/home/osboxes/opt/m68k-amigaos_14Nov18/include/SDL #`sdl-config --cflags`
+LFLAGS = -g -noixemul -Wl,-Map=sam.map,--trace -ldebug #-lSDL  #`sdl-config --libs`
 
 # no libsdl present
-#CFLAGS =  -DPLATFORM_IS_BIG_ENDIAN -Wall -Os -noixemul -g
+#CFLAGS =  -DPLATFORM_IS_BIG_ENDIAN -DSTATIC_FUNC= -Iamiga/ -Iamiga/portaudio/ -I. -Wall -Os -noixemul -g
 #LFLAGS =  -g -noixemul -Wl,-Map=sam.map,--trace 
+
+vpath sdlwrapper.c       src/amiga/
+vpath portaudio.c        src/amiga/portaudio/
+vpath portaudio_ahidev.c src/amiga/portaudio/ 
+vpath portaudio_audev.c  src/amiga/portaudio/
+vpath portaudio.c        src/amiga/portaudio/
+vpath subtask_support.c  src/amiga/portaudio/
+
 
 sam: $(OBJS)
 	$(CC) -o sam $(OBJS) $(LFLAGS)
