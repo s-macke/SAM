@@ -1004,13 +1004,13 @@ void SetMouthThroat(unsigned char mouth, unsigned char throat)
     //unsigned char throat; //mem38881
 
     // mouth formants (F1) 5..29
-    unsigned char mouthFormants5_29[30] = {
+    static unsigned char mouthFormants5_29[30] = {    //  AF, save some stack
         0, 0, 0, 0, 0, 10,
         14, 19, 24, 27, 23, 21, 16, 20, 14, 18, 14, 18, 18,
         16, 13, 15, 11, 18, 14, 11, 9, 6, 6, 6};
 
     // throat formants (F2) 5..29
-    unsigned char throatFormants5_29[30] = {
+    static unsigned char throatFormants5_29[30] = {    //  AF, save some stack
     255, 255,
     255, 255, 255, 84, 73, 67, 63, 40, 44, 31, 37, 45, 73, 49,
     36, 30, 51, 37, 29, 69, 24, 50, 30, 24, 83, 46, 54, 86};

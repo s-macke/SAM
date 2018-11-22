@@ -15,11 +15,15 @@
 #include "endian.h"                                                 // AF, Endian
 
 #ifdef __AMIGA__                                                    // AF, use ahi.device instead pf audio.device
+	#define DBG(x) x
+#else
+	#define DBG(x)
+#endif
+
+#ifdef __AMIGA__                                                    // AF, use ahi.device instead pf audio.device
 	void set_ahi_devide(unsigned int unit);
 #endif
 
-#define DBG(x)
-//#define DBG(x) x
 
 void WriteWav(char* filename, char* buffer, int bufferlength)
 {
@@ -171,7 +175,8 @@ int main(int argc, char **argv)
     int phonetic = 0;
 
     char* wavfilename = NULL;
-    char input[256];
+    static char input[256];   // AF, save some stack
+
 
 #ifdef USESDL
 #ifndef __AMIGA__
