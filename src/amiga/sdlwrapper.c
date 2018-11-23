@@ -20,14 +20,14 @@ static PortAudioStream *pa_stream=NULL;
 
 void SDL_CloseAudio(void)
 {
-	KPrintF("%s()\n",__FUNCTION__);
+//	KPrintF("%s()\n",__FUNCTION__);
 	Pa_CloseStream(pa_stream);
 }
 /************************************************************** */
 
 void SDL_Delay(Uint32 ms)
 {
-	KPrintF("%s(%ld)\n",__FUNCTION__,ms);
+//	KPrintF("%s(%ld)\n",__FUNCTION__,ms);
 	usleep(ms*1000);
 }
 /************************************************************** */
@@ -37,7 +37,7 @@ char *SDL_Error_String="SDL Dummy_Error";
 
 DECLSPEC char * SDL_GetError(void)
 {
-	KPrintF("%s()\n",__FUNCTION__);
+//	KPrintF("%s()\n",__FUNCTION__);
 	getchar();
 	return SDL_Error_String;
 }
@@ -46,7 +46,7 @@ DECLSPEC char * SDL_GetError(void)
 //flags=SDL_INIT_AUDIO The file I/O and threading subsystems are initialized
 int SDL_Init(Uint32 flags)
 {
-	KPrintF("%s(0x%lx)\n",__FUNCTION__,flags);
+//	KPrintF("%s(0x%lx)\n",__FUNCTION__,flags);
 	if(flags & SDL_INIT_AUDIO)
 	{
 		return Pa_Initialize();
@@ -65,7 +65,7 @@ int PortAudioCallbackFunction(
     unsigned long framesPerBuffer,
     PaTimestamp outTime, void *userData )
 {
-KPrintF("*****************%s(%ld)*********************\n",__FUNCTION__,framesPerBuffer);
+//KPrintF("*****************%s(%ld)*********************\n",__FUNCTION__,framesPerBuffer);
 	SDL_CallbackFunction(userData, outputBuffer,framesPerBuffer);
 	return 0;  /* continue until somebody Aborts the stream */
 }
@@ -76,14 +76,14 @@ int SDL_OpenAudio(SDL_AudioSpec* desired, SDL_AudioSpec* obtained)
 	PaError Error;
 	PaSampleFormat SampleFormat;
 
-	KPrintF("%s()\n",__FUNCTION__);
-	KPrintF("channels %ld\n",desired->channels);
-	KPrintF("format %ld\n",desired->format);
-	KPrintF("freq %ld\n",desired->freq);
-	KPrintF("Padding %ld\n",desired->padding);
-	KPrintF("Samples %ld\n",desired->samples);
-	KPrintF("Silence %ld\n",desired->silence);
-	KPrintF("Size %ld\n",desired->size);
+//	KPrintF("%s()\n",__FUNCTION__);
+//	KPrintF("channels %ld\n",desired->channels);
+//	KPrintF("format %ld\n",desired->format);
+//	KPrintF("freq %ld\n",desired->freq);
+//	KPrintF("Padding %ld\n",desired->padding);
+//	KPrintF("Samples %ld\n",desired->samples);
+//	KPrintF("Silence %ld\n",desired->silence);
+//	KPrintF("Size %ld\n",desired->size);
 
 	if(desired->format!=AUDIO_U8)
 	{
@@ -120,7 +120,7 @@ int SDL_OpenAudio(SDL_AudioSpec* desired, SDL_AudioSpec* obtained)
 // 1=audio callback is stopped when this returns.  0=start ausio callback
 void SDL_PauseAudio(int pause_on)
 {
-	KPrintF("%s(%ld)\n",__FUNCTION__,pause_on);
+//	KPrintF("%s(%ld)\n",__FUNCTION__,pause_on);
 
 	if(0==pause_on)
 	{
@@ -136,7 +136,7 @@ void SDL_PauseAudio(int pause_on)
 
 void SDL_Quit(void)  // useful with atexit()
 {
-	KPrintF("%s()\n",__FUNCTION__);
+//	KPrintF("%s()\n",__FUNCTION__);
 
 	 Pa_CloseStream(pa_stream);
 }

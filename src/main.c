@@ -14,13 +14,7 @@
 
 #include "endian.h"                                                 // AF, Endian
 
-#ifdef __AMIGA__                                                    // AF, use ahi.device instead pf audio.device
-	#define DBG(x) x
-#else
-	#define DBG(x)
-#endif
-
-#ifdef __AMIGA__                                                    // AF, use ahi.device instead pf audio.device
+#ifdef __AMIGA__                                                    // AF, use ahi.device instead of audio.device
 	void set_ahi_devide(unsigned int unit);
 #endif
 
@@ -118,8 +112,6 @@ void MixAudio(void *unused, Uint8 *stream, int len)
     int bufferpos = GetBufferLength();
     char *buffer = GetBuffer();
     int i;
-
- DBG(KPrintF("%s(%ld) bufferpos=%ld\n",__FUNCTION__,len,bufferpos));
 
     if (pos >= bufferpos) return;
     if ((bufferpos-pos) < len) len = (bufferpos-pos);

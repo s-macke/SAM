@@ -761,7 +761,7 @@ PaError Pa_OpenDefaultStream_audev( PortAudioStream** stream,
 		void *userData )
 {
 
-	KPrintF("%s() called\n",__FUNCTION__);
+//	KPrintF("%s() called\n",__FUNCTION__);
 	//	KPrintF("%s() called\n",__FUNCTION__);
 	/*
 	File=fopen("Samples","w");
