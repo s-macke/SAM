@@ -117,6 +117,16 @@ typedef struct
 STATIC_FUNC ULONG getAHISampleType(PaSampleFormat format );
 
 
+void ConvertU8Samples(UBYTE *data, unsigned int SampleCount) // AHI does not support UINT8-Samples !???
+{
+	unsigned long i;
+	for(i=0;i<SampleCount;i++)
+	{
+		*data++=(*data++)-128;
+	}
+}
+
+
 // Loeschen!
 struct MsgPort    *AHImp     = NULL;
 
@@ -313,6 +323,7 @@ VOID /*__asm __saveds*/ SamAudioTask_AHI(VOID)
 									// Fill buffer
 									if( 0!=PortAudioStreamData->callback(NULL,p1,PortAudioStreamData->framesPerBuffer,0,NULL))  /* Last Buffer */
 									{
+										ConvertU8Samples(p1,PortAudioStreamData->framesPerBuffer);  // AHI does not support UINT8-Samples !???
 										PortAudioStreamData->StreamActive=0;
 										worktodo=FALSE;
 										LastBuf=TRUE;
@@ -335,6 +346,11 @@ VOID /*__asm __saveds*/ SamAudioTask_AHI(VOID)
 									AHIio->ahir_Position        = 0x8000;           // Centered
 									AHIio->ahir_Link            = link;
 									SendIO((struct IORequest *) AHIio);
+
+									if(((struct IORequest *) AHIio)->io_Error!=0)
+									{
+										printf("io_Error=%lx\n",((struct IORequest *) AHIio)->io_Error);
+									}
 
 									if(link) {
 
@@ -885,7 +901,8 @@ STATIC_FUNC ULONG getAHISampleType(PaSampleFormat format )
 	//	case paInt24       : return ;
 	//	case paPackedInt24 : return ;
 	case paInt8        : return AHIST_M8S;             /* Mono, 8 bit signed (BYTE) */
-	case paUInt8       : return AHIST_M8U;             /* OBSOLETE! */  /* unsigned 8 bit, 128 is "ground" */
+	//case paUInt8       : return AHIST_M8U;             /* OBSOLETE! */  /* unsigned 8 bit, 128 is "ground" Is not supported by AHI !?*/
+	case paUInt8       : return AHIST_M8S;             /* set tp SIGNED 8 bit instead and convert buffer later */
 	default            : return AHIE_BADSAMPLETYPE;    /* Unknown/unsupported sample type */;
 	}
 

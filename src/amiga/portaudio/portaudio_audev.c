@@ -62,6 +62,33 @@
 
 /*extern "C"*/ LONG KPrintF(STRPTR format, ...);
 
+
+#include <hardware/cia.h>
+#define CIAA 0xBFE001  /* Address of CIAA chip */
+
+// 0==bright LED, Filter=0n
+// return 1 if bit is NOT set, i.e. Filter is on
+unsigned int getAudioFilterState(void)
+{
+	struct CIA *cia = (struct CIA *) CIAA;
+	unsigned int Result=   ((cia->ciapra ^ CIAF_LED) & CIAF_LED) ? 1: 0;
+//	KPrintF("Filter is %s\n",Result ? "On":"Off");
+	return Result;
+}
+
+void setAudioFilterState(unsigned int val)
+{
+	struct CIA *cia = (struct CIA *) CIAA;
+	unsigned char cia_value=cia->ciapra;
+
+	cia_value &= ~CIAF_LED;
+	cia_value |= val ? 0: CIAF_LED;
+	cia->ciapra=cia_value;
+
+//	KPrintF("%s(%ld) ->  ",__FUNCTION__,val);
+	getAudioFilterState();
+}
+
 #include <proto/timer.h>
 static struct timeval startTime;
 
@@ -128,7 +155,7 @@ typedef struct
 	SHORT *FastMemBuf2;             // Espeak-AudioBuffer used in Callback
 	unsigned int LeftChannel;       // left Audiochannel we got allocated in OpenDevice() or 0
 	unsigned int RightChannel;      // right Audiochannel we got allocated in OpenDevice() or 0
-
+	unsigned int LP_FilterSate;     // stores old state of audop LP-Filter
 
 }PortAudioStreamStruct;
 
@@ -149,7 +176,7 @@ void SetAudioUnit(struct IOAudio *AIOptr,unsigned int Channel)
 }
 
 
-STATIC_FUNC UWORD Convert16SSamples(SHORT *Source16S, BYTE *Dest8S, ULONG SampleCount);  /* reads 16Bit Signed Samples from Source and writes 8Bit Signed Samples to Dest.  DestLen Samples will be read */
+STATIC_FUNC UWORD Convert8USamples(UBYTE *Source8U, BYTE *Dest8S, ULONG SampleCount);  /* reads 16Bit Signed Samples from Source and writes 8Bit Signed Samples to Dest.  DestLen Samples will be read */
 
 
 struct Device* TimerBase;           // nur zum Benchmarking
@@ -341,7 +368,7 @@ VOID /*__asm __saveds*/ SamAudioTask(VOID)
 													/* read two buffers. cannot fail. (just end of data but that does not matter here) */
 													PortAudioStreamData->callback(NULL,PortAudioStreamData->FastMemBuf1,PortAudioStreamData->framesPerBuffer,0,NULL);
 
-													Convert16SSamples(PortAudioStreamData->FastMemBuf1, PortAudioStreamData->ChipMemBuf1 ,PortAudioStreamData->framesPerBuffer);
+													Convert8USamples(PortAudioStreamData->FastMemBuf1, PortAudioStreamData->ChipMemBuf1 ,PortAudioStreamData->framesPerBuffer);
 													PortAudioStreamData->AIOptr1->ioa_Length=PortAudioStreamData->framesPerBuffer;
 													PortAudioStreamData->AIOptr1->ioa_Data=(UBYTE*)PortAudioStreamData->ChipMemBuf1;
 
@@ -351,7 +378,7 @@ VOID /*__asm __saveds*/ SamAudioTask(VOID)
 
 
 													PortAudioStreamData->callback(NULL,PortAudioStreamData->FastMemBuf2,PortAudioStreamData->framesPerBuffer,0,NULL);
-													Convert16SSamples(PortAudioStreamData->FastMemBuf2, PortAudioStreamData->ChipMemBuf2 ,PortAudioStreamData->framesPerBuffer);
+													Convert8USamples(PortAudioStreamData->FastMemBuf2, PortAudioStreamData->ChipMemBuf2 ,PortAudioStreamData->framesPerBuffer);
 													PortAudioStreamData->AIOptr2->ioa_Length=PortAudioStreamData->framesPerBuffer;
 													PortAudioStreamData->AIOptr2->ioa_Data=(UBYTE*)PortAudioStreamData->ChipMemBuf2;
 
@@ -440,7 +467,7 @@ VOID /*__asm __saveds*/ SamAudioTask(VOID)
 													//								printf("Callback() called %u, return != paContinue. End of stream.\n",count);
 													PortAudioStreamData->StreamActive=0;
 													worktodo=FALSE;
-													Convert16SSamples(FastMemBuf, ChipMemBuf ,PortAudioStreamData->framesPerBuffer);
+													Convert8USamples(FastMemBuf, ChipMemBuf ,PortAudioStreamData->framesPerBuffer);
 													BeginIO((struct IORequest*)Aptr);
 													BeginIO((Aptr==PortAudioStreamData->AIOptr1)?(struct IORequest*)PortAudioStreamData->AIOptr1_2:(struct IORequest*)PortAudioStreamData->AIOptr2_2); /* also corresponding 2. stereo-channel */
 													/* Wait for the last two buffers to finish */
@@ -491,7 +518,7 @@ VOID /*__asm __saveds*/ SamAudioTask(VOID)
 													//KPrintF("Convert16SSamples($%08lx,$%08lx)\n",(ULONG)PortAudioStreamData->FastMemBuf1, (ULONG)PortAudioStreamData->ChipMemBuf1);
 
 													//fwrite(PortAudioStreamData->FastMemBuf1,PortAudioStreamData->framesPerBuffer,1,File);
-													Convert16SSamples(FastMemBuf, ChipMemBuf ,PortAudioStreamData->framesPerBuffer);
+													Convert8USamples(FastMemBuf, ChipMemBuf ,PortAudioStreamData->framesPerBuffer);
 													//	fwrite(PortAudioStreamData->ChipMemBuf1,PortAudioStreamData->framesPerBuffer,1,File);
 													BeginIO((struct IORequest*)Aptr);
 													BeginIO((Aptr==PortAudioStreamData->AIOptr1)?(struct IORequest*)PortAudioStreamData->AIOptr1_2:(struct IORequest*)PortAudioStreamData->AIOptr2_2); /* also corresponding 2. stereo-channel */
@@ -837,6 +864,10 @@ PaError Pa_OpenDefaultStream_audev( PortAudioStream** stream,
 											if(StreamStruct->AIOptrStartStop)
 											{
 
+												StreamStruct->LP_FilterSate=getAudioFilterState();  // read current state of LP-Filter
+												setAudioFilterState(0); // turn Filter off
+
+
 												StreamStruct->st = SpawnSubTask("SamAudioTask",SamAudioTask,StreamStruct);
 												if (StreamStruct->st)
 												{
@@ -1054,6 +1085,8 @@ PaError __attribute__((no_instrument_function)) Pa_CloseStream_audev( PortAudioS
 			StreamStruct->ChipMemBuf1=NULL;
 		}
 
+		setAudioFilterState(StreamStruct->LP_FilterSate);  // set last state of LP-Filter again
+
 		free(StreamStruct);
 		GlobalPaStreamPtr=NULL;   /* in case of CTRL-C atexit()-Functions are void so a global pointer is needed */
 
@@ -1134,7 +1167,7 @@ PaError Pa_GetSampleSize_audev( PaSampleFormat format )
 /* AF, 15.76.2017                    */
 
 #ifdef HFHFHFHF
-STATIC_FUNC UWORD Convert16SSamples(SHORT *Source16S, BYTE *Dest8S, ULONG SampleCount)
+STATIC_FUNC UWORD Convert8USamples(SHORT *Source16S, BYTE *Dest8S, ULONG SampleCount)
 {
 	UWORD i=0;
 	ULONG *SourcePtr=(ULONG*)Source16S;   /* we read 2 16Bit-Samples at once */
@@ -1159,13 +1192,12 @@ STATIC_FUNC UWORD Convert16SSamples(SHORT *Source16S, BYTE *Dest8S, ULONG Sample
 	return i*2;
 }
 #else
-STATIC_FUNC UWORD Convert16SSamples(SHORT *Source16S, BYTE *Dest8S, ULONG SampleCount)
+STATIC_FUNC UWORD Convert8USamples(UBYTE *Source8U, BYTE *Dest8S, ULONG SampleCount)
 {
-	char *Src=(char*)Source16S;
 	unsigned long i;
 	for(i=0;i<SampleCount;i++)
 	{
-		*Dest8S++=(*Src++)+128;
+		*Dest8S++=(*Source8U++)-128;
 	}
 }
 #endif
