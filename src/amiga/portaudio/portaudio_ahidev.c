@@ -122,7 +122,8 @@ void ConvertU8Samples(UBYTE *data, unsigned int SampleCount) // AHI does not sup
 	unsigned long i;
 	for(i=0;i<SampleCount;i++)
 	{
-		*data++=(*data++)-128;
+		*data=*data-128;
+		data++;
 	}
 }
 
@@ -331,6 +332,7 @@ VOID /*__asm __saveds*/ SamAudioTask_AHI(VOID)
 									else
 									{
 										// more buffers to come
+										ConvertU8Samples(p1,PortAudioStreamData->framesPerBuffer);  // AHI does not support UINT8-Samples !???
 										LastBuf=FALSE;
 									}
 
