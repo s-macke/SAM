@@ -38,7 +38,6 @@ char *SDL_Error_String="SDL Dummy_Error";
 DECLSPEC char * SDL_GetError(void)
 {
 //	KPrintF("%s()\n",__FUNCTION__);
-	getchar();
 	return SDL_Error_String;
 }
 /************************************************************** */
@@ -137,6 +136,4 @@ void SDL_PauseAudio(int pause_on)
 void SDL_Quit(void)  // useful with atexit()
 {
 //	KPrintF("%s()\n",__FUNCTION__);
-
-	 Pa_CloseStream(pa_stream);
 }
