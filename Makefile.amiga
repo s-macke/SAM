@@ -1,14 +1,18 @@
-OBJS = reciter.o sam.o render.o main.o debug.o endian.o sdlwrapper.o portaudio_ahidev.o  portaudio_audev.o  portaudio.o  subtask_support.o 
+OBJS = reciter.o sam.o render.o main.o debug.o endian.o sdlwrapper.o portaudio_ahidev.o  portaudio_audev.o  portaudio.o  subtask_support.o amiga_version.o 
 
-CC = ~/opt/m68k-amigaos_14Nov18/bin/m68k-amigaos-gcc #gcc
+COMPILER_DIR = ~/opt/m68k-amigaos_14Nov18/bin
+CC = $(COMPILER_DIR)/m68k-amigaos-gcc #gcc
+
+TOOLCHAIN_VER=$(shell cat $(COMPILER_DIR)/toolchain_commit.txt)
 
 
-CFLAGS =  -DPLATFORM_IS_BIG_ENDIAN -DSTATIC_FUNC= -Iamiga/ -Iamiga/portaudio/ -I. -Wall -Os -fomit-frame-pointer -noixemul -g -DUSESDL -I/home/osboxes/opt/m68k-amigaos_14Nov18/include/SDL #`sdl-config --cflags`
+CFLAGS =  -DDATE="\"$(shell /bin/date +'%d.%m.%Y')\""
+CFLAGS += -DPLATFORM_IS_BIG_ENDIAN -DSTATIC_FUNC= -DUSESDL
+CFLAGS += -DTOOLCHAIN_VER="\"$(TOOLCHAIN_VER)\""
+CFLAGS += -Iamiga/ -Iamiga/portaudio/ -I. -I/home/osboxes/opt/m68k-amigaos_14Nov18/include/SDL
+CFLAGS += -Wall -Os -fomit-frame-pointer -noixemul -g #`sdl-config --cflags`
+
 LFLAGS = -g -noixemul -Wl,-Map=sam.map,--trace # -ldebug #-lSDL  #`sdl-config --libs`
-
-# no libsdl present
-#CFLAGS =  -DPLATFORM_IS_BIG_ENDIAN -DSTATIC_FUNC= -Iamiga/ -Iamiga/portaudio/ -I. -Wall -Os -noixemul -g
-#LFLAGS =  -g -noixemul -Wl,-Map=sam.map,--trace 
 
 vpath sdlwrapper.c       src/amiga/
 vpath portaudio.c        src/amiga/portaudio/
@@ -16,6 +20,7 @@ vpath portaudio_ahidev.c src/amiga/portaudio/
 vpath portaudio_audev.c  src/amiga/portaudio/
 vpath portaudio.c        src/amiga/portaudio/
 vpath subtask_support.c  src/amiga/portaudio/
+vpath amiga_version.c    src/amiga/version/
 
 
 sam: $(OBJS)

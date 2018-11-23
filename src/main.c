@@ -239,10 +239,11 @@ int main(int argc, char **argv)
 				{
 					if(argv[i+1])
 					{
-						unit=strtoul(argv[i+1],NULL,10);
+						//unit=strtoul(argv[i+1],NULL,10);
+						unit=atoi(argv[i+1]);
 						if(unit<4)
 						{
-							set_ahi_devide(strtol(argv[i+1],NULL,10));
+							set_ahi_devide(unit);
 						}
 						else
 						{
