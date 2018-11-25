@@ -53,8 +53,33 @@ gcovr --object-directory=. -r . --html --html-details -o coverage.html
 ----------
 Auf nackten Amigas is SAM sehr langsam!
 
-sam Hello, my name is sam. 1 2 3 4 5 6 7 8 9 0
-A2000, 7MHz, 68000 -> 49Sekunden bis Ton kommt
-A1200, 14MHz, 68020 -> 16 Sekunden bis Ton kommt
-A1200, 14MHz, 68020, compiliert fuer 68020 -> 13 Sekunden bis Ton kommt
+sam_old_render_O2          67564 ----rwed Heute      17:30:44
+sam_Os                     57576 ----rwed Heute      17:30:41
+sam_O3                     73528 ----rwed Heute      17:30:38
+sam_old_render_Os          57760 ----rwed Heute      17:30:36
+sam_O2                     66800 ----rwed Heute      17:30:34
+
+A2000
+8.Ram Disk:> ; sam_Os  49
+8.Ram Disk:> ; sam_O2  44
+8.Ram Disk:> ; sam_O3  41
+8.Ram Disk:> ; sam_old_render_Os 32
+8.Ram Disk:> ; sam_old_render_O2 30
+8.Ram Disk:> ; sam_old_render_O3 28
+8.Ram Disk:> ;
+8.Ram Disk:> ; sam_O2 Hello, my name is sam. 1 2 3 4 5 6 7 8 9 0
+8.Ram Disk:> 
+8.Ram Disk:> 
+
+A1200, no FastMem
+sam_Os 15s
+sam_O2 14s
+sam_O3 14s
+sam_old_render_Os 10s
+sam_old_render_O2 8s
+sam_old_render_O3 8s
+
+Die alte Renderfunktion mit multable und 4 Bit bekomme ich mit
+git checkout 760786f13b79ddf5b519131925863181d224b839 src/RenderTabs.h
+git checkout 760786f13b79ddf5b519131925863181d224b839 src/render.c
 
