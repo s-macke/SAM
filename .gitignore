@@ -1,3 +1,9 @@
 .DS_Store
 *.o
 /sam
+*.gcno
+*.gcda
+*.wav
+*.html
+*.lha
+*.map
