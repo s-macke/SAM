@@ -5,14 +5,23 @@ CC = $(COMPILER_DIR)/m68k-amigaos-gcc #gcc
 
 TOOLCHAIN_VER=$(shell cat $(COMPILER_DIR)/toolchain_commit.txt)
 
+CPUFLAGS=-m68000
 
 CFLAGS =  -DDATE="\"$(shell /bin/date +'%d.%m.%Y')\""
 CFLAGS += -DPLATFORM_IS_BIG_ENDIAN -DSTATIC_FUNC= -DUSESDL
 CFLAGS += -DTOOLCHAIN_VER="\"$(TOOLCHAIN_VER)\""
 CFLAGS += -Iamiga/ -Iamiga/portaudio/ -I. -I/home/osboxes/opt/m68k-amigaos_14Nov18/include/SDL
-CFLAGS += -Wall -Os -fomit-frame-pointer -noixemul -g #`sdl-config --cflags`
+CFLAGS += $(CPUFLAGS)
+CFLAGS += -Wall -O2 -fomit-frame-pointer -noixemul -g #`sdl-config --cflags`
 
 LFLAGS = -g -noixemul -Wl,-Map=sam.map,--trace # -ldebug #-lSDL  #`sdl-config --libs`
+
+#coverage
+#CFLAGS += -fprofile-generate=VBox:$(shell pwd | cut -c2-)  # remove first "/" from pwd -> VBox:home/...
+#CFLAGS += -ftest-coverage
+#CFLAGS += -fprofile-arcs      #-pg  # Profiler
+#LFLAGS += -lgcov
+
 
 vpath sdlwrapper.c       src/amiga/
 vpath portaudio.c        src/amiga/portaudio/

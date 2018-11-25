@@ -41,3 +41,20 @@ ohne SDL (gestripped) 44 kBytes
 mit SDL (gestripped) 256 kBytes !
 
 Der linkt alles moegliche ran, z.B. sind Youstick-Meldungen im Executable...
+
+24.11.2018
+----------
+Inzwischen geht alles mit eigenem SDL->Portaudio-Wrapper.
+CTRL-C Behandlung feht noch.
+
+gcovr --object-directory=. -r . --html --html-details -o coverage.html
+
+25.11.2018
+----------
+Auf nackten Amigas is SAM sehr langsam!
+
+sam Hello, my name is sam. 1 2 3 4 5 6 7 8 9 0
+A2000, 7MHz, 68000 -> 49Sekunden bis Ton kommt
+A1200, 14MHz, 68020 -> 16 Sekunden bis Ton kommt
+A1200, 14MHz, 68020, compiliert fuer 68020 -> 13 Sekunden bis Ton kommt
+
