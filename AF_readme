@@ -83,3 +83,9 @@ Die alte Renderfunktion mit multable und 4 Bit bekomme ich mit
 git checkout 760786f13b79ddf5b519131925863181d224b839 src/RenderTabs.h
 git checkout 760786f13b79ddf5b519131925863181d224b839 src/render.c
 
+
+Profiling
+,it -pg linken und uebersetzen
+/home/osboxes/opt/m68k-amigaos_14Nov18/bin/m68k-amigaos-gprof sam | gprof2dot -n0 -e0 | dot -Tsvg -o output.svg
+mirage output.svg &
+

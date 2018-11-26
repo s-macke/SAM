@@ -12,7 +12,7 @@ CFLAGS += -DPLATFORM_IS_BIG_ENDIAN -DSTATIC_FUNC= -DUSESDL
 CFLAGS += -DTOOLCHAIN_VER="\"$(TOOLCHAIN_VER)\""
 CFLAGS += -Iamiga/ -Iamiga/portaudio/ -I. -I/home/osboxes/opt/m68k-amigaos_14Nov18/include/SDL
 CFLAGS += $(CPUFLAGS)
-CFLAGS += -Wall -O2 -fomit-frame-pointer -noixemul -g #`sdl-config --cflags`
+CFLAGS += -Wall -O3 -fomit-frame-pointer -noixemul -g #`sdl-config --cflags`
 
 LFLAGS = -g -noixemul -Wl,-Map=sam.map,--trace # -ldebug #-lSDL  #`sdl-config --libs`
 
@@ -21,6 +21,8 @@ LFLAGS = -g -noixemul -Wl,-Map=sam.map,--trace # -ldebug #-lSDL  #`sdl-config --
 #CFLAGS += -ftest-coverage
 #CFLAGS += -fprofile-arcs      #-pg  # Profiler
 #LFLAGS += -lgcov
+CFLAGS += -pg -fno-omit-frame-pointer
+LFLAGS += -pg
 
 
 vpath sdlwrapper.c       src/amiga/
