@@ -56,29 +56,23 @@ extern char *buffer;
 //timetable for more accurate c64 simulation
 int timetable[5][5] =
 {
-    {162, 167, 167, 127, 128},
-    {226, 60, 60, 0, 0},
-    {225, 60, 59, 0, 0},
-    {200, 0, 0, 54, 55},
-    {199, 0, 0, 54, 54}
+	{162, 167, 167, 127, 128},
+	{226, 60, 60, 0, 0},
+	{225, 60, 59, 0, 0},
+	{200, 0, 0, 54, 55},
+	{199, 0, 0, 54, 54}
 };
 
-static unsigned oldtimetableindex = 0;
-void Output8BitAry(int index, unsigned char ary[5])
+void Output(int index, unsigned char A)
 {
-    int k;
-    bufferpos += timetable[oldtimetableindex][index];
-    oldtimetableindex = index;
-    // write a little bit in advance
-    for(k=0; k<5; k++)
-        buffer[bufferpos/50 + k] = ary[k];
+	static unsigned oldtimetableindex = 0;
+	int k;
+	bufferpos += timetable[oldtimetableindex][index];
+	oldtimetableindex = index;
+	// write a little bit in advance
+	for(k=0; k<5; k++)
+		buffer[bufferpos/50 + k] = (A & 15)*16;
 }
-void Output8Bit(int index, unsigned char A)
-{
-    unsigned char ary[5] = {A,A,A,A,A};
-    Output8BitAry(index, ary);
-}
-
 
 
 
@@ -97,34 +91,34 @@ void Output8Bit(int index, unsigned char A)
 // 174=amplitude3
 unsigned char Read(unsigned char p, unsigned char Y)
 {
-    switch(p)
-    {
-    case 168: return pitches[Y];
-    case 169: return frequency1[Y];
-    case 170: return frequency2[Y];
-    case 171: return frequency3[Y];
-    case 172: return amplitude1[Y];
-    case 173: return amplitude2[Y];
-    case 174: return amplitude3[Y];
-    }
-    printf("Error reading to tables");
-    return 0;
+	switch(p)
+	{
+	case 168: return pitches[Y];
+	case 169: return frequency1[Y];
+	case 170: return frequency2[Y];
+	case 171: return frequency3[Y];
+	case 172: return amplitude1[Y];
+	case 173: return amplitude2[Y];
+	case 174: return amplitude3[Y];
+	}
+	printf("Error reading to tables");
+	return 0;
 }
 
 void Write(unsigned char p, unsigned char Y, unsigned char value)
 {
 
-    switch(p)
-    {
-    case 168: pitches[Y] = value; return;
-    case 169: frequency1[Y] = value;  return;
-    case 170: frequency2[Y] = value;  return;
-    case 171: frequency3[Y] = value;  return;
-    case 172: amplitude1[Y] = value;  return;
-    case 173: amplitude2[Y] = value;  return;
-    case 174: amplitude3[Y] = value;  return;
-    }
-    printf("Error writing to tables\n");
+	switch(p)
+	{
+	case 168: pitches[Y] = value; return;
+	case 169: frequency1[Y] = value;  return;
+	case 170: frequency2[Y] = value;  return;
+	case 171: frequency3[Y] = value;  return;
+	case 172: amplitude1[Y] = value;  return;
+	case 173: amplitude2[Y] = value;  return;
+	case 174: amplitude3[Y] = value;  return;
+	}
+	printf("Error writing to tables\n");
 }
 
 
@@ -187,154 +181,154 @@ void Write(unsigned char p, unsigned char Y, unsigned char value)
 // Code48227()
 void RenderSample(unsigned char *mem66)
 {
-    int tempA;
-    // current phoneme's index
-    mem49 = Y;
+	int tempA;
+	// current phoneme's index
+	mem49 = Y;
 
-    // mask low three bits and subtract 1 get value to
-    // convert 0 bits on unvoiced samples.
-    A = mem39&7;
-    X = A-1;
+	// mask low three bits and subtract 1 get value to
+	// convert 0 bits on unvoiced samples.
+	A = mem39&7;
+	X = A-1;
 
     // store the result
-    mem56 = X;
+	mem56 = X;
 
-    // determine which offset to use from table { 0x18, 0x1A, 0x17, 0x17, 0x17 }
-    // T, S, Z                0          0x18
-    // CH, J, SH, ZH          1          0x1A
-    // P, F*, V, TH, DH       2          0x17
-    // /H                     3          0x17
-    // /X                     4          0x17
+	// determine which offset to use from table { 0x18, 0x1A, 0x17, 0x17, 0x17 }
+	// T, S, Z                0          0x18
+	// CH, J, SH, ZH          1          0x1A
+	// P, F*, V, TH, DH       2          0x17
+	// /H                     3          0x17
+	// /X                     4          0x17
 
     // get value from the table
-    mem53 = tab48426[X];
-    mem47 = X;      //46016+mem[56]*256
+	mem53 = tab48426[X];
+	mem47 = X;      //46016+mem[56]*256
 
-    // voiced sample?
-    A = mem39 & 248;
-    if(A == 0)
-    {
+	// voiced sample?
+	A = mem39 & 248;
+	if(A == 0)
+	{
         // voiced phoneme: Z*, ZH, V*, DH
-        Y = mem49;
-        A = pitches[mem49] >> 4;
+		Y = mem49;
+		A = pitches[mem49] >> 4;
 
-        // jump to voiced portion
-        goto pos48315;
-    }
+		// jump to voiced portion
+		goto pos48315;
+	}
 
-    Y = A ^ 255;
+	Y = A ^ 255;
 pos48274:
 
     // step through the 8 bits in the sample
-    mem56 = 8;
+	mem56 = 8;
 
-    // get the next sample from the table
+	// get the next sample from the table
     // mem47*256 = offset to start of samples
-    A = sampleTable[mem47*256+Y];
+	A = sampleTable[mem47*256+Y];
 pos48280:
 
     // left shift to get the high bit
-    tempA = A;
-    A = A << 1;
-    //48281: BCC 48290
+	tempA = A;
+	A = A << 1;
+	//48281: BCC 48290
 
-    // bit not set?
-    if ((tempA & 128) == 0)
-    {
+	// bit not set?
+	if ((tempA & 128) == 0)
+	{
         // convert the bit to value from table
-        X = mem53;
-        //mem[54296] = X;
+		X = mem53;
+		//mem[54296] = X;
         // output the byte
-        Output8Bit(1, (X&0x0f) * 16);
-        // if X != 0, exit loop
-        if(X != 0) goto pos48296;
-    }
+		Output(1, X);
+		// if X != 0, exit loop
+		if(X != 0) goto pos48296;
+	}
 
-    // output a 5 for the on bit
-    Output8Bit(2, 5 * 16);
+	// output a 5 for the on bit
+	Output(2, 5);
 
-    //48295: NOP
+	//48295: NOP
 pos48296:
 
-    X = 0;
+	X = 0;
 
     // decrement counter
-    mem56--;
+	mem56--;
 
-    // if not done, jump to top of loop
-    if (mem56 != 0) goto pos48280;
+	// if not done, jump to top of loop
+	if (mem56 != 0) goto pos48280;
 
-    // increment position
-    Y++;
-    if (Y != 0) goto pos48274;
+	// increment position
+	Y++;
+	if (Y != 0) goto pos48274;
 
-    // restore values and return
-    mem44 = 1;
-    Y = mem49;
-    return;
+	// restore values and return
+	mem44 = 1;
+	Y = mem49;
+	return;
 
 
-    unsigned char phase1;
+	unsigned char phase1;
 
 pos48315:
 // handle voiced samples here
 
    // number of samples?
-    phase1 = A ^ 255;
+	phase1 = A ^ 255;
 
-    Y = *mem66;
-    do
-    {
-        //pos48321:
+	Y = *mem66;
+	do
+	{
+		//pos48321:
 
         // shift through all 8 bits
-        mem56 = 8;
-        //A = Read(mem47, Y);
+		mem56 = 8;
+		//A = Read(mem47, Y);
 
-        // fetch value from table
-        A = sampleTable[mem47*256+Y];
+		// fetch value from table
+		A = sampleTable[mem47*256+Y];
 
         // loop 8 times
-        //pos48327:
-        do
-        {
-            //48327: ASL A
-            //48328: BCC 48337
+		//pos48327:
+		do
+		{
+			//48327: ASL A
+			//48328: BCC 48337
 
-            // left shift and check high bit
-            tempA = A;
-            A = A << 1;
-            if ((tempA & 128) != 0)
-            {
+			// left shift and check high bit
+			tempA = A;
+			A = A << 1;
+			if ((tempA & 128) != 0)
+			{
                 // if bit set, output 26
-                X = 26;
-                Output8Bit(3, (X&0xf)*16);
-            } else
-            {
-                //timetable 4
-                // bit is not set, output a 6
-                X=6;
-                Output8Bit(4, (X&0xf)*16);
-            }
+				X = 26;
+				Output(3, X);
+			} else
+			{
+				//timetable 4
+				// bit is not set, output a 6
+				X=6;
+				Output(4, X);
+			}
 
-            mem56--;
-        } while(mem56 != 0);
+			mem56--;
+		} while(mem56 != 0);
 
         // move ahead in the table
-        Y++;
+		Y++;
 
-        // continue until counter done
-        phase1++;
+		// continue until counter done
+		phase1++;
 
-    } while (phase1 != 0);
-    //  if (phase1 != 0) goto pos48321;
+	} while (phase1 != 0);
+	//	if (phase1 != 0) goto pos48321;
 
-    // restore values and return
-    A = 1;
-    mem44 = 1;
-    *mem66 = Y;
-    Y = mem49;
-    return;
+	// restore values and return
+	A = 1;
+	mem44 = 1;
+	*mem66 = Y;
+	Y = mem49;
+	return;
 }
 
 
@@ -358,20 +352,21 @@ pos48315:
 //void Code47574()
 void Render()
 {
-    unsigned char phase1 = 0;  //mem43
-    unsigned char phase2=0;
-    unsigned char phase3=0;
-    unsigned char mem66=0;
-    unsigned char mem38=0;
-    unsigned char mem40=0;
-    unsigned char speedcounter=0; //mem45
-    unsigned char mem48=0;
-    int i;
-    if (phonemeIndexOutput[0] == 255) return; //exit if no data
+	unsigned char phase1 = 0;  //mem43
+	unsigned char phase2;
+	unsigned char phase3;
+	unsigned char mem66;
+	unsigned char mem38;
+	unsigned char mem40;
+	unsigned char speedcounter; //mem45
+	unsigned char mem48;
+	int i;
+	int carry;
+	if (phonemeIndexOutput[0] == 255) return; //exit if no data
 
-    A = 0;
-    X = 0;
-    mem44 = 0;
+	A = 0;
+	X = 0;
+	mem44 = 0;
 
 
 // CREATE FRAMES
@@ -387,58 +382,58 @@ void Render()
 do
 {
     // get the index
-    Y = mem44;
-    // get the phoneme at the index
-    A = phonemeIndexOutput[mem44];
-    mem56 = A;
+	Y = mem44;
+	// get the phoneme at the index
+	A = phonemeIndexOutput[mem44];
+	mem56 = A;
 
-    // if terminal phoneme, exit the loop
-    if (A == 255) break;
+	// if terminal phoneme, exit the loop
+	if (A == 255) break;
 
-    // period phoneme *.
-    if (A == 1)
-    {
+	// period phoneme *.
+	if (A == 1)
+	{
        // add rising inflection
-        A = 1;
-        mem48 = 1;
-        //goto pos48376;
-        AddInflection(mem48, phase1);
-    }
-    /*
-    if (A == 2) goto pos48372;
-    */
+		A = 1;
+		mem48 = 1;
+		//goto pos48376;
+		AddInflection(mem48, phase1);
+	}
+	/*
+	if (A == 2) goto pos48372;
+	*/
 
-    // question mark phoneme?
-    if (A == 2)
-    {
+	// question mark phoneme?
+	if (A == 2)
+	{
         // create falling inflection
-        mem48 = 255;
-        AddInflection(mem48, phase1);
-    }
-    //  pos47615:
+		mem48 = 255;
+		AddInflection(mem48, phase1);
+	}
+	//	pos47615:
 
     // get the stress amount (more stress = higher pitch)
-    phase1 = tab47492[stressOutput[Y] + 1];
+	phase1 = tab47492[stressOutput[Y] + 1];
 
     // get number of frames to write
-    phase2 = phonemeLengthOutput[Y];
-    Y = mem56;
+	phase2 = phonemeLengthOutput[Y];
+	Y = mem56;
 
-    // copy from the source to the frames list
-    do
-    {
-        frequency1[X] = freq1data[Y];     // F1 frequency
-        frequency2[X] = freq2data[Y];     // F2 frequency
-        frequency3[X] = freq3data[Y];     // F3 frequency
-        amplitude1[X] = ampl1data[Y];     // F1 amplitude
-        amplitude2[X] = ampl2data[Y];     // F2 amplitude
-        amplitude3[X] = ampl3data[Y];     // F3 amplitude
-        sampledConsonantFlag[X] = sampledConsonantFlags[Y];        // phoneme data for sampled consonants
-        pitches[X] = pitch + phase1;      // pitch
-        X++;
-        phase2--;
-    } while(phase2 != 0);
-    mem44++;
+	// copy from the source to the frames list
+	do
+	{
+		frequency1[X] = freq1data[Y];     // F1 frequency
+		frequency2[X] = freq2data[Y];     // F2 frequency
+		frequency3[X] = freq3data[Y];     // F3 frequency
+		amplitude1[X] = ampl1data[Y];     // F1 amplitude
+		amplitude2[X] = ampl2data[Y];     // F2 amplitude
+		amplitude3[X] = ampl3data[Y];     // F3 amplitude
+		sampledConsonantFlag[X] = sampledConsonantFlags[Y];        // phoneme data for sampled consonants
+		pitches[X] = pitch + phase1;      // pitch
+		X++;
+		phase2--;
+	} while(phase2 != 0);
+	mem44++;
 } while(mem44 != 0);
 // -------------------
 //pos47694:
@@ -572,65 +567,65 @@ do
 //   241     2    10     2    65     1    96    59 * <-- OutBlendFrames = 1
 //   241     0     6     0    73     0    99    61
 
-    A = 0;
-    mem44 = 0;
-    mem49 = 0; // mem49 starts at as 0
-    X = 0;
-    while(1) //while No. 1
-    {
+	A = 0;
+	mem44 = 0;
+	mem49 = 0; // mem49 starts at as 0
+	X = 0;
+	while(1) //while No. 1
+	{
 
         // get the current and following phoneme
-        Y = phonemeIndexOutput[X];
-        A = phonemeIndexOutput[X+1];
-        X++;
+		Y = phonemeIndexOutput[X];
+		A = phonemeIndexOutput[X+1];
+		X++;
 
-        // exit loop at end token
-        if (A == 255) break;//goto pos47970;
+		// exit loop at end token
+		if (A == 255) break;//goto pos47970;
 
 
         // get the ranking of each phoneme
-        X = A;
-        mem56 = blendRank[A];
-        A = blendRank[Y];
+		X = A;
+		mem56 = blendRank[A];
+		A = blendRank[Y];
 
-        // compare the rank - lower rank value is stronger
-        if (A == mem56)
-        {
+		// compare the rank - lower rank value is stronger
+		if (A == mem56)
+		{
             // same rank, so use out blend lengths from each phoneme
-            phase1 = outBlendLength[Y];
-            phase2 = outBlendLength[X];
-        } else
-        if (A < mem56)
-        {
+			phase1 = outBlendLength[Y];
+			phase2 = outBlendLength[X];
+		} else
+		if (A < mem56)
+		{
             // first phoneme is stronger, so us it's blend lengths
-            phase1 = inBlendLength[X];
-            phase2 = outBlendLength[X];
-        } else
-        {
+			phase1 = inBlendLength[X];
+			phase2 = outBlendLength[X];
+		} else
+		{
             // second phoneme is stronger, so use it's blend lengths
             // note the out/in are swapped
-            phase1 = outBlendLength[Y];
-            phase2 = inBlendLength[Y];
-        }
+			phase1 = outBlendLength[Y];
+			phase2 = inBlendLength[Y];
+		}
 
-        Y = mem44;
-        A = mem49 + phonemeLengthOutput[mem44]; // A is mem49 + length
-        mem49 = A; // mem49 now holds length + position
-        A = A + phase2; //Maybe Problem because of carry flag
+		Y = mem44;
+		A = mem49 + phonemeLengthOutput[mem44]; // A is mem49 + length
+		mem49 = A; // mem49 now holds length + position
+		A = A + phase2; //Maybe Problem because of carry flag
 
-        //47776: ADC 42
-        speedcounter = A;
-        mem47 = 168;
-        phase3 = mem49 - phase1; // what is mem49
-        A = phase1 + phase2; // total transition?
-        mem38 = A;
+		//47776: ADC 42
+		speedcounter = A;
+		mem47 = 168;
+		phase3 = mem49 - phase1; // what is mem49
+		A = phase1 + phase2; // total transition?
+		mem38 = A;
 
-        X = A;
-        X -= 2;
-        if ((X & 128) == 0)
-        do   //while No. 2
-        {
-            //pos47810:
+		X = A;
+		X -= 2;
+		if ((X & 128) == 0)
+		do   //while No. 2
+		{
+			//pos47810:
 
           // mem47 is used to index the tables:
           // 168  pitches[]
@@ -641,98 +636,96 @@ do
           // 173  amplitude2
           // 174  amplitude3
 
-            mem40 = mem38;
+			mem40 = mem38;
 
-            if (mem47 == 168)     // pitch
-            {
+			if (mem47 == 168)     // pitch
+			{
 
                // unlike the other values, the pitches[] interpolates from
                // the middle of the current phoneme to the middle of the
                // next phoneme
 
-                unsigned char mem36, mem37;
-                // half the width of the current phoneme
-                mem36 = phonemeLengthOutput[mem44] >> 1;
-                // half the width of the next phoneme
-                mem37 = phonemeLengthOutput[mem44+1] >> 1;
-                // sum the values
-                mem40 = mem36 + mem37; // length of both halves
-                mem37 += mem49; // center of next phoneme
-                mem36 = mem49 - mem36; // center index of current phoneme
-                A = Read(mem47, mem37); // value at center of next phoneme - end interpolation value
-                //A = mem[address];
+				unsigned char mem36, mem37;
+				// half the width of the current phoneme
+				mem36 = phonemeLengthOutput[mem44] >> 1;
+				// half the width of the next phoneme
+				mem37 = phonemeLengthOutput[mem44+1] >> 1;
+				// sum the values
+				mem40 = mem36 + mem37; // length of both halves
+				mem37 += mem49; // center of next phoneme
+				mem36 = mem49 - mem36; // center index of current phoneme
+				A = Read(mem47, mem37); // value at center of next phoneme - end interpolation value
+				//A = mem[address];
 
-                Y = mem36; // start index of interpolation
-                mem53 = A - Read(mem47, mem36); // value to center of current phoneme
-            } else
-            {
+				Y = mem36; // start index of interpolation
+				mem53 = A - Read(mem47, mem36); // value to center of current phoneme
+			} else
+			{
                 // value to interpolate to
-                A = Read(mem47, speedcounter);
-                // position to start interpolation from
-                Y = phase3;
-                // value to interpolate from
-                mem53 = A - Read(mem47, phase3);
-            }
+				A = Read(mem47, speedcounter);
+				// position to start interpolation from
+				Y = phase3;
+				// value to interpolate from
+				mem53 = A - Read(mem47, phase3);
+			}
 
-            //Code47503(mem40);
-            // ML : Code47503 is division with remainder, and mem50 gets the sign
+			//Code47503(mem40);
+			// ML : Code47503 is division with remainder, and mem50 gets the sign
 
-            // calculate change per frame
-            signed char m53 = (signed char)mem53;
-            mem50 = mem53 & 128;
-            unsigned char m53abs = abs(m53);
-            mem51 = m53abs % mem40; //abs((char)m53) % mem40;
-            mem53 = (unsigned char)((signed char)(m53) / mem40);
+			// calculate change per frame
+			mem50 = (((char)(mem53) < 0) ? 128 : 0);
+			mem51 = abs((char)mem53) % mem40;
+			mem53 = (unsigned char)((char)(mem53) / mem40);
 
             // interpolation range
-            X = mem40; // number of frames to interpolate over
-            Y = phase3; // starting frame
+			X = mem40; // number of frames to interpolate over
+			Y = phase3; // starting frame
 
 
             // linearly interpolate values
 
-            mem56 = 0;
-            //47907: CLC
-            //pos47908:
-            while(1)     //while No. 3
-            {
-                A = Read(mem47, Y) + mem53; //carry alway cleared
+			mem56 = 0;
+			//47907: CLC
+			//pos47908:
+			while(1)     //while No. 3
+			{
+				A = Read(mem47, Y) + mem53; //carry alway cleared
 
-                mem48 = A;
-                Y++;
-                X--;
-                if(X == 0) break;
+				mem48 = A;
+				Y++;
+				X--;
+				if(X == 0) break;
 
-                mem56 += mem51;
-                if (mem56 >= mem40)  //???
-                {
-                    mem56 -= mem40; //carry? is set
-                    //if ((mem56 & 128)==0)
-                    if ((mem50 & 128)==0)
-                    {
-                        //47935: BIT 50
-                        //47937: BMI 47943
-                        if(mem48 != 0) mem48++;
-                    } else mem48--;
-                }
-                //pos47945:
-                Write(mem47, Y, mem48);
-            } //while No. 3
+				mem56 += mem51;
+				if (mem56 >= mem40)  //???
+				{
+					mem56 -= mem40; //carry? is set
+					//if ((mem56 & 128)==0)
+					if ((mem50 & 128)==0)
+					{
+						//47935: BIT 50
+						//47937: BMI 47943
+						if(mem48 != 0) mem48++;
+					} else mem48--;
+				}
+				//pos47945:
+				Write(mem47, Y, mem48);
+			} //while No. 3
 
-            //pos47952:
-            mem47++;
-            //if (mem47 != 175) goto pos47810;
-        } while (mem47 != 175);     //while No. 2
-        //pos47963:
-        mem44++;
-        X = mem44;
-    }  //while No. 1
+			//pos47952:
+			mem47++;
+			//if (mem47 != 175) goto pos47810;
+		} while (mem47 != 175);     //while No. 2
+		//pos47963:
+		mem44++;
+		X = mem44;
+	}  //while No. 1
 
-    //goto pos47701;
-    //pos47970:
+	//goto pos47701;
+	//pos47970:
 
     // add the length of this phoneme
-    mem48 = mem49 + phonemeLengthOutput[mem44];
+	mem48 = mem49 + phonemeLengthOutput[mem44];
 
 
 // ASSIGN PITCH CONTOUR
@@ -742,45 +735,45 @@ do
 // pitch level (monotone).
 
 
-    // don't adjust pitch if in sing mode
-    if (!singmode)
-    {
+	// don't adjust pitch if in sing mode
+	if (!singmode)
+	{
         // iterate through the buffer
-        for(i=0; i<256; i++) {
+		for(i=0; i<256; i++) {
             // subtract half the frequency of the formant 1.
             // this adds variety to the voice
-            pitches[i] -= (frequency1[i] >> 1);
+    		pitches[i] -= (frequency1[i] >> 1);
         }
-    }
+	}
 
-    phase1 = 0;
-    phase2 = 0;
-    phase3 = 0;
-    mem49 = 0;
-    speedcounter = 72; //sam standard speed
+	phase1 = 0;
+	phase2 = 0;
+	phase3 = 0;
+	mem49 = 0;
+	speedcounter = 72; //sam standard speed
 
 // RESCALE AMPLITUDE
 //
 // Rescale volume from a linear scale to decibels.
 //
 
-    //amplitude rescaling
-    for(i=255; i>=0; i--)
-    {
-        amplitude1[i] = amplitudeRescale[amplitude1[i]];
-        amplitude2[i] = amplitudeRescale[amplitude2[i]];
-        amplitude3[i] = amplitudeRescale[amplitude3[i]];
-    }
+	//amplitude rescaling
+	for(i=255; i>=0; i--)
+	{
+		amplitude1[i] = amplitudeRescale[amplitude1[i]];
+		amplitude2[i] = amplitudeRescale[amplitude2[i]];
+		amplitude3[i] = amplitudeRescale[amplitude3[i]];
+	}
 
-    Y = 0;
-    A = pitches[0];
-    mem44 = A;
-    X = A;
-    mem38 = A - (A>>2);     // 3/4*A ???
+	Y = 0;
+	A = pitches[0];
+	mem44 = A;
+	X = A;
+	mem38 = A - (A>>2);     // 3/4*A ???
 
 if (debug)
 {
-    PrintOutput(sampledConsonantFlag, frequency1, frequency2, frequency3, amplitude1, amplitude2, amplitude3, pitches);
+	PrintOutput(sampledConsonantFlag, frequency1, frequency2, frequency3, amplitude1, amplitude2, amplitude3, pitches);
 }
 
 // PROCESS THE FRAMES
@@ -792,154 +785,143 @@ if (debug)
 // To simulate them being driven by the glottal pulse, the waveforms are
 // reset at the beginning of each glottal pulse.
 
-    //finally the loop for sound output
-    //pos48078:
-    while(1)
-    {
+	//finally the loop for sound output
+	//pos48078:
+	while(1)
+	{
         // get the sampled information on the phoneme
-        A = sampledConsonantFlag[Y];
-        mem39 = A;
+		A = sampledConsonantFlag[Y];
+		mem39 = A;
 
-        // unvoiced sampled phoneme?
-        A = A & 248;
-        if(A != 0)
-        {
+		// unvoiced sampled phoneme?
+		A = A & 248;
+		if(A != 0)
+		{
             // render the sample for the phoneme
-            RenderSample(&mem66);
+			RenderSample(&mem66);
 
-            // skip ahead two in the phoneme buffer
-            Y += 2;
-            mem48 -= 2;
-        } else
-        {
+			// skip ahead two in the phoneme buffer
+			Y += 2;
+			mem48 -= 2;
+		} else
+		{
             // simulate the glottal pulse and formants
-            unsigned char ary[5];
-            unsigned int p1 = phase1 * 256; // Fixed point integers because we need to divide later on
-            unsigned int p2 = phase2 * 256;
-            unsigned int p3 = phase3 * 256;
-            int k;
-            for (k=0; k<5; k++) {
-                signed char sp1 = (signed char)sinus[0xff & (p1>>8)];
-                signed char sp2 = (signed char)sinus[0xff & (p2>>8)];
-                signed char rp3 = (signed char)rectangle[0xff & (p3>>8)];
-                signed int sin1 = sp1 * ((unsigned char)amplitude1[Y] & 0x0f);
-                signed int sin2 = sp2 * ((unsigned char)amplitude2[Y] & 0x0f);
-                signed int rect = rp3 * ((unsigned char)amplitude3[Y] & 0x0f);
-                signed int mux = sin1 + sin2 + rect;
-                mux /= 32;
-                mux += 128; // Go from signed to unsigned amplitude
-                ary[k] = mux;
-                p1 += frequency1[Y] * 256 / 4; // Compromise, this becomes a shift and works well
-                p2 += frequency2[Y] * 256 / 4;
-                p3 += frequency3[Y] * 256 / 4;
-            }
-            // output the accumulated value
-            Output8BitAry(0, ary);
-            speedcounter--;
-            if (speedcounter != 0) goto pos48155;
-            Y++; //go to next amplitude
+			mem56 = multtable[sinus[phase1] | amplitude1[Y]];
 
-            // decrement the frame count
-            mem48--;
-        }
+			carry = 0;
+			if ((mem56+multtable[sinus[phase2] | amplitude2[Y]] ) > 255) carry = 1;
+			mem56 += multtable[sinus[phase2] | amplitude2[Y]];
+			A = mem56 + multtable[rectangle[phase3] | amplitude3[Y]] + (carry?1:0);
+			A = ((A + 136) & 255) >> 4; //there must be also a carry
+			//mem[54296] = A;
 
-        // if the frame count is zero, exit the loop
-        if(mem48 == 0)  return;
-        speedcounter = speed;
+			// output the accumulated value
+			Output(0, A);
+			speedcounter--;
+			if (speedcounter != 0) goto pos48155;
+			Y++; //go to next amplitude
+
+			// decrement the frame count
+			mem48--;
+		}
+
+		// if the frame count is zero, exit the loop
+		if(mem48 == 0) 	return;
+		speedcounter = speed;
 pos48155:
 
         // decrement the remaining length of the glottal pulse
-        mem44--;
+		mem44--;
 
-        // finished with a glottal pulse?
-        if(mem44 == 0)
-        {
+		// finished with a glottal pulse?
+		if(mem44 == 0)
+		{
 pos48159:
             // fetch the next glottal pulse length
-            A = pitches[Y];
-            mem44 = A;
-            A = A - (A>>2);
-            mem38 = A;
+			A = pitches[Y];
+			mem44 = A;
+			A = A - (A>>2);
+			mem38 = A;
 
-            // reset the formant wave generators to keep them in
-            // sync with the glottal pulse
-            phase1 = 0;
-            phase2 = 0;
-            phase3 = 0;
-            continue;
-        }
+			// reset the formant wave generators to keep them in
+			// sync with the glottal pulse
+			phase1 = 0;
+			phase2 = 0;
+			phase3 = 0;
+			continue;
+		}
 
-        // decrement the count
-        mem38--;
+		// decrement the count
+		mem38--;
 
-        // is the count non-zero and the sampled flag is zero?
-        if((mem38 != 0) || (mem39 == 0))
-        {
+		// is the count non-zero and the sampled flag is zero?
+		if((mem38 != 0) || (mem39 == 0))
+		{
             // reset the phase of the formants to match the pulse
-            phase1 += frequency1[Y];
-            phase2 += frequency2[Y];
-            phase3 += frequency3[Y];
-            continue;
-        }
+			phase1 += frequency1[Y];
+			phase2 += frequency2[Y];
+			phase3 += frequency3[Y];
+			continue;
+		}
 
-        // voiced sampled phonemes interleave the sample with the
-        // glottal pulse. The sample flag is non-zero, so render
-        // the sample for the phoneme.
-        RenderSample(&mem66);
-        goto pos48159;
-    } //while
+		// voiced sampled phonemes interleave the sample with the
+		// glottal pulse. The sample flag is non-zero, so render
+		// the sample for the phoneme.
+		RenderSample(&mem66);
+		goto pos48159;
+	} //while
 
 
     // The following code is never reached. It's left over from when
     // the voiced sample code was part of this loop, instead of part
     // of RenderSample();
 
-    //pos48315:
-    int tempA;
-    phase1 = A ^ 255;
-    Y = mem66;
-    do
-    {
-        //pos48321:
+	//pos48315:
+	int tempA;
+	phase1 = A ^ 255;
+	Y = mem66;
+	do
+	{
+		//pos48321:
 
-        mem56 = 8;
-        A = Read(mem47, Y);
+		mem56 = 8;
+		A = Read(mem47, Y);
 
-        //pos48327:
-        do
-        {
-            //48327: ASL A
-            //48328: BCC 48337
-            tempA = A;
-            A = A << 1;
-            if ((tempA & 128) != 0)
-            {
-                X = 26;
-                // mem[54296] = X;
-                bufferpos += 150;
-                buffer[bufferpos/50] = (X & 15)*16;
-            } else
-            {
-                //mem[54296] = 6;
-                X=6;
-                bufferpos += 150;
-                buffer[bufferpos/50] = (X & 15)*16;
-            }
+		//pos48327:
+		do
+		{
+			//48327: ASL A
+			//48328: BCC 48337
+			tempA = A;
+			A = A << 1;
+			if ((tempA & 128) != 0)
+			{
+				X = 26;
+				// mem[54296] = X;
+				bufferpos += 150;
+				buffer[bufferpos/50] = (X & 15)*16;
+			} else
+			{
+				//mem[54296] = 6;
+				X=6;
+				bufferpos += 150;
+				buffer[bufferpos/50] = (X & 15)*16;
+			}
 
-            for(X = wait2; X>0; X--); //wait
-            mem56--;
-        } while(mem56 != 0);
+			for(X = wait2; X>0; X--); //wait
+			mem56--;
+		} while(mem56 != 0);
 
-        Y++;
-        phase1++;
+		Y++;
+		phase1++;
 
-    } while (phase1 != 0);
-    //  if (phase1 != 0) goto pos48321;
-    A = 1;
-    mem44 = 1;
-    mem66 = Y;
-    Y = mem49;
-    return;
+	} while (phase1 != 0);
+	//	if (phase1 != 0) goto pos48321;
+	A = 1;
+	mem44 = 1;
+	mem66 = Y;
+	Y = mem49;
+	return;
 }
 
 
@@ -949,46 +931,46 @@ pos48159:
 
 void AddInflection(unsigned char mem48, unsigned char phase1)
 {
-    //pos48372:
-    //  mem48 = 255;
+	//pos48372:
+	//	mem48 = 255;
 //pos48376:
 
     // store the location of the punctuation
-    mem49 = X;
-    A = X;
-    int Atemp = A;
+	mem49 = X;
+	A = X;
+	int Atemp = A;
 
-    // backup 30 frames
-    A = A - 30;
-    // if index is before buffer, point to start of buffer
-    if (Atemp <= 30) A=0;
-    X = A;
+	// backup 30 frames
+	A = A - 30;
+	// if index is before buffer, point to start of buffer
+	if (Atemp <= 30) A=0;
+	X = A;
 
-    // FIXME: Explain this fix better, it's not obvious
-    // ML : A =, fixes a problem with invalid pitch with '.'
-    while( (A=pitches[X]) == 127) X++;
+	// FIXME: Explain this fix better, it's not obvious
+	// ML : A =, fixes a problem with invalid pitch with '.'
+	while( (A=pitches[X]) == 127) X++;
 
 
 pos48398:
-    //48398: CLC
-    //48399: ADC 48
+	//48398: CLC
+	//48399: ADC 48
 
-    // add the inflection direction
-    A += mem48;
-    phase1 = A;
+	// add the inflection direction
+	A += mem48;
+	phase1 = A;
 
-    // set the inflection
-    pitches[X] = A;
+	// set the inflection
+	pitches[X] = A;
 pos48406:
 
     // increment the position
-    X++;
+	X++;
 
-    // exit if the punctuation has been reached
-    if (X == mem49) return; //goto pos47615;
-    if (pitches[X] == 255) goto pos48406;
-    A = phase1;
-    goto pos48398;
+	// exit if the punctuation has been reached
+	if (X == mem49) return; //goto pos47615;
+	if (pitches[X] == 255) goto pos48406;
+	A = phase1;
+	goto pos48398;
 }
 
 /*
@@ -998,108 +980,108 @@ pos48406:
 */
 void SetMouthThroat(unsigned char mouth, unsigned char throat)
 {
-    unsigned char initialFrequency;
-    unsigned char newFrequency = 0;
-    //unsigned char mouth; //mem38880
-    //unsigned char throat; //mem38881
+	unsigned char initialFrequency;
+	unsigned char newFrequency = 0;
+	//unsigned char mouth; //mem38880
+	//unsigned char throat; //mem38881
 
-    // mouth formants (F1) 5..29
-    static unsigned char mouthFormants5_29[30] = {    //  AF, save some stack
-        0, 0, 0, 0, 0, 10,
-        14, 19, 24, 27, 23, 21, 16, 20, 14, 18, 14, 18, 18,
-        16, 13, 15, 11, 18, 14, 11, 9, 6, 6, 6};
+	// mouth formants (F1) 5..29
+	unsigned char mouthFormants5_29[30] = {
+		0, 0, 0, 0, 0, 10,
+		14, 19, 24, 27, 23, 21, 16, 20, 14, 18, 14, 18, 18,
+		16, 13, 15, 11, 18, 14, 11, 9, 6, 6, 6};
 
-    // throat formants (F2) 5..29
-    static unsigned char throatFormants5_29[30] = {    //  AF, save some stack
-    255, 255,
-    255, 255, 255, 84, 73, 67, 63, 40, 44, 31, 37, 45, 73, 49,
-    36, 30, 51, 37, 29, 69, 24, 50, 30, 24, 83, 46, 54, 86};
+	// throat formants (F2) 5..29
+	unsigned char throatFormants5_29[30] = {
+	255, 255,
+	255, 255, 255, 84, 73, 67, 63, 40, 44, 31, 37, 45, 73, 49,
+	36, 30, 51, 37, 29, 69, 24, 50, 30, 24, 83, 46, 54, 86};
 
-    // there must be no zeros in this 2 tables
-    // formant 1 frequencies (mouth) 48..53
-    unsigned char mouthFormants48_53[6] = {19, 27, 21, 27, 18, 13};
+	// there must be no zeros in this 2 tables
+	// formant 1 frequencies (mouth) 48..53
+	unsigned char mouthFormants48_53[6] = {19, 27, 21, 27, 18, 13};
 
-    // formant 2 frequencies (throat) 48..53
-    unsigned char throatFormants48_53[6] = {72, 39, 31, 43, 30, 34};
+	// formant 2 frequencies (throat) 48..53
+	unsigned char throatFormants48_53[6] = {72, 39, 31, 43, 30, 34};
 
-    unsigned char pos = 5; //mem39216
+	unsigned char pos = 5; //mem39216
 //pos38942:
-    // recalculate formant frequencies 5..29 for the mouth (F1) and throat (F2)
-    while(pos != 30)
-    {
-        // recalculate mouth frequency
-        initialFrequency = mouthFormants5_29[pos];
-        if (initialFrequency != 0) newFrequency = trans(mouth, initialFrequency);
-        freq1data[pos] = newFrequency;
+	// recalculate formant frequencies 5..29 for the mouth (F1) and throat (F2)
+	while(pos != 30)
+	{
+		// recalculate mouth frequency
+		initialFrequency = mouthFormants5_29[pos];
+		if (initialFrequency != 0) newFrequency = trans(mouth, initialFrequency);
+		freq1data[pos] = newFrequency;
 
-        // recalculate throat frequency
-        initialFrequency = throatFormants5_29[pos];
-        if(initialFrequency != 0) newFrequency = trans(throat, initialFrequency);
-        freq2data[pos] = newFrequency;
-        pos++;
-    }
+		// recalculate throat frequency
+		initialFrequency = throatFormants5_29[pos];
+		if(initialFrequency != 0) newFrequency = trans(throat, initialFrequency);
+		freq2data[pos] = newFrequency;
+		pos++;
+	}
 
 //pos39059:
-    // recalculate formant frequencies 48..53
-    pos = 48;
-    Y = 0;
+	// recalculate formant frequencies 48..53
+	pos = 48;
+	Y = 0;
     while(pos != 54)
     {
-        // recalculate F1 (mouth formant)
-        initialFrequency = mouthFormants48_53[Y];
-        newFrequency = trans(mouth, initialFrequency);
-        freq1data[pos] = newFrequency;
+		// recalculate F1 (mouth formant)
+		initialFrequency = mouthFormants48_53[Y];
+		newFrequency = trans(mouth, initialFrequency);
+		freq1data[pos] = newFrequency;
 
-        // recalculate F2 (throat formant)
-        initialFrequency = throatFormants48_53[Y];
-        newFrequency = trans(throat, initialFrequency);
-        freq2data[pos] = newFrequency;
-        Y++;
-        pos++;
-    }
+		// recalculate F2 (throat formant)
+		initialFrequency = throatFormants48_53[Y];
+		newFrequency = trans(throat, initialFrequency);
+		freq2data[pos] = newFrequency;
+		Y++;
+		pos++;
+	}
 }
 
 
 //return = (mem39212*mem39213) >> 1
 unsigned char trans(unsigned char mem39212, unsigned char mem39213)
 {
-    //pos39008:
-    unsigned char carry;
-    int temp;
-    unsigned char mem39214, mem39215;
-    A = 0;
-    mem39215 = 0;
-    mem39214 = 0;
-    X = 8;
-    do
-    {
-        carry = mem39212 & 1;
-        mem39212 = mem39212 >> 1;
-        if (carry != 0)
-        {
-            /*
-                        39018: LSR 39212
-                        39021: BCC 39033
-                        */
-            carry = 0;
-            A = mem39215;
-            temp = (int)A + (int)mem39213;
-            A = A + mem39213;
-            if (temp > 255) carry = 1;
-            mem39215 = A;
-        }
-        temp = mem39215 & 1;
-        mem39215 = (mem39215 >> 1) | (carry?128:0);
-        carry = temp;
-        //39033: ROR 39215
-        X--;
-    } while (X != 0);
-    temp = mem39214 & 128;
-    mem39214 = (mem39214 << 1) | (carry?1:0);
-    carry = temp;
-    temp = mem39215 & 128;
-    mem39215 = (mem39215 << 1) | (carry?1:0);
-    carry = temp;
+	//pos39008:
+	unsigned char carry;
+	int temp;
+	unsigned char mem39214, mem39215;
+	A = 0;
+	mem39215 = 0;
+	mem39214 = 0;
+	X = 8;
+	do
+	{
+		carry = mem39212 & 1;
+		mem39212 = mem39212 >> 1;
+		if (carry != 0)
+		{
+			/*
+						39018: LSR 39212
+						39021: BCC 39033
+						*/
+			carry = 0;
+			A = mem39215;
+			temp = (int)A + (int)mem39213;
+			A = A + mem39213;
+			if (temp > 255) carry = 1;
+			mem39215 = A;
+		}
+		temp = mem39215 & 1;
+		mem39215 = (mem39215 >> 1) | (carry?128:0);
+		carry = temp;
+		//39033: ROR 39215
+		X--;
+	} while (X != 0);
+	temp = mem39214 & 128;
+	mem39214 = (mem39214 << 1) | (carry?1:0);
+	carry = temp;
+	temp = mem39215 & 128;
+	mem39215 = (mem39215 << 1) | (carry?1:0);
+	carry = temp;
 
-    return mem39215;
+	return mem39215;
 }

@@ -89,3 +89,15 @@ Profiling
 /home/osboxes/opt/m68k-amigaos_14Nov18/bin/m68k-amigaos-gprof sam | gprof2dot -n0 -e0 | dot -Tsvg -o output.svg
 mirage output.svg &
 
+4.Dec.2018
+----------
+Die alten Versionen von RenderTabs.h und render.c jetzt wieder hergestellt wie am 25.11. getestet. 
+Damit steigt die Geschwindigkeit deutlich an.
+
+Neue Funktionen : 46 Sekunden
+alte Funktionen : 30 Sekunden
+
+Fuer
+gprof test | gprof2dot  -n0 -e0  | dot -Tpng -o output2.png && mirage output2.png 
+(gemessen ohne Soundausgabe oder Wave-File-schreiben, compiliert mit -O2, -pg und auf WinUAE Cycleexact A500 getestet)
+
