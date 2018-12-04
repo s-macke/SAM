@@ -14,6 +14,7 @@
 
 #include "endian.h"                                                 // AF, Endian
 
+#include <time.h>  // AF, Test
 #ifdef __AMIGA__                                                    // AF, use ahi.device instead of audio.device
 	void set_ahi_devide(unsigned int unit);
 #endif
@@ -169,6 +170,7 @@ int main(int argc, char **argv)
     char* wavfilename = NULL;
     static char input[256];   // AF, save some stack
 
+    time_t StartZeit=time(NULL);
 
 #ifdef USESDL
 #ifndef __AMIGA__
@@ -306,7 +308,7 @@ int main(int argc, char **argv)
         PrintUsage();
         return 1;
     }
-
+printf("Sound berechnung nach %lld Sekunden\n",time(NULL)-StartZeit);
     if (wavfilename != NULL)
         WriteWav(wavfilename, GetBuffer(), GetBufferLength()/50);
     else
