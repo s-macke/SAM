@@ -67,11 +67,13 @@ void Output(int index, unsigned char A)
 {
 	static unsigned oldtimetableindex = 0;
 	int k;
+	int local_bufferpos;                                 // much faster if we use a local copy here  30s --> 13s for sam -wav hello.wav Hell, my name is sam. 1 2 3 4 5 6 7 8 9 0
 	bufferpos += timetable[oldtimetableindex][index];
+	local_bufferpos=bufferpos;
 	oldtimetableindex = index;
 	// write a little bit in advance
 	for(k=0; k<5; k++)
-		buffer[bufferpos/50 + k] = (A & 15)*16;
+		buffer[local_bufferpos/50 + k] = (A & 15)*16;    // much faster if we use a local copy here
 }
 
 

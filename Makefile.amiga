@@ -22,7 +22,7 @@ LFLAGS = -g -noixemul -Wl,-Map=sam.map,--trace # -ldebug #-lSDL  #`sdl-config --
 #CFLAGS += -ftest-coverage
 #CFLAGS += -fprofile-arcs      #-pg  # Profiler
 #LFLAGS += -lgcov
-CFLAGS += -pg -fno-omit-frame-pointer
+CFLAGS += -g -pg -fno-omit-frame-pointer
 LFLAGS += -pg
 
 

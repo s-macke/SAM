@@ -308,7 +308,12 @@ int main(int argc, char **argv)
         PrintUsage();
         return 1;
     }
+{
 printf("Sound berechnung nach %lld Sekunden\n",time(NULL)-StartZeit);
+extern int bufferpos;
+printf("%s(): BufferPos=%d\n",__FUNCTION__,bufferpos);
+printf("%s(): GetBufferLength=%d\n",__FUNCTION__,GetBufferLength());
+}
     if (wavfilename != NULL)
         WriteWav(wavfilename, GetBuffer(), GetBufferLength()/50);
     else

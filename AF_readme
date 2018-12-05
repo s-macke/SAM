@@ -101,3 +101,7 @@ Fuer
 gprof test | gprof2dot  -n0 -e0  | dot -Tpng -o output2.png && mirage output2.png 
 (gemessen ohne Soundausgabe oder Wave-File-schreiben, compiliert mit -O2, -pg und auf WinUAE Cycleexact A500 getestet)
 
+5.Dec.2018
+----------
+In render.c gibt es mehrere Stellen, an denen BufferPos/50 berechnet wird. Bufferpos ist ein int. Das Dauert. Wenn ich testweise statt dessen Bufferpos >> 6 rechne, also /64, dann ist das Ergebnis zwar falsch, aber statt 30 Sekunden werden nur noch 10 Sekunden benoetigt! 
+
