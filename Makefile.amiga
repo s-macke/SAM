@@ -37,6 +37,7 @@ vpath amiga_version.c    src/amiga/version/
 
 sam: $(OBJS)
 	$(CC) -o sam $(OBJS) $(LFLAGS)
+	sync
 
 %.o: src/%.c
 	$(CC) $(CFLAGS) -c $<

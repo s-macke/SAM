@@ -1,7 +1,7 @@
 #include<stdio.h>
 
-extern unsigned char signInputTable1[];
-extern unsigned char signInputTable2[];
+extern const unsigned char signInputTable1[];
+extern const unsigned char signInputTable2[];
 
 void PrintPhonemes(unsigned char *phonemeindex, unsigned char *phonemeLength, unsigned char *stress)
 {
