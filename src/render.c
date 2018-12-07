@@ -581,6 +581,9 @@ do
 	X = 0;
 	while(1) //while No. 1
 	{
+#ifdef __AMIGA__
+	__chkabort();  /* look for CTRL-C */
+#endif
 
         // get the current and following phoneme
 		Y = phonemeIndexOutput[X];
@@ -633,6 +636,10 @@ do
 		if ((X & 128) == 0)
 		do   //while No. 2
 		{
+#ifdef __AMIGA__
+	__chkabort();  /* look for CTRL-C */
+#endif
+
 			//pos47810:
 
           // mem47 is used to index the tables:
@@ -697,6 +704,10 @@ do
 			//pos47908:
 			while(1)     //while No. 3
 			{
+#ifdef __AMIGA__
+	__chkabort();  /* look for CTRL-C */
+#endif
+
 				A = Read(mem47, Y) + mem53; //carry alway cleared
 
 				mem48 = A;

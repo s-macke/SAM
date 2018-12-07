@@ -1208,13 +1208,13 @@ void __attribute__((no_instrument_function)) Abort_Pa_CloseStream_audev (void)
 {
 	if(GlobalPaStreamPtr)
 	{
-		//		KPrintF("%s() called with Stream=$%08lx\n",__FUNCTION__,GlobalPaStreamPtr);
+				KPrintF("%s() called with Stream=$%08lx\n",__FUNCTION__,GlobalPaStreamPtr);
 		Pa_CloseStream_audev(GlobalPaStreamPtr);
 		GlobalPaStreamPtr=NULL;
 	}
 	else
 	{
-		//		KPrintF("%s() called but nothing to do\n",__FUNCTION__);
+				KPrintF("%s() called but nothing to do\n",__FUNCTION__);
 	}
 }
 

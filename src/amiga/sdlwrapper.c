@@ -28,6 +28,7 @@ void SDL_CloseAudio(void)
 void SDL_Delay(Uint32 ms)
 {
 //	KPrintF("%s(%ld)\n",__FUNCTION__,ms);
+	__chkabort();
 	usleep(ms*1000);
 }
 /************************************************************** */
@@ -135,5 +136,6 @@ void SDL_PauseAudio(int pause_on)
 
 void SDL_Quit(void)  // useful with atexit()
 {
-//	KPrintF("%s()\n",__FUNCTION__);
+	KPrintF("%s()\n",__FUNCTION__);
+	Abort_Pa_CloseStream();
 }

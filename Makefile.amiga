@@ -1,8 +1,9 @@
 OBJS = reciter.o sam.o render.o main.o debug.o endian.o sdlwrapper.o portaudio_ahidev.o  portaudio_audev.o  portaudio.o  subtask_support.o amiga_version.o 
 
-COMPILER_INSTALL_DIR = /home/osboxes/opt/m68k-amigaos_30Nov18
+COMPILER_INSTALL_DIR = /home/osboxes/opt/m68k-amigaos_06Dec18
 COMPILER_DIR         = $(COMPILER_INSTALL_DIR)/bin
 CC                   = $(COMPILER_DIR)/m68k-amigaos-gcc #gcc
+STRIP                = $(COMPILER_DIR)/m68k-amigaos-strip
 
 TOOLCHAIN_VER=$(shell cat $(COMPILER_DIR)/toolchain_commit.txt)
 
@@ -15,15 +16,15 @@ CFLAGS += -Iamiga/ -Iamiga/portaudio/ -I. -I$(COMPILER_INSTALL_DIR)/include/SDL
 CFLAGS += $(CPUFLAGS)
 CFLAGS += -Wall -O2 -fomit-frame-pointer -noixemul -g #`sdl-config --cflags`
 
-LFLAGS = -g -noixemul -Wl,-Map=sam.map,--trace # -ldebug #-lSDL  #`sdl-config --libs`
+LFLAGS = -g -noixemul -Wl,-Map=sam.map,--trace -ldebug #-lSDL  #`sdl-config --libs`
 
 #coverage
 #CFLAGS += -fprofile-generate=VBox:$(shell pwd | cut -c2-)  # remove first "/" from pwd -> VBox:home/...
 #CFLAGS += -ftest-coverage
 #CFLAGS += -fprofile-arcs      #-pg  # Profiler
 #LFLAGS += -lgcov
-CFLAGS += -g -pg -fno-omit-frame-pointer
-LFLAGS += -pg
+#CFLAGS += -g -pg -fno-omit-frame-pointer
+#LFLAGS += -pg
 
 
 vpath sdlwrapper.c       src/amiga/
@@ -39,6 +40,9 @@ sam: $(OBJS)
 	$(CC) -o sam $(OBJS) $(LFLAGS)
 	sync
 
+strip: sam
+	$(STRIP) $<
+
 %.o: src/%.c
 	$(CC) $(CFLAGS) -c $<
 
@@ -46,7 +50,7 @@ package:
 	tar -cvzf sam.tar.gz README.md Makefile sing src/
 
 clean:
-	rm -f *.o
+	rm -f *.o *.wav sam sam.map
 
 archive:
 	rm -f sam_windows.zip

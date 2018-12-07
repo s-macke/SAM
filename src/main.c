@@ -170,6 +170,7 @@ int main(int argc, char **argv)
     char* wavfilename = NULL;
     static char input[256];   // AF, save some stack
 
+    printf("Los...\n");
     time_t StartZeit=time(NULL);
 
 #ifdef USESDL
