@@ -116,3 +116,7 @@ Aber auch mit patch stürzt das Programm immer ab.
 ----------
 Demos fuer Amiga angepasst. Neues Verzeichnis demos_amiga
 
+11.12.2018
+----------
+Makefile geaendert. Alles ausser render.c wird mit -Os compiliert. rendr.c mit -O2. Alles mir -msamll-code.
+SAM ist jetzt 59912 Bytes gross. 

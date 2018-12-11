@@ -1,4 +1,5 @@
-OBJS = reciter.o sam.o render.o main.o debug.o endian.o sdlwrapper.o portaudio_ahidev.o  portaudio_audev.o  portaudio.o  subtask_support.o amiga_version.o 
+# All the o-Files in Link-Order
+OBJS_ORDERED = reciter.o sam.o render.o  main.o debug.o endian.o sdlwrapper.o portaudio_ahidev.o  portaudio_audev.o  portaudio.o  subtask_support.o amiga_version.o
 
 COMPILER_INSTALL_DIR = /home/osboxes/opt/m68k-amigaos_06Dec18
 COMPILER_DIR         = $(COMPILER_INSTALL_DIR)/bin
@@ -14,10 +15,11 @@ CFLAGS += -DPLATFORM_IS_BIG_ENDIAN -DSTATIC_FUNC= -DUSESDL
 CFLAGS += -DTOOLCHAIN_VER="\"$(TOOLCHAIN_VER)\""
 CFLAGS += -Iamiga/ -Iamiga/portaudio/ -I. -I$(COMPILER_INSTALL_DIR)/include/SDL
 CFLAGS += $(CPUFLAGS)
-CFLAGS += -Wall -O2 -fomit-frame-pointer -noixemul -g #`sdl-config --cflags`
+CFLAGS += -Os  # all but render.c arecompiled for size. Only render.c will be compiled for speed
+CFLAGS += -Wall -fomit-frame-pointer -noixemul -g #`sdl-config --cflags`
 
 #CFLAGS += -fbaserel 
-#CFLAGS += -msmall-code
+CFLAGS += -msmall-code
 
 LFLAGS = -g -noixemul -Wl,-Map=sam.map,--trace -ldebug #-lSDL  #`sdl-config --libs`
 #LFLAGS += -fbaserel 
@@ -41,12 +43,15 @@ vpath subtask_support.c  src/amiga/portaudio/
 vpath amiga_version.c    src/amiga/version/
 
 
-sam: $(OBJS)
-	$(CC) -o sam $(OBJS) $(LFLAGS)
+sam: $(OBJS_ORDERED)
+	$(CC) -o sam $(OBJS_ORDERED) $(LFLAGS)
 	sync
 
 strip: sam
 	$(STRIP) $<
+
+render.o: src/render.c
+	$(CC) $(CFLAGS) -O2 -c $<    # this one is compiled with -O2 as it is the time critical part
 
 %.o: src/%.c
 	$(CC) $(CFLAGS) -c $<
