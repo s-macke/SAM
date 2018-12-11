@@ -1,20 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2017 by Alexander Fritsch                               *
  *   email: selco@t-online.de                                              *
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 3 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write see:                           *
- *               <http://www.gnu.org/licenses/>.                           *
  ***************************************************************************/
 
 /* Amiga audio.device part */
@@ -89,18 +75,21 @@ void setAudioFilterState(unsigned int val)
 	getAudioFilterState();
 }
 
+/*
 #include <proto/timer.h>
 static struct timeval startTime;
-
+*/
+/*
 void TimerAuDevStartup() {
 	GetSysTime(&startTime);
 }
+*/
 
+//extern unsigned int global_bufsize_factor;   // AF Test einstellbare Audio Buffergroesse n mal 512 Bytes
+//extern unsigned int global_benchmark_flag;   // AF Einschalten der Ausgabe der durchschnittlichen Zeit fuer die portaudio-Callbackfunktion
+//extern char *global_ProgramName;             // AF argv[0]
 
-extern unsigned int global_bufsize_factor;   // AF Test einstellbare Audio Buffergroesse n mal 512 Bytes
-extern unsigned int global_benchmark_flag;   // AF Einschalten der Ausgabe der durchschnittlichen Zeit fuer die portaudio-Callbackfunktion
-extern char *global_ProgramName;             // AF argv[0]
-
+/*
 ULONG TimerAuDevGetMilliseconds() {
 	struct timeval endTime;
 
@@ -113,7 +102,7 @@ ULONG TimerAuDevGetMilliseconds() {
 
 
 FILE *File=NULL;    // testweise samples in File schreiben
-
+*/
 
 //UBYTE chans[] ={1,2,4,8};  /* get any of the four channels RKRM Audio-example */
 UBYTE chans[] ={3,5,10,12};  /* get a pair of stereo channels, RKRM Devices */
@@ -182,7 +171,7 @@ STATIC_FUNC UWORD Convert8USamples(UBYTE *Source8U, BYTE *Dest8S, ULONG SampleCo
 struct Device* TimerBase;           // nur zum Benchmarking
 static struct IORequest timereq;    // nur zum Benchmarking
 
-VOID /*__asm __saveds*/ SamAudioTask(VOID)
+VOID /*__asm*/ __saveds SamAudioTask(VOID)
 {
 
 	//	KPrintF("%s() called\n",__FUNCTION__);
@@ -454,12 +443,13 @@ VOID /*__asm __saveds*/ SamAudioTask(VOID)
 												{
 												};
 
-
+/*
 												if(global_benchmark_flag)
 												{
-													TimerAuDevStartup();     /* set CallbackTime startvalue */
+													TimerAuDevStartup();     // set CallbackTime startvalue
 												}
-												//							printf("Callback() called %u\n",count);
+*/
+											//							printf("Callback() called %u\n",count);
 												if( 0!=PortAudioStreamData->callback(NULL,FastMemBuf,PortAudioStreamData->framesPerBuffer,0,NULL))  /* Last Buffer */
 												{
 													/* we queue this last buffer for playback and wait for the previous one and this one  to finish */
@@ -505,9 +495,10 @@ VOID /*__asm __saveds*/ SamAudioTask(VOID)
 												}
 												else /* There are more buffers to come */
 												{
+/*
 													if(global_benchmark_flag)
 													{
-														unsigned long Time=TimerAuDevGetMilliseconds();  /* measure time for callbacks for benchmarking */
+														unsigned long Time=TimerAuDevGetMilliseconds();  // measure time for callbacks for benchmarking
 														if(Time>CallBackMaxTime)
 														{
 															CallBackMaxTime=Time;
@@ -515,7 +506,8 @@ VOID /*__asm __saveds*/ SamAudioTask(VOID)
 														CallbackTime+=Time;
 														CallBackCount+=1;
 													}
-													//KPrintF("Convert16SSamples($%08lx,$%08lx)\n",(ULONG)PortAudioStreamData->FastMemBuf1, (ULONG)PortAudioStreamData->ChipMemBuf1);
+*/
+	   											//KPrintF("Convert16SSamples($%08lx,$%08lx)\n",(ULONG)PortAudioStreamData->FastMemBuf1, (ULONG)PortAudioStreamData->ChipMemBuf1);
 
 													//fwrite(PortAudioStreamData->FastMemBuf1,PortAudioStreamData->framesPerBuffer,1,File);
 													Convert8USamples(FastMemBuf, ChipMemBuf ,PortAudioStreamData->framesPerBuffer);
@@ -573,11 +565,12 @@ VOID /*__asm __saveds*/ SamAudioTask(VOID)
 										BeginIO((struct IORequest*)PortAudioStreamData->AIOptr1);
 										PortAudioStreamData->AIOptr2->ioa_Request.io_Command=ADCMD_FINISH;
 										BeginIO((struct IORequest*)PortAudioStreamData->AIOptr2);
-
-										if(global_benchmark_flag)   /* if Benchmarking was done */
+/*
+										if(global_benchmark_flag)   // if Benchmarking was done
 										{
 											printf("%s, Average BufferTime %lums, Max Buffertime %lums, (Buffer is %lums), Compiled for " __CPU__ " " __FPU__ "\n",global_ProgramName,CallbackTime/CallBackCount,CallBackMaxTime,(ULONG)(global_bufsize_factor*512*1000/PortAudioStreamData->sampleRate));
 										}
+*/
 										//KPrintF("Calling DeletePort st->st_Port\n");
 										DeletePort(st->st_Port);
 										st->st_Port=NULL;
@@ -812,7 +805,7 @@ PaError Pa_OpenDefaultStream_audev( PortAudioStream** stream,
 			StreamNr++;
 
 			StreamStruct->callback=callback;  // store ptr to callback function
-			StreamStruct->framesPerBuffer=framesPerBuffer*global_bufsize_factor;   // AF Test mit n mal 512 Byte Puffern
+			StreamStruct->framesPerBuffer=framesPerBuffer;//*global_bufsize_factor;   // AF Test mit n mal 512 Byte Puffern
 			StreamStruct->numInputChannels=numInputChannels;
 			StreamStruct->numOutputChannels=numOutputChannels;
 			StreamStruct->sampleFormat=sampleFormat;
@@ -1101,13 +1094,13 @@ PaError __attribute__((no_instrument_function)) Pa_CloseStream_audev( PortAudioS
 		return paBadStreamPtr;   // <0 is error
 
 	}
-
+/*
 	if(File)
 	{
 		fclose(File);
 		File=NULL;
 	}
-
+*/
 }
 
 

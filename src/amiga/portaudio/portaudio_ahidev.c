@@ -1,20 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2017 by Alexander Fritsch                               *
  *   email: selco@t-online.de                                              *
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 3 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write see:                           *
- *               <http://www.gnu.org/licenses/>.                           *
  ***************************************************************************/
 
 /* Amiga ahi.device part */
@@ -64,14 +50,14 @@
 #endif
 
 /*extern "C"*/ LONG KPrintF(STRPTR format, ...);
-
+/*
 extern unsigned int global_bufsize_factor;   // AF Test einstellbare Audio Buffergroesse n mal 512 Bytes
 extern unsigned int global_benchmark_flag;   // AF Einschalten der Ausgabe der durchschnittlichen Zeit fuer die portaudio-Callbackfunktion
 extern char *global_ProgramName;             // AF argv[0]
-
-
+*/
+/*
 FILE *File_ahi=NULL;    // testweise samples in File schreiben
-
+*/
 unsigned int g_AHI_Unit=0; // can be changed via command line (speak.cpp)
 
 //UBYTE chans[] ={1,2,4,8};  /* get any of the four channels RKRM Audio-example */
@@ -134,7 +120,7 @@ struct MsgPort    *AHImp     = NULL;
 extern struct Device* TimerBase;           // nur zum Benchmarking
 static struct IORequest timereq;    // nur zum Benchmarking
 
-VOID /*__asm __saveds*/ SamAudioTask_AHI(VOID)
+VOID /*__asm */__saveds SamAudioTask_AHI(VOID)
 {
 	//	KPrintF("%s() called\n",__FUNCTION__);
 
@@ -404,11 +390,12 @@ VOID /*__asm __saveds*/ SamAudioTask_AHI(VOID)
 							//KPrintF("stm=%lx\n",stm);
 							Error=paNoError;
 							//					return;// Error;
-
-							if(global_benchmark_flag)   /* if Benchmarking was done */
+/*
+							if(global_benchmark_flag)   // if Benchmarking was done
 							{
 								printf("%s, Average BufferTime %lums, Max Buffertime %lums, (Buffer is %lums), Compiled for " __CPU__ " " __FPU__ "\n",global_ProgramName,CallbackTime/CallBackCount,CallBackMaxTime,(ULONG)(global_bufsize_factor*512*1000/PortAudioStreamData->sampleRate));
 							}
+*/
 							//KPrintF("Calling DeletePort st->st_Port\n");
 							DeletePort(st->st_Port);
 							st->st_Port=NULL;
@@ -604,7 +591,7 @@ PaError Pa_OpenDefaultStream_ahidev( PortAudioStream** stream,
 		StreamNr++;
 
 		StreamStruct->callback=callback;  // store ptr to callback function
-		StreamStruct->framesPerBuffer=framesPerBuffer*global_bufsize_factor;   // AF Test mit n mal 512 Byte Puffern
+		StreamStruct->framesPerBuffer=framesPerBuffer;//*global_bufsize_factor;   // AF Test mit n mal 512 Byte Puffern
 		StreamStruct->numInputChannels=numInputChannels;
 		StreamStruct->numOutputChannels=numOutputChannels;
 		StreamStruct->sampleFormat=sampleFormat;
@@ -834,13 +821,13 @@ PaError __attribute__((no_instrument_function)) Pa_CloseStream_ahidev( PortAudio
 		return paBadStreamPtr;   // <0 is error
 
 	}
-
+/*
 	if(File_ahi)
 	{
 		fclose(File_ahi);
 		File_ahi=NULL;
 	}
-
+*/
 }
 
 

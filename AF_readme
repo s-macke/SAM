@@ -120,3 +120,8 @@ Demos fuer Amiga angepasst. Neues Verzeichnis demos_amiga
 ----------
 Makefile geaendert. Alles ausser render.c wird mit -Os compiliert. rendr.c mit -O2. Alles mir -msamll-code.
 SAM ist jetzt 59912 Bytes gross. 
+
+* Portaudio: debug-code entfern. (getMilliseconds(), File
+* Audiotask muss __saveds sein, wenn mit -fbaserel uebersetzt wird.
+* Programm ist nicht GPL, entsprechenden Header in meinen Audiofiles entfernt.
+

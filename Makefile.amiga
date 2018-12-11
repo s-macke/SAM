@@ -18,11 +18,11 @@ CFLAGS += $(CPUFLAGS)
 CFLAGS += -Os  # all but render.c arecompiled for size. Only render.c will be compiled for speed
 CFLAGS += -Wall -fomit-frame-pointer -noixemul -g #`sdl-config --cflags`
 
-#CFLAGS += -fbaserel 
+CFLAGS += -fbaserel 
 CFLAGS += -msmall-code
 
-LFLAGS = -g -noixemul -Wl,-Map=sam.map,--trace -ldebug #-lSDL  #`sdl-config --libs`
-#LFLAGS += -fbaserel 
+LFLAGS = -g -noixemul $(CPUFLAGS) -Wl,-Map=sam.map,--trace -ldebug #-lSDL  #`sdl-config --libs`
+LFLAGS += -fbaserel 
 
 
 #coverage
