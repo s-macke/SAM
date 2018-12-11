@@ -16,7 +16,12 @@ CFLAGS += -Iamiga/ -Iamiga/portaudio/ -I. -I$(COMPILER_INSTALL_DIR)/include/SDL
 CFLAGS += $(CPUFLAGS)
 CFLAGS += -Wall -O2 -fomit-frame-pointer -noixemul -g #`sdl-config --cflags`
 
+#CFLAGS += -fbaserel 
+#CFLAGS += -msmall-code
+
 LFLAGS = -g -noixemul -Wl,-Map=sam.map,--trace -ldebug #-lSDL  #`sdl-config --libs`
+#LFLAGS += -fbaserel 
+
 
 #coverage
 #CFLAGS += -fprofile-generate=VBox:$(shell pwd | cut -c2-)  # remove first "/" from pwd -> VBox:home/...
