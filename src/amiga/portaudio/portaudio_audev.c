@@ -75,34 +75,6 @@ void setAudioFilterState(unsigned int val)
 	getAudioFilterState();
 }
 
-/*
-#include <proto/timer.h>
-static struct timeval startTime;
-*/
-/*
-void TimerAuDevStartup() {
-	GetSysTime(&startTime);
-}
-*/
-
-//extern unsigned int global_bufsize_factor;   // AF Test einstellbare Audio Buffergroesse n mal 512 Bytes
-//extern unsigned int global_benchmark_flag;   // AF Einschalten der Ausgabe der durchschnittlichen Zeit fuer die portaudio-Callbackfunktion
-//extern char *global_ProgramName;             // AF argv[0]
-
-/*
-ULONG TimerAuDevGetMilliseconds() {
-	struct timeval endTime;
-
-	GetSysTime(&endTime);
-	SubTime(&endTime, &startTime);
-
-	return (endTime.tv_secs * 1000 + endTime.tv_micro / 1000);
-}
-
-
-
-FILE *File=NULL;    // testweise samples in File schreiben
-*/
 
 //UBYTE chans[] ={1,2,4,8};  /* get any of the four channels RKRM Audio-example */
 UBYTE chans[] ={3,5,10,12};  /* get a pair of stereo channels, RKRM Devices */
@@ -168,8 +140,6 @@ void SetAudioUnit(struct IOAudio *AIOptr,unsigned int Channel)
 STATIC_FUNC UWORD Convert8USamples(UBYTE *Source8U, BYTE *Dest8S, ULONG SampleCount);  /* reads 16Bit Signed Samples from Source and writes 8Bit Signed Samples to Dest.  DestLen Samples will be read */
 
 
-struct Device* TimerBase;           // nur zum Benchmarking
-static struct IORequest timereq;    // nur zum Benchmarking
 
 VOID /*__asm*/ __saveds SamAudioTask(VOID)
 {
@@ -200,10 +170,6 @@ VOID /*__asm*/ __saveds SamAudioTask(VOID)
 
 		PortAudioStreamStruct *PortAudioStreamData=(PortAudioStreamStruct*)(st->st_Data);
 		int Error=paInternalError;
-
-		if(0==OpenDevice((CONST_STRPTR)TIMERNAME, UNIT_MICROHZ, &timereq, 0))   // nur zum test
-		{
-			TimerBase = timereq.io_Device;	            // nur zum test
 
 			/* Make four Reply-Ports */
 			PortAudioStreamData->port1=CreatePort(0,0);
@@ -443,12 +409,6 @@ VOID /*__asm*/ __saveds SamAudioTask(VOID)
 												{
 												};
 
-/*
-												if(global_benchmark_flag)
-												{
-													TimerAuDevStartup();     // set CallbackTime startvalue
-												}
-*/
 											//							printf("Callback() called %u\n",count);
 												if( 0!=PortAudioStreamData->callback(NULL,FastMemBuf,PortAudioStreamData->framesPerBuffer,0,NULL))  /* Last Buffer */
 												{
@@ -495,18 +455,6 @@ VOID /*__asm*/ __saveds SamAudioTask(VOID)
 												}
 												else /* There are more buffers to come */
 												{
-/*
-													if(global_benchmark_flag)
-													{
-														unsigned long Time=TimerAuDevGetMilliseconds();  // measure time for callbacks for benchmarking
-														if(Time>CallBackMaxTime)
-														{
-															CallBackMaxTime=Time;
-														}
-														CallbackTime+=Time;
-														CallBackCount+=1;
-													}
-*/
 	   											//KPrintF("Convert16SSamples($%08lx,$%08lx)\n",(ULONG)PortAudioStreamData->FastMemBuf1, (ULONG)PortAudioStreamData->ChipMemBuf1);
 
 													//fwrite(PortAudioStreamData->FastMemBuf1,PortAudioStreamData->framesPerBuffer,1,File);
@@ -535,15 +483,6 @@ VOID /*__asm*/ __saveds SamAudioTask(VOID)
 
 												}
 
-												//TimerAuuDevstartup(); // Zeit Anfang
-												//KPrintF("PortAudioStreamData->port1->mp_SigBit = 0x%04lx\n",(ULONG)PortAudioStreamData->port1->mp_SigBit);
-												//KPrintF("wakebit                               = 0x%04lx\n",(ULONG)wakebit);
-												//KPrintF("st->st_Port->mp_SigBit                = 0x%04lx\n\n",(ULONG)st->st_Port->mp_SigBit);
-
-												//ULONG Zeit=getMilliseconds();
-												//KPrintF("Dauer: %lums\n",Zeit);
-
-												//	fwrite(PortAudioStreamData->ChipMemBuf1,PortAudioStreamData->framesPerBuffer,1,File);
 												/* Since we are very busy working, we do not Wait() for signals. */
 											}
 											else
@@ -636,13 +575,6 @@ VOID /*__asm*/ __saveds SamAudioTask(VOID)
 				printf("    Could not create port1\n");
 				Error=paInsufficientMemory;
 			}
-
-			CloseDevice(&timereq);
-		}
-		else
-		{
-			printf("    Could not open " TIMERNAME "\n");
-		}
 
 		// Error uebergeben?
 		//KPrintF("Calling ExitSubtask. stm=%lx\n",(ULONG)stm);

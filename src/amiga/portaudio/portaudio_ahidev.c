@@ -88,12 +88,12 @@ typedef struct
 	struct MsgPort *AHImp;
 	struct MsgPort *portStartStop;
 	ULONG device;                   // Audio device handle
-	BYTE *ChipMemBuf1;              // Amiga-Audiobuffer
-	BYTE *ChipMemBuf2;              // Amiga-Audiobuffer
+//	BYTE *ChipMemBuf1;              // Amiga-Audiobuffer
+//	BYTE *ChipMemBuf2;              // Amiga-Audiobuffer
 	SHORT *FastMemBuf1;             // Espeak-AudioBuffer used in Callback
 	SHORT *FastMemBuf2;             // Espeak-AudioBuffer used in Callback
-	unsigned int LeftChannel;       // left Audiochannel we got allocated in OpenDevice() or 0
-	unsigned int RightChannel;      // right Audiochannel we got allocated in OpenDevice() or 0
+//	unsigned int LeftChannel;       // left Audiochannel we got allocated in OpenDevice() or 0
+//	unsigned int RightChannel;      // right Audiochannel we got allocated in OpenDevice() or 0
 
 
 }PortAudioStreamStruct;
@@ -117,8 +117,6 @@ void ConvertU8Samples(UBYTE *data, unsigned int SampleCount) // AHI does not sup
 // Loeschen!
 struct MsgPort    *AHImp     = NULL;
 
-extern struct Device* TimerBase;           // nur zum Benchmarking
-static struct IORequest timereq;    // nur zum Benchmarking
 
 VOID /*__asm */__saveds SamAudioTask_AHI(VOID)
 {
@@ -151,10 +149,6 @@ VOID /*__asm */__saveds SamAudioTask_AHI(VOID)
 
 		PortAudioStreamStruct *PortAudioStreamData=(PortAudioStreamStruct*)(st->st_Data);
 		int Error=paInternalError;
-
-		if(0==OpenDevice((CONST_STRPTR)TIMERNAME, UNIT_MICROHZ, &timereq, 0))   // nur zum test
-		{
-			TimerBase = timereq.io_Device;	            // nur zum test
 
 			/* Make four Reply-Ports */
 			PortAudioStreamData->AHImp=CreatePort(0,0);
@@ -434,12 +428,6 @@ VOID /*__asm */__saveds SamAudioTask_AHI(VOID)
 				printf("    Could not create AHImp\n");
 				Error=paInsufficientMemory;
 			}
-			CloseDevice(&timereq);
-		}
-		else
-		{
-			printf("    Could not open " TIMERNAME"\n");
-		}
 
 		// Error uebergeben?
 		//KPrintF("Calling ExitSubtask. stm=%lx\n",(ULONG)stm);
@@ -605,16 +593,8 @@ PaError Pa_OpenDefaultStream_ahidev( PortAudioStream** stream,
 
 		GlobalPaStreamPtr_ahi=StreamStruct;   /* in case of CTRL-C atexit()-Functions are void so a global pointer is needed */
 
-		/* Allocate two Audio Buffers in ChipMem for Amiga-8Bit-Samples */
-		StreamStruct->ChipMemBuf1=(BYTE*)AllocMem(StreamStruct->framesPerBuffer,MEMF_CHIP);
-		if(StreamStruct->ChipMemBuf1)
-		{
 			//KPrintF("Zeile %ld\n",__LINE__);
 
-			StreamStruct->ChipMemBuf2=(BYTE*)AllocMem(StreamStruct->framesPerBuffer,MEMF_CHIP);
-			if(StreamStruct->ChipMemBuf2)
-			{
-				//KPrintF("Zeile %ld\n",__LINE__);
 
 				/* Allocate two Audio Buffers in FastMem for Espeak-16Bit-Samples */
 				StreamStruct->FastMemBuf1=(SHORT*)AllocMem(StreamStruct->framesPerBuffer*Pa_GetSampleSize(StreamStruct->sampleFormat),MEMF_PUBLIC);
@@ -691,22 +671,6 @@ PaError Pa_OpenDefaultStream_ahidev( PortAudioStream** stream,
 					printf("    Could not allocate FastMemBuf1 (%lu Bytes)\n",StreamStruct->framesPerBuffer*Pa_GetSampleSize(StreamStruct->sampleFormat));
 					Error=paInsufficientMemory;
 				}
-				FreeMem(StreamStruct->ChipMemBuf2,StreamStruct->framesPerBuffer);
-				StreamStruct->ChipMemBuf2=NULL;
-			}
-			else
-			{
-				printf("    Could not allocate ChipMemBuf2 (%lu Bytes)\n",StreamStruct->framesPerBuffer);
-				Error=paInsufficientMemory;
-			}
-			FreeMem(StreamStruct->ChipMemBuf1,StreamStruct->framesPerBuffer);
-			StreamStruct->ChipMemBuf1=NULL;
-		}
-		else
-		{
-			printf("    Could not allocate ChipMemBuf1 (%lu Bytes)\n",StreamStruct->framesPerBuffer);
-			Error=paInsufficientMemory;
-		}
 
 		free(StreamStruct);
 		StreamStruct=NULL;
@@ -792,19 +756,6 @@ PaError __attribute__((no_instrument_function)) Pa_CloseStream_ahidev( PortAudio
 		{
 			FreeMem(StreamStruct->FastMemBuf1,StreamStruct->framesPerBuffer*Pa_GetSampleSize(StreamStruct->sampleFormat));
 			StreamStruct->FastMemBuf1=NULL;
-		}
-
-
-		if(StreamStruct->ChipMemBuf2)
-		{
-			FreeMem(StreamStruct->ChipMemBuf2,StreamStruct->framesPerBuffer);
-			StreamStruct->ChipMemBuf2=NULL;
-		}
-
-		if(StreamStruct->ChipMemBuf1)
-		{
-			FreeMem(StreamStruct->ChipMemBuf1,StreamStruct->framesPerBuffer);
-			StreamStruct->ChipMemBuf1=NULL;
 		}
 
 		free(StreamStruct);
