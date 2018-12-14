@@ -169,7 +169,7 @@ VOID /*__asm*/ __saveds SamAudioTask(VOID)
 		BOOL worktodo = FALSE;
 
 		PortAudioStreamStruct *PortAudioStreamData=(PortAudioStreamStruct*)(st->st_Data);
-		int Error=paInternalError;
+		//int Error=paInternalError;
 
 			/* Make four Reply-Ports */
 			PortAudioStreamData->port1=CreatePort(0,0);
@@ -279,9 +279,9 @@ VOID /*__asm*/ __saveds SamAudioTask(VOID)
 										BYTE *ChipMemBuf=NULL;      /* Amiga-Audiobuffer for double buffer switching */
 										SHORT *FastMemBuf=NULL;     /* Espeak-AudioBuffer used in Callback for double buffer switching */
 
-										ULONG CallbackTime=0;       /* For Callback benchmarking */
-										ULONG CallBackCount=0;
-										ULONG CallBackMaxTime=0;
+										//ULONG CallbackTime=0;       /* For Callback benchmarking */
+										//ULONG CallBackCount=0;
+										//ULONG CallBackMaxTime=0;
 
 										stm->stm_Result = TRUE;
 										ReplyMsg((struct Message *)stm);
@@ -397,14 +397,14 @@ VOID /*__asm*/ __saveds SamAudioTask(VOID)
 												 */
 
 												struct Message *msg;
-												ULONG wakebit;
+												//ULONG wakebit;
 
-												wakebit=Wait(1 << port->mp_SigBit);
+												/*wakebit=*/Wait(1 << port->mp_SigBit);
 												while((msg=GetMsg(port))==0)
 												{
 												};
 												//KPrintF("GetMsg() returned 0x%08lx\n",msg);
-												wakebit=Wait(1 << port_2->mp_SigBit);
+												/*wakebit=*/Wait(1 << port_2->mp_SigBit);
 												while((msg=GetMsg(port_2))==0)  // the 2. channel has also finished. Clear that message queue, too
 												{
 												};
@@ -433,9 +433,9 @@ VOID /*__asm*/ __saveds SamAudioTask(VOID)
 														port=PortAudioStreamData->port1;
 														port_2=PortAudioStreamData->port1_2;
 													}
-													wakebit=Wait(1 << port->mp_SigBit);  /* wait until last buffer has finished */
+													/*wakebit=*/Wait(1 << port->mp_SigBit);  /* wait until last buffer has finished */
 													while((msg=GetMsg(port))==0) {};
-													wakebit=Wait(1 << port_2->mp_SigBit);  /* wait until last buffer has finished */
+													/*wakebit=*/Wait(1 << port_2->mp_SigBit);  /* wait until last buffer has finished */
 													while((msg=GetMsg(port_2))==0) {};
 
 													if(Aptr==(struct IOAudio*)PortAudioStreamData->AIOptr1)
@@ -448,9 +448,9 @@ VOID /*__asm*/ __saveds SamAudioTask(VOID)
 														port=PortAudioStreamData->port1;
 														port_2=PortAudioStreamData->port1_2;
 													}
-													wakebit=Wait(1 << port->mp_SigBit);  /* wait until last bufer has finished */
+													/*wakebit=*/Wait(1 << port->mp_SigBit);  /* wait until last bufer has finished */
 													while((msg=GetMsg(port))==0) {};
-													wakebit=Wait(1 << port_2->mp_SigBit);  /* wait until last bufer has finished */
+													/*wakebit=*/Wait(1 << port_2->mp_SigBit);  /* wait until last bufer has finished */
 													while((msg=GetMsg(port_2))==0) {};
 												}
 												else /* There are more buffers to come */
@@ -496,8 +496,8 @@ VOID /*__asm*/ __saveds SamAudioTask(VOID)
 
 										//KPrintF("stm=%lx\n",stm);
 
-										Error=paNoError;
-										//					return;// Error;
+										//Error=paNoError;
+										//	return;// Error;
 
 										/* Wait for sound to finish ALEXANDER */
 										PortAudioStreamData->AIOptr1->ioa_Request.io_Command=ADCMD_FINISH;
@@ -517,7 +517,7 @@ VOID /*__asm*/ __saveds SamAudioTask(VOID)
 									else  // st->st_Port = CreateMsgPort() failed
 									{
 										printf("    Subtask CreateMsgPort() failed\n");
-										Error=paInsufficientMemory;
+										//Error=paInsufficientMemory;
 									}
 									//KPrintF("Calling CloseDevice\n");
 									CloseDevice((struct IORequest*)PortAudioStreamData->AIOptr1);
@@ -526,7 +526,7 @@ VOID /*__asm*/ __saveds SamAudioTask(VOID)
 								else
 								{
 									printf("    Could not open " AUDIONAME "\n");
-									Error=paDeviceUnavailable;
+									//Error=paDeviceUnavailable;
 								}
 								/* --------------------- */
 								//KPrintF("Calling DeletePortStartStop\n");
@@ -536,7 +536,7 @@ VOID /*__asm*/ __saveds SamAudioTask(VOID)
 							else
 							{
 								printf("    Could not create portStartStop\n");
-								Error=paInsufficientMemory;
+								//Error=paInsufficientMemory;
 							}
 							//KPrintF("Calling DeletePort2_2\n");
 							DeletePort(PortAudioStreamData->port2_2);
@@ -546,7 +546,7 @@ VOID /*__asm*/ __saveds SamAudioTask(VOID)
 						else
 						{
 							printf("    Could not create port2_2\n");
-							Error=paInsufficientMemory;
+							//Error=paInsufficientMemory;
 						}
 						//KPrintF("Calling DeletePort2\n");
 						DeletePort(PortAudioStreamData->port2);
@@ -555,7 +555,7 @@ VOID /*__asm*/ __saveds SamAudioTask(VOID)
 					else
 					{
 						printf("    Could not create port2\n");
-						Error=paInsufficientMemory;
+						//Error=paInsufficientMemory;
 					}
 					//KPrintF("Calling DeletePort1_2\n");
 					DeletePort(PortAudioStreamData->port1_2);
@@ -564,7 +564,7 @@ VOID /*__asm*/ __saveds SamAudioTask(VOID)
 				else
 				{
 					printf("    Could not create port1_2\n");
-					Error=paInsufficientMemory;
+					//Error=paInsufficientMemory;
 				}
 				//KPrintF("Calling DeletePort1\n");
 				DeletePort(PortAudioStreamData->port1);
@@ -573,7 +573,7 @@ VOID /*__asm*/ __saveds SamAudioTask(VOID)
 			else
 			{
 				printf("    Could not create port1\n");
-				Error=paInsufficientMemory;
+				//Error=paInsufficientMemory;
 			}
 
 		// Error uebergeben?
@@ -1124,22 +1124,23 @@ STATIC_FUNC UWORD Convert8USamples(UBYTE *Source8U, BYTE *Dest8S, ULONG SampleCo
 	{
 		*Dest8S++=(*Source8U++)-128;
 	}
+	return (UWORD)SampleCount;
 }
 #endif
 
 
 /* used for atexit(). Therefore void parameter -> global Pointer needed */
-void __attribute__((no_instrument_function)) Abort_Pa_CloseStream_audev (void)
+void Abort_Pa_CloseStream_audev (void)
 {
 	if(GlobalPaStreamPtr)
 	{
-				KPrintF("%s() called with Stream=$%08lx\n",__FUNCTION__,GlobalPaStreamPtr);
+		// KPrintF("%s() called with Stream=$%08lx\n",__FUNCTION__,GlobalPaStreamPtr);
 		Pa_CloseStream_audev(GlobalPaStreamPtr);
 		GlobalPaStreamPtr=NULL;
 	}
 	else
 	{
-				KPrintF("%s() called but nothing to do\n",__FUNCTION__);
+		// KPrintF("%s() called but nothing to do\n",__FUNCTION__);
 	}
 }
 

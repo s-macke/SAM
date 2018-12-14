@@ -125,3 +125,6 @@ SAM ist jetzt 59912 Bytes gross.
 * Audiotask muss __saveds sein, wenn mit -fbaserel uebersetzt wird.
 * Programm ist nicht GPL, entsprechenden Header in meinen Audiofiles entfernt.
 
+14.12.2018
+----------
+Render() und RenderSample() gibt es jetzt als 68000 und 68020 Version, die automatisch ausgewaehlt werden. guess_number.rexx gemacht. Portaudio warnings behoben.

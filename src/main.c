@@ -17,6 +17,7 @@
 #include <time.h>  // AF, Test
 #ifdef __AMIGA__                                                    // AF, use ahi.device instead of audio.device
 	void set_ahi_devide(unsigned int unit);
+    void SetCpuSpecificFunctions(void);                             // AF, we compile some functions for 68000 and for 68020
 #endif
 
 
@@ -178,6 +179,10 @@ int main(int argc, char **argv)
         freopen("CON", "w", stdout);
         freopen("CON", "w", stderr);
 #endif
+#endif
+
+#ifdef __AMIGA__
+        SetCpuSpecificFunctions();
 #endif
 
     for(i=0; i<256; i++) input[i] = 0;

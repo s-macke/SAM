@@ -148,7 +148,7 @@ VOID /*__asm */__saveds SamAudioTask_AHI(VOID)
 		BOOL worktodo = FALSE;
 
 		PortAudioStreamStruct *PortAudioStreamData=(PortAudioStreamStruct*)(st->st_Data);
-		int Error=paInternalError;
+		//int Error=paInternalError;
 
 			/* Make four Reply-Ports */
 			PortAudioStreamData->AHImp=CreatePort(0,0);
@@ -215,9 +215,9 @@ VOID /*__asm */__saveds SamAudioTask_AHI(VOID)
 
 							/* variables are declared here because they should be initialized to Zero */
 							/* in the for loop they would become initialized at the beginning of every turn - which is wrong */
-							ULONG CallbackTime=0;       /* For Callback benchmarking */
-							ULONG CallBackCount=0;
-							ULONG CallBackMaxTime=0;
+							//ULONG CallbackTime=0;       /* For Callback benchmarking */
+							//ULONG CallBackCount=0;
+							//ULONG CallBackMaxTime=0;
 
 							ULONG BufferLength=PortAudioStreamData->framesPerBuffer * Pa_GetSampleSize_ahidev(PortAudioStreamData->sampleFormat);
 
@@ -297,7 +297,7 @@ VOID /*__asm */__saveds SamAudioTask_AHI(VOID)
 								{
 									//#ifdef ALEXANDER
 									int LastBuf;
-									ULONG signals;
+									//ULONG signals;
 
 									/* if there is work to do,...
 									 */
@@ -337,15 +337,8 @@ VOID /*__asm */__saveds SamAudioTask_AHI(VOID)
 									if(link) {
 
 										// Wait until the last buffer is finished (== the new buffer is started)
-										signals=Wait(SIGBREAKF_CTRL_C | (1L << PortAudioStreamData->AHImp->mp_SigBit));
-#ifdef ALEXANDER
-										// Check for Ctrl-C and abort if pressed
-										if(signals & SIGBREAKF_CTRL_C) {
-											SetIoErr(ERROR_BREAK);
-											break;
-										}
-#endif
-// Remove the reply and abort on error
+										/*signals=*/Wait(SIGBREAKF_CTRL_C | (1L << PortAudioStreamData->AHImp->mp_SigBit));
+										// Remove the reply and abort on error
 										if(WaitIO((struct IORequest *) link)) {
 											SetIoErr(ERROR_WRITE_PROTECTED);
 											//									        break;
@@ -382,7 +375,7 @@ VOID /*__asm */__saveds SamAudioTask_AHI(VOID)
 							}
 
 							//KPrintF("stm=%lx\n",stm);
-							Error=paNoError;
+							//Error=paNoError;
 							//					return;// Error;
 /*
 							if(global_benchmark_flag)   // if Benchmarking was done
@@ -397,7 +390,7 @@ VOID /*__asm */__saveds SamAudioTask_AHI(VOID)
 						else  // st->st_Port = CreateMsgPort() failed
 						{
 							printf("    Subtask CreateMsgPort() failed\n");
-							Error=paInsufficientMemory;
+							//Error=paInsufficientMemory;
 						}
 						//KPrintF("Calling CloseDevice\n");
 						CloseDevice((struct IORequest*)PortAudioStreamData->AHIio);
@@ -406,7 +399,7 @@ VOID /*__asm */__saveds SamAudioTask_AHI(VOID)
 					else
 					{
 						printf("    Could not open " AHINAME " version 4\n");
-						Error=paDeviceUnavailable;
+						//Error=paDeviceUnavailable;
 					}
 
 					//KPrintF("Calling DeletePortStartStop\n");
@@ -416,7 +409,7 @@ VOID /*__asm */__saveds SamAudioTask_AHI(VOID)
 				else
 				{
 					printf("    Could not create portStartStop\n");
-					Error=paInsufficientMemory;
+					//Error=paInsufficientMemory;
 				}
 				//KPrintF("Calling DeleteAHImp\n");
 				DeletePort(PortAudioStreamData->AHImp);
@@ -426,7 +419,7 @@ VOID /*__asm */__saveds SamAudioTask_AHI(VOID)
 			else
 			{
 				printf("    Could not create AHImp\n");
-				Error=paInsufficientMemory;
+				//Error=paInsufficientMemory;
 			}
 
 		// Error uebergeben?

@@ -1,0 +1,36 @@
+Short:        amiga-port of famous C64 speech synthesizer SAM
+Author:       sebastian@macke.de (Sebastian Macke)
+Uploader:     selco@t-online.de (Alexander Fritsch)
+Type:         util/sys
+Version:      1.1
+Architecture: m68k-amigaos
+Distribution: Aminet
+
+
+This is the Amiga port of Sebastian Macke's C-adaption of the speech software 
+SAM (Software Automatic Mouth) for the Commodore C64.
+It creates a nice sounding voice direct from text. That sound can be played 
+via audio.device (default) or via ahi.device (-ahi unit). The sound can
+also be saved to a wave-file. Input is possible in either English text mode
+for automatic translation or in phoneme mode (-phonetic)
+
+Just enter sam <enter> to get a list of options.
+
+sam Hello, my name is sam.
+
+For a few more examples cd into demos_amiga drawer and enjoy the show.
+
+cd demos_amiga
+execute demo1
+execute demo2
+; and so on...
+; also try the tiny game
+rx guess_number.rexx 
+
+
+Requirements:
+Any Amiga will do. An 68000 is sufficient but an 68020 or better is utilized 
+if present. On a plain  7MHz 68000 it takes a few seconds to calculate until 
+sound occurs. Standard Amiga stack (4096) is sufficient. 
+Either audio.device or ahi.device are used for playback.
+

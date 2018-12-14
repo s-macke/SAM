@@ -131,6 +131,29 @@ void Write(unsigned char p, unsigned char Y, unsigned char value)
 
 
 
+#ifdef __AMIGA__
+
+	#include <exec/execbase.h>
+	void Render_000(void);
+	void Render_020(void);
+
+	void (*Render_Function)(void);
+
+	void SetCpuSpecificFunctions(void)
+	{
+		extern struct ExecBase *SysBase;
+		if(SysBase->AttnFlags&AFF_68020)
+		{
+			Render_Function=Render_020;
+		}
+		else
+		{
+			Render_Function=Render_000;
+		}
+	}
+#endif
+
+
 // -------------------------------------------------------------------------
 //Code48227
 // Render a sampled sound from the sampleTable.
@@ -360,6 +383,9 @@ pos48315:
 //void Code47574()
 void Render()
 {
+#ifdef __AMIGA__
+	Render_Function();
+#else
 	unsigned char phase1 = 0;  //mem43
 	unsigned char phase2;
 	unsigned char phase3;
@@ -941,6 +967,7 @@ pos48159:
 	mem66 = Y;
 	Y = mem49;
 	return;
+#endif
 }
 
 

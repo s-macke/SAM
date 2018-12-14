@@ -12,6 +12,9 @@ unsigned int global_bufsize_factor=1;
 
 #include "portaudio18.h"
 
+LONG KPrintF(STRPTR format, ...);
+void Abort_Pa_CloseStream_audev (void);
+
 static PortAudioStream *pa_stream=NULL;
 
 
