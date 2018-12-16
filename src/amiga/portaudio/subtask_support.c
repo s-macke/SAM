@@ -11,7 +11,26 @@
 #include <dos/dostags.h>
 #include <sys/types.h>
 
+/* BEGIN -resident support for new task, suggested by bebbo 16.Dec1028 */
+// put the a4 reg into my task
 
+// get a4 helper
+ULONG __get_a4() {
+  asm("move.l a4,d0");
+}
+
+// load a4 from my task
+void __restore_a4() {
+  // do not use ExecBase via a4 yet
+  struct Library * SysBase = *(struct Library **)4;
+  struct Task * task = FindTask(0);
+  asm("\tmove.l %0,a4 ;\n"
+		:                             /* output */
+		: "r" (task->tc_UserData)     /* input  */
+  	 );
+}
+
+/* END -resident support for new task, suggested by bebbo 16.Dec1028 */
 
 
 LONG SendSubTaskMsg(struct SubTask *st,WORD command,APTR params)
@@ -29,6 +48,7 @@ LONG SendSubTaskMsg(struct SubTask *st,WORD command,APTR params)
     return(st->st_Message.stm_Result);
 }
 
+
 struct SubTask *SpawnSubTask(char *name,VOID (*func)(VOID),APTR data)
 {
     struct SubTask *st;
@@ -40,10 +60,12 @@ struct SubTask *SpawnSubTask(char *name,VOID (*func)(VOID),APTR data)
         if (st->st_Reply)
         {
             st->st_Data = data;
-
-            st->st_Task = (struct Task *)CreateNewProcTags(NP_Entry,(unsigned long)func,NP_Name,(unsigned long)name,TAG_DONE);
+            st->st_Task = (struct Task *)CreateNewProcTags(NP_Entry,(unsigned long)func,NP_Name,(unsigned long)name,
+            											   NP_Input, __get_a4(),   // abuse NP_Input to pass a4 -> will be put into pr_CIS
+														   TAG_DONE);
             if (st->st_Task)
             {
+
                 if (SendSubTaskMsg(st,STC_STARTUP,st))
                 {
                     return(st);
@@ -55,6 +77,7 @@ struct SubTask *SpawnSubTask(char *name,VOID (*func)(VOID),APTR data)
     }
     return(NULL);
 }
+
 
 VOID KillSubTask(struct SubTask *st)
 {

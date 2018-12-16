@@ -1,7 +1,7 @@
 # All the o-Files in Link-Order
 OBJS_ORDERED = reciter.o sam.o debug.o endian.o sdlwrapper.o portaudio_audev.o render.o render000.o render020.o main.o portaudio_ahidev.o  portaudio.o  subtask_support.o amiga_version.o
 
-COMPILER_INSTALL_DIR = /home/osboxes/opt/m68k-amigaos_06Dec18
+COMPILER_INSTALL_DIR = /home/osboxes/opt/m68k-amigaos_14Dec18
 COMPILER_DIR         = $(COMPILER_INSTALL_DIR)/bin
 CC                   = $(COMPILER_DIR)/m68k-amigaos-gcc #gcc
 STRIP                = $(COMPILER_DIR)/m68k-amigaos-strip
@@ -18,11 +18,11 @@ CFLAGS += $(CPUFLAGS)
 CFLAGS += -Os  # all but render.c arecompiled for size. Only render.c will be compiled for speed
 CFLAGS += -Wall -fomit-frame-pointer -noixemul -g #`sdl-config --cflags`
 
-#CFLAGS += -fbaserel 
+CFLAGS += -resident
 CFLAGS += -msmall-code
 
 LFLAGS = -g -noixemul $(CPUFLAGS) -Wl,-Map=sam.map,--trace -ldebug #-lSDL  #`sdl-config --libs`
-#LFLAGS += -fbaserel 
+LFLAGS += -resident
 
 
 #coverage

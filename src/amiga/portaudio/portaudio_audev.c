@@ -141,12 +141,21 @@ STATIC_FUNC UWORD Convert8USamples(UBYTE *Source8U, BYTE *Dest8S, ULONG SampleCo
 
 
 
-VOID /*__asm*/ __saveds SamAudioTask(VOID)
+VOID /*__asm*/ /*__saveds*/ SamAudioTask(VOID)
 {
 
 	//	KPrintF("%s() called\n",__FUNCTION__);
 
+	{
+		// do not use ExecBase via a4 yet
+		  struct Library * SysBase = *(struct Library **)4;
+		  struct Task * task = FindTask(0);
+		  task->tc_UserData = (APTR)((struct Process *)task)->pr_CIS;  // the main task put a4 via NP_Input into pr_CIS
+		  __restore_a4();                                              // get A4 from there. Now we can access static and global data via A4 !
 
+		  // now fix CIS to zero or allocate something or ...
+		  ((struct Process *)task)->pr_CIS = 0;
+	}
 
 	struct Task *me = FindTask(NULL);
 	struct SubTask *st;

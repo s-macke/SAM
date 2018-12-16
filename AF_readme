@@ -128,3 +128,7 @@ SAM ist jetzt 59912 Bytes gross.
 14.12.2018
 ----------
 Render() und RenderSample() gibt es jetzt als 68000 und 68020 Version, die automatisch ausgewaehlt werden. guess_number.rexx gemacht. Portaudio warnings behoben.
+
+16.12.2018
+----------
+Resident geht jetzt. Vorschlag von Bebbo zum Weitergeben von A4 ueber np_Input bzw pr_CIS gemacht
