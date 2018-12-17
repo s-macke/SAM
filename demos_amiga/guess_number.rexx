@@ -79,7 +79,7 @@ ADDRESS COMMAND; "/SAM" "You guessed the number correctly!"; ADDRESS REXX
 ECHO
 ECHO
 ECHO "The number was" number
-ADDRESS COMMAND; "/SAM" "The number was" Number; ADDRESS REXX
+ADDRESS COMMAND; "/SAM" "The number was" getNumberString(Number); ADDRESS REXX
 ECHO "Thanks for playing " Name ",thanks for playing!"
 ADDRESS COMMAND; "/SAM" "Thanks for playing?" Name "Thanks for playing."; ADDRESS REXX
 DELAY(100)
@@ -89,4 +89,48 @@ EXIT
 cls: PROCEDURE
 ECHO "1B"x"[0;0H" "1B"x"[J"
 RETURN 0
+
+
+getNumberString: PROCEDURE
+  ARG number
+
+  SELECT
+    WHEN number < 10 THEN return number
+
+    WHEN number = 10 THEN return "ten"
+    WHEN number = 11 THEN return "eleven"
+    WHEN number = 12 THEN return "twelve"
+    WHEN number = 13 THEN return "thirteen"
+    WHEN number = 14 THEN return "fourteen"
+    WHEN number = 15 THEN return "fifteen"
+    WHEN number = 16 THEN return "sixteen"
+    WHEN number = 17 THEN return "seventeen"
+    WHEN number = 18 THEN return "eighteen"
+    WHEN number = 19 THEN return "9teen"
+
+    WHEN number = 20 THEN return "twenty"
+    WHEN number < 30 THEN return "twenty" || number//20
+
+    WHEN number = 30 THEN return "thirty"
+    WHEN number < 40 THEN return "thirty" || number//30
+
+    WHEN number = 40 THEN return "fourty"
+    WHEN number < 50 THEN return "fourty" || number//40
+
+    WHEN number = 50 THEN return "fifty"
+    WHEN number < 60 THEN return "fifty"  || number//50
+
+    WHEN number = 60 THEN return "sixty"
+    WHEN number < 70 THEN return "sixty"  || number//60
+
+    WHEN number = 70 THEN return "seventy"
+    WHEN number < 80 THEN return "seventy"  || number//70
+
+    WHEN number = 80 THEN return "eighty"
+    WHEN number < 90 THEN return "eighty"  || number//80
+
+    WHEN number = 90 THEN return "9tee"
+    WHEN number <100 THEN return "9tee"  || number//90
+  END
+
 

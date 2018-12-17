@@ -177,8 +177,8 @@ int main(int argc, char **argv)
 
 #ifdef USESDL
 #ifndef __AMIGA__
-        freopen("CON", "w", stdout);
-        freopen("CON", "w", stderr);
+//        freopen("CON", "w", stdout);
+//        freopen("CON", "w", stderr);
 #endif
 #endif
 
