@@ -13,6 +13,14 @@
 	#define CPU(x) CPU_TYPE(x)
 #endif
 
+#ifdef DEBUG
+    #define D(x) x
+#else
+   // for debug-prints. Can be activated with -DDEBUG in Makefile
+    #define D(x)
+#endif
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "debug.h"
@@ -144,10 +152,10 @@ void Output(int index, unsigned char A);
 // Code48227()
 void CPU(RenderSample)(unsigned char *mem66)  // 68000 or 68020 Version of this function
 {
-	{
+	D({
 		static int Firsttime=1;
 		if(Firsttime) {Firsttime=0; printf("%s()\n",__FUNCTION__); }
-	}
+	})
 
 	int tempA;
 	// current phoneme's index
@@ -318,10 +326,10 @@ pos48315:
 //void Code47574()
 void CPU(Render)(void) // 68000 or 68020 Version of this function
 {
-	{
+	D({
 		static int Firsttime=1;
 		if(Firsttime) {Firsttime=0; printf("%s()\n",__FUNCTION__); }
-	}
+	})
 
 	unsigned char phase1 = 0;  //mem43
 	unsigned char phase2;

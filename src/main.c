@@ -18,6 +18,13 @@
 #ifdef __AMIGA__                                                    // AF, use ahi.device instead of audio.device
 	void set_ahi_devide(unsigned int unit);
     void SetCpuSpecificFunctions(void);                             // AF, we compile some functions for 68000 and for 68020
+ #endif
+
+#ifdef DEBUG
+    #define D(x) x
+#else
+   // for debug-prints. Can be activated with -DDEBUG in Makefile
+    #define D(x)
 #endif
 
 
@@ -172,7 +179,7 @@ int main(int argc, char **argv)
     char* wavfilename = NULL;
     static char input[256];   // AF, save some stack
 
-    printf("Los...\n");
+    D(printf("Los...\n"));
     time_t StartZeit=time(NULL);
 
 #ifdef USESDL
@@ -316,10 +323,10 @@ int main(int argc, char **argv)
         return 1;
     }
 {
-printf("Sound berechnung nach %lld Sekunden\n",time(NULL)-StartZeit);
+D(printf("Sound berechnung nach %lld Sekunden\n",time(NULL)-StartZeit));
 extern int bufferpos;
-printf("%s(): BufferPos=%d\n",__FUNCTION__,bufferpos);
-printf("%s(): GetBufferLength=%d\n",__FUNCTION__,GetBufferLength());
+D(printf("%s(): BufferPos=%d\n",__FUNCTION__,bufferpos));
+D(printf("%s(): GetBufferLength=%d\n",__FUNCTION__,GetBufferLength()));
 }
     if (wavfilename != NULL)
         WriteWav(wavfilename, GetBuffer(), GetBufferLength()/50);
