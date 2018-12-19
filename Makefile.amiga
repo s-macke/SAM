@@ -1,7 +1,7 @@
 # All the o-Files in Link-Order
 OBJS_ORDERED = reciter.o sam.o debug.o endian.o sdlwrapper.o portaudio_audev.o render.o render000.o render020.o main.o portaudio_ahidev.o  portaudio.o  subtask_support.o amiga_version.o
 
-COMPILER_INSTALL_DIR = /home/osboxes/opt/m68k-amigaos_14Dec18
+COMPILER_INSTALL_DIR = /home/developer/opt/m68k-amigaos_18Dec18
 COMPILER_DIR         = $(COMPILER_INSTALL_DIR)/bin
 CC                   = $(COMPILER_DIR)/m68k-amigaos-gcc #gcc
 STRIP                = $(COMPILER_DIR)/m68k-amigaos-strip
@@ -46,16 +46,19 @@ vpath amiga_version.c    src/amiga/version/
 
 sam: $(OBJS_ORDERED)
 	$(CC) -o sam $(OBJS_ORDERED) $(LFLAGS)
+	ls -la sam
 	sync
 
 strip: sam
 	$(STRIP) $<
+	ls -la sam
+	sync
 
 render000.o: src/render2.c
 	$(CC) $(CFLAGS)         -Os -c $< -o render000.o     # this one is compiled with -O2 as it is the time critical part
 
 render020.o: src/render2.c
-	$(CC) $(CFLAGS) -m68020 -Os -c $< -o render020.o     # this one is compiled with -O2 as it is the time critical part
+	$(CC) $(CFLAGS) -m68020 -O2 -c $< -o render020.o     # this one is compiled with -O2 as it is the time critical part
 %.o: src/%.c
 	$(CC) $(CFLAGS) -c $<
 

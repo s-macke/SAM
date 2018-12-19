@@ -127,7 +127,7 @@ PaError Pa_GetSampleSize( PaSampleFormat format )
 	return (*Pa_GetSampleSize_FctPtr)( format );
 }
 
-void __attribute__((no_instrument_function)) Abort_Pa_CloseStream (void)
+void Abort_Pa_CloseStream (void)
 {
 	(*Abort_Pa_CloseStream_FctPtr)();
 }

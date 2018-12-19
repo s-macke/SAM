@@ -911,7 +911,7 @@ PaError Pa_OpenDefaultStream_audev( PortAudioStream** stream,
 	Pa_CloseStream() closes an audio stream, flushing any pending buffers.
  */
 
-PaError __attribute__((no_instrument_function)) Pa_CloseStream_audev( PortAudioStream *stream )
+PaError Pa_CloseStream_audev( PortAudioStream *stream )
 {
 	//KPrintF("%s() called\n",__FUNCTION__);
 

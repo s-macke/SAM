@@ -697,7 +697,7 @@ PaError Pa_OpenDefaultStream_ahidev( PortAudioStream** stream,
 	Pa_CloseStream() closes an audio stream, flushing any pending buffers.
  */
 
-PaError __attribute__((no_instrument_function)) Pa_CloseStream_ahidev( PortAudioStream *stream )
+PaError Pa_CloseStream_ahidev( PortAudioStream *stream )
 {
 	//KPrintF("%s() called\n",__FUNCTION__);
 	//KPrintF("Zeile %ld\n",__LINE__);
@@ -888,7 +888,7 @@ STATIC_FUNC ULONG getAHISampleType(PaSampleFormat format )
 
 
 /* used for atexit(). Therefore void parameter -> global Pointer needed */
-void __attribute__((no_instrument_function)) Abort_Pa_CloseStream_ahidev (void)
+void Abort_Pa_CloseStream_ahidev (void)
 {
 	//KPrintF("Zeile %ld\n",__LINE__);
 	if(GlobalPaStreamPtr_ahi)
