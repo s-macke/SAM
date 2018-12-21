@@ -91,7 +91,34 @@ extern char *buffer;
 
 extern unsigned char sampledConsonantFlag[256]; // tab44800
 
-void Output(int index, unsigned char A);
+//timetable for more accurate c64 simulation
+static int timetable[5][8] =
+{
+	{162, 167, 167, 127, 128,0,0,0},
+	{226, 60, 60, 0, 0,0,0,0},
+	{225, 60, 59, 0, 0,0,0,0},
+	{200, 0, 0, 54, 55,0,0,0},
+	{199, 0, 0, 54, 54,0,0,0}
+};
+
+inline void CPU(Output)(int index, unsigned char A)
+{
+	static unsigned oldtimetableindex = 0;
+//	int k;
+	int local_bufferpos;                                 // much faster if we use a local copy here  30s --> 13s for sam -wav hello.wav Hello, my name is sam. 1 2 3 4 5 6 7 8 9 0
+	char *local_buffer_ptr;
+	bufferpos += timetable[oldtimetableindex][index];
+	local_bufferpos=bufferpos/50;
+	local_buffer_ptr=&buffer[local_bufferpos];
+	oldtimetableindex = index;
+	// write a little bit in advance
+//	for(k=0; k<5; k++)
+	*local_buffer_ptr++ = (A & 15)*16;    // much faster if we use a local copy here
+	*local_buffer_ptr++ = (A & 15)*16;    // much faster if we use a local copy here
+	*local_buffer_ptr++ = (A & 15)*16;    // much faster if we use a local copy here
+	*local_buffer_ptr++ = (A & 15)*16;    // much faster if we use a local copy here
+	*local_buffer_ptr++ = (A & 15)*16;    // much faster if we use a local copy here
+}
 
 
 // -------------------------------------------------------------------------
@@ -215,13 +242,13 @@ pos48280:
 		X = mem53;
 		//mem[54296] = X;
         // output the byte
-		Output(1, X);
+		CPU(Output)(1, X);
 		// if X != 0, exit loop
 		if(X != 0) goto pos48296;
 	}
 
 	// output a 5 for the on bit
-	Output(2, 5);
+	CPU(Output)(2, 5);
 
 	//48295: NOP
 pos48296:
@@ -278,13 +305,13 @@ pos48315:
 			{
                 // if bit set, output 26
 				X = 26;
-				Output(3, X);
+				CPU(Output)(3, X);
 			} else
 			{
 				//timetable 4
 				// bit is not set, output a 6
 				X=6;
-				Output(4, X);
+				CPU(Output)(4, X);
 			}
 
 			mem56--;
@@ -807,7 +834,7 @@ if (debug)
 			//mem[54296] = A;
 
 			// output the accumulated value
-			Output(0, A);
+			CPU(Output)(0, A);
 			speedcounter--;
 			if (speedcounter != 0) goto pos48155;
 			Y++; //go to next amplitude

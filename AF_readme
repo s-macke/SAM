@@ -136,3 +136,8 @@ Resident geht jetzt. Vorschlag von Bebbo zum Weitergeben von A4 ueber np_Input b
 21.12.2018
 ----------
 Stopwatch fuer genauere Zeitmessung
+
+inline von Output() bringt 1,4 Sekunden bei Hello, my name is sam. 1 2 3 4 5 6 7 8 9 0
+timeTable[5][8] bringt nochmal 0,13 Sekunden
+
+-> 10,77 Sekunden
