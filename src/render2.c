@@ -103,12 +103,25 @@ static int timetable[5][8] =
 
 inline void CPU(Output)(int index, unsigned char A)
 {
+	extern struct UtilityBase *UtilityBase;
 	static unsigned oldtimetableindex = 0;
 //	int k;
 	int local_bufferpos;                                 // much faster if we use a local copy here  30s --> 13s for sam -wav hello.wav Hello, my name is sam. 1 2 3 4 5 6 7 8 9 0
 	char *local_buffer_ptr;
 	bufferpos += timetable[oldtimetableindex][index];
-	local_bufferpos=bufferpos/50;
+//	local_bufferpos=bufferpos/50;
+
+	asm(
+	"     move.l  %1,d0;"
+	"     moveq   #50,d1;"
+	"     move.l   %2,a0;"     // UtilityBase
+	"     jsr     a0@(-150:W);"
+	"     move.l  d0,%0"
+	: "=r" (local_bufferpos)
+	: "r"  (bufferpos), "r" (UtilityBase)
+	: "d0","d1", "a0"
+	);
+
 	local_buffer_ptr=&buffer[local_bufferpos];
 	oldtimetableindex = index;
 	// write a little bit in advance

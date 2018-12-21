@@ -141,3 +141,6 @@ inline von Output() bringt 1,4 Sekunden bei Hello, my name is sam. 1 2 3 4 5 6 7
 timeTable[5][8] bringt nochmal 0,13 Sekunden
 
 -> 10,77 Sekunden
+
+ASM-inline fuer SDivMod32 in OutPut 10,77 -> 10,09 Sekunden
+
