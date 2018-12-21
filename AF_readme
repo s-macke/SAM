@@ -132,3 +132,7 @@ Render() und RenderSample() gibt es jetzt als 68000 und 68020 Version, die autom
 16.12.2018
 ----------
 Resident geht jetzt. Vorschlag von Bebbo zum Weitergeben von A4 ueber np_Input bzw pr_CIS gemacht
+
+21.12.2018
+----------
+Stopwatch fuer genauere Zeitmessung

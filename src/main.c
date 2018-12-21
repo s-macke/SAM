@@ -18,13 +18,39 @@
 #ifdef __AMIGA__                                                    // AF, use ahi.device instead of audio.device
 	void set_ahi_devide(unsigned int unit);
     void SetCpuSpecificFunctions(void);                             // AF, we compile some functions for 68000 and for 68020
+    // AF STOPWATCH
+    #include "amiga/stopwatch/stopwatch.h"
+    struct StopWatch *sw_main=NULL;
+
+
+	#define ALLOCSTOPWATCH(x)                   \
+        x=AllocStopWatch();                     \
+        if(NULL==x)                             \
+        {                                       \
+                printf("InitStopWatch 1 failed\n"); \
+                CleanUp();                          \
+                return 1;                           \
+        }
+
+
+	#define CLEANUP_SW(x) {if(x) { FreeStopWatch(x); x=NULL; }}
+    void CleanUp(void)
+    {
+            CLEANUP_SW(sw_main);
+    }
+
  #endif
+
+
 
 #ifdef DEBUG
     #define D(x) x
+	#define CLEANUP_SW(x) {if(x) { FreeStopWatch(x); x=NULL; }}
 #else
    // for debug-prints. Can be activated with -DDEBUG in Makefile
     #define D(x)
+	#define CLEANUP_SW(x)
+
 #endif
 
 
@@ -181,6 +207,8 @@ int main(int argc, char **argv)
 
     D(printf("Los...\n"));
     time_t StartZeit=time(NULL);
+    D(ALLOCSTOPWATCH(sw_main));  // AF
+    D(StartStopWatch(sw_main));  // AF
 
 #ifdef USESDL
 #ifndef __AMIGA__
@@ -323,6 +351,16 @@ int main(int argc, char **argv)
         return 1;
     }
 {
+    //AF STOPWATCH
+	D(
+    StopStopWatch(sw_main);
+    {
+            #define PRINT_STOPWATCH(x)      printf("Dauer " #x "  : %6lums, (%2.2f%%)\n",StopWatchGetTotalMilliSeconds(x),  100.0*StopWatchGetTotalMilliSeconds(x)/main_ms);
+
+            unsigned long main_ms=StopWatchGetMilliSeconds(sw_main);
+            printf("Dauer main           : %6lums\n",main_ms);
+    }
+    )
 D(printf("Sound berechnung nach %lld Sekunden\n",time(NULL)-StartZeit));
 extern int bufferpos;
 D(printf("%s(): BufferPos=%d\n",__FUNCTION__,bufferpos));
