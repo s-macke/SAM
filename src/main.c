@@ -206,6 +206,7 @@ int main(int argc, char **argv)
     static char input[256];   // AF, save some stack
 
     D(printf("Los...\n"));
+    D(atexit(CleanUp));      // Stopuhr freigeben
     time_t StartZeit=time(NULL);
     D(ALLOCSTOPWATCH(sw_main));  // AF
     D(StartStopWatch(sw_main));  // AF
