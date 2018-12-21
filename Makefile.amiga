@@ -59,7 +59,7 @@ render000.o: src/render2.c
 	$(CC) $(CFLAGS)         -O2 -c $< -o render000.o     # this one is compiled with -O2 as it is the time critical part
 
 render020.o: src/render2.c
-	$(CC) $(CFLAGS) -m68020 -O3 -c $< -o render020.o     # this one is compiled with -O2 as it is the time critical part
+	$(CC) $(CFLAGS) -m68020 -O2 -c $< -o render020.o     # this one is compiled with -O2 as it is the time critical part
 %.o: src/%.c
 	$(CC) $(CFLAGS) -c $<
 
