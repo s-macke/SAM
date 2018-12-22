@@ -110,7 +110,12 @@ inline void CPU(Output)(int index, unsigned char A)
 	char *local_buffer_ptr;
 	bufferpos += timetable[oldtimetableindex][index];
 //	local_bufferpos=bufferpos/50;
+local_bufferpos=((bufferpos*327)>>14); //16384);   // Durch 50,1  mal 327 durch 16384  // das beste!
+//local_bufferpos=((bufferpos*327)/16384);          // Durch 50,1  mal 327 durch 16384
 
+//	local_bufferpos=((bufferpos<<8)+(bufferpos<<6)+(bufferpos<<3)-bufferpos)  >>14;
+
+/*
 	asm(
 	"     move.l  %1,d0;"
 	"     moveq   #50,d1;"
@@ -121,7 +126,7 @@ inline void CPU(Output)(int index, unsigned char A)
 	: "r"  (bufferpos), "r" (UtilityBase)
 	: "d0","d1", "a0"
 	);
-
+*/
 	local_buffer_ptr=&buffer[local_bufferpos];
 	oldtimetableindex = index;
 	// write a little bit in advance
