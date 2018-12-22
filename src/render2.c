@@ -110,8 +110,8 @@ inline void CPU(Output)(int index, unsigned char A)
 	char *local_buffer_ptr;
 	bufferpos += timetable[oldtimetableindex][index];
 //	local_bufferpos=bufferpos/50;
-local_bufferpos=((bufferpos*327)>>14); //16384);   // Durch 50,1  mal 327 durch 16384  // das beste!
-//local_bufferpos=((bufferpos*327)/16384);          // Durch 50,1  mal 327 durch 16384
+local_bufferpos=((bufferpos*327U)>>14); //16384);   // Durch 50,1  mal 327 durch 16384  // das beste!
+//local_bufferpos=((bufferpos*327U)/16384);          // Durch 50,1  mal 327 durch 16384
 
 //	local_bufferpos=((bufferpos<<8)+(bufferpos<<6)+(bufferpos<<3)-bufferpos)  >>14;
 

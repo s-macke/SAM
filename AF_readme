@@ -148,4 +148,7 @@ ASM-inline fuer SDivMod32 in OutPut 10,77 -> 10,09 Sekunden
 -----------
 *327>>14, also *327/16384 statt durch 50 in Output(). Jetzt ca 7,74 Skunden! Deutlich besser als die ASM Variante.
 -resident stuerzt ab, wenn mit meinem Debug-Define compiliert wird. Wird da was zu gross? Fehler im Compiler?
-
+- Es scheint nicht resident zu sein, sondern -msmall-code, was zum Absturz fuehrt.
+- 327U i der Multiplikation, sonst stuerzt sam bei langen Texten ab. 
+- Test fuer Linux und Amiga: sam  Hello, my name is sam. 1 2 3 4 5 6 7 8 9 0 0 9 8 7 6 5 4 3 2 1
+Damit dann auch nochmal A1200 testen und dort ev fiv lassen? Dort ev anders optimieren?
