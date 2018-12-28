@@ -13,7 +13,7 @@ CPUFLAGS=-m68000
 CFLAGS =  -DDATE="\"$(shell /bin/date +'%d.%m.%Y')\""
 CFLAGS += -DPLATFORM_IS_BIG_ENDIAN -DSTATIC_FUNC= -DUSESDL
 CFLAGS += -DTOOLCHAIN_VER="\"$(TOOLCHAIN_VER)\""
-CFLAGS += -DDEBUG
+#CFLAGS += -DDEBUG
 CFLAGS += -Iamiga/ -Iamiga/portaudio/ -I. -I$(COMPILER_INSTALL_DIR)/include/SDL
 CFLAGS += $(CPUFLAGS)
 CFLAGS += -Os  # all but render.c arecompiled for size. Only render.c will be compiled for speed

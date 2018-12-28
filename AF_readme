@@ -152,3 +152,55 @@ ASM-inline fuer SDivMod32 in OutPut 10,77 -> 10,09 Sekunden
 - 327U i der Multiplikation, sonst stuerzt sam bei langen Texten ab. 
 - Test fuer Linux und Amiga: sam  Hello, my name is sam. 1 2 3 4 5 6 7 8 9 0 0 9 8 7 6 5 4 3 2 1
 Damit dann auch nochmal A1200 testen und dort ev fiv lassen? Dort ev anders optimieren?
+
+27.Dec.2018
+-----------
+Der Code enthaelt viele globale Variablen, die ev. die Optimierung beeintraechtigen?
+
+Alle globalen Variablen finden
+
+~/opt/m68k-amigaos_23Dec18/bin/m68k-amigaos-gdb sam
+info variables 
+
+Dann die C-Files finden, in denen dieses Variablen benutzt werden. Manche koenen vielleicht zu lokalen Variablen gemacht werden.
+z.B. finde alle Verwendungen von mem39 finden
+
+find src -name "*.c" -exec grep -nH "mem39[^(0-9)]" {} \;
+
+
+28.Dec.28
+---------
+WinUAE
+A1200 ohne FastRam: 1111ms  (1286ms bei 68000-code)
+A1200 mit FastRam: 423ms (474ms bei 68000-code)
+Die 68020-Erkennung bringt also nicht wirklich viel...
+
+A500 ohne FastRam: 7572ms
+A500 mit FastRam: 7569ms
+Beim A500 spielt FastRam also keine Rolle. 
+
+Sam Groesse: 49900 Bytes
+
+Aminet:
+;http://aminet.net/util/arc/lha.run  ; lha genommen: LhA 2.15 68000+  Jan 3 2011
+wget http://aminet.net/util/arc/lha.run
+
+in WinUAE:
+protect demos_amiga/#? +s
+protect sam +p
+lha_68k a sam.lha sam sam.readme README.md 
+lha_68k a sam.lha demos_amiga/#? -r
+
+in Linux:
+ftp -p   # -p passive mode, falls ftp durch NAT
+open main.aminet.net
+Name (main.aminet.net:developer): anonymous
+Password: selco@t-online.de
+cd new
+pwd
+put sam.lha
+put sam.readme    # keine Verzeichnisse! also nicht z.B. amiga/espeak.readme!
+quit
+
+Aminet Release 1.1
+
