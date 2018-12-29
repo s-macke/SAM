@@ -42,8 +42,8 @@ extern unsigned char freq3data[80];
 extern unsigned char ampl1data[80];
 extern unsigned char ampl2data[80];
 extern unsigned char ampl3data[80];
-extern unsigned char const sinus[256];
-extern unsigned char const rectangle[256];
+extern unsigned char sinus[256];
+extern unsigned char rectangle[256];
 
 
 

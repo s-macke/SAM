@@ -1,7 +1,7 @@
 # All the o-Files in Link-Order
 OBJS_ORDERED = reciter.o sam.o debug.o endian.o sdlwrapper.o portaudio_audev.o render.o render000.o render020.o main.o portaudio_ahidev.o  portaudio.o  subtask_support.o amiga_version.o stopwatch.o
 
-COMPILER_INSTALL_DIR = /home/osboxes/opt/m68k-amigaos_23Dec18
+COMPILER_INSTALL_DIR = /home/osboxes/opt/m68k-amigaos_28Dec18
 COMPILER_DIR         = $(COMPILER_INSTALL_DIR)/bin
 CC                   = $(COMPILER_DIR)/m68k-amigaos-gcc #gcc
 STRIP                = $(COMPILER_DIR)/m68k-amigaos-strip

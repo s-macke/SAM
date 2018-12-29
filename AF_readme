@@ -204,3 +204,12 @@ quit
 
 Aminet Release 1.1
 
+29.Dec.2018
+-----------
+Kommentar von Gunther Nikl:
+Anbei noch ein Patch für render2.c: Dort importierst Du sinus und
+rectangle als "const". Diese sind in RenderTabs.h aber OHNE const
+angelegt.
+
+--> const aus render2.c rausgenommen. 32 Bytes kleineres Programm.
+Compiler vom 28.12.18 genommen.
