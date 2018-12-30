@@ -18,12 +18,13 @@ CFLAGS += -Iamiga/ -Iamiga/portaudio/ -I. -I$(COMPILER_INSTALL_DIR)/include/SDL
 CFLAGS += $(CPUFLAGS)
 CFLAGS += -Os  # all but render.c arecompiled for size. Only render.c will be compiled for speed
 CFLAGS += -Wall -fomit-frame-pointer -noixemul -g #`sdl-config --cflags`
+#CFLAGS += -Wa,-adhln   #produce nice Assemby output
 
-CFLAGS += -resident
+#CFLAGS += -resident
 CFLAGS += -msmall-code
 
 LFLAGS = -g -noixemul $(CPUFLAGS) -Wl,-Map=sam.map,--trace -ldebug #-lSDL  #`sdl-config --libs`
-LFLAGS += -resident
+#LFLAGS += -resident
 
 
 #coverage
@@ -56,12 +57,12 @@ strip: sam
 	sync
 
 render000.o: src/render2.c
-	$(CC) $(CFLAGS)         -O2 -c $< -o render000.o     # this one is compiled with -O2 as it is the time critical part
+	$(CC) $(CFLAGS)          -O2 -c $< -o render000.o     # this one is compiled with -O2 as it is the time critical part
 
 render020.o: src/render2.c
-	$(CC) $(CFLAGS) -m68020 -O2 -c $< -o render020.o     # this one is compiled with -O2 as it is the time critical part
+	$(CC) $(CFLAGS)  -m68020 -O2 -c $< -o render020.o     # this one is compiled with -O2 as it is the time critical part
 %.o: src/%.c
-	$(CC) $(CFLAGS) -c $<
+	$(CC) $(CFLAGS)  -c $<
 
 package:
 	tar -cvzf sam.tar.gz README.md Makefile sing src/
