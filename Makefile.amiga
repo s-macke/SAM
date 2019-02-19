@@ -1,7 +1,23 @@
 # All the o-Files in Link-Order
 OBJS_ORDERED = reciter.o sam.o debug.o endian.o sdlwrapper.o portaudio_audev.o render.o render000.o render020.o main.o portaudio_ahidev.o  portaudio.o  subtask_support.o amiga_version.o stopwatch.o
 
-COMPILER_INSTALL_DIR = /home/osboxes/opt/m68k-amigaos_28Dec18
+# 7.552 Seconds
+# COMPILER_INSTALL_DIR = /home/developer/opt/m68k-amigaos_23Dec18
+ # 7.58  Seconds for 21Jan19
+# bad COMPILER_INSTALL_DIR = /home/developer/opt/m68k-amigaos_21Jan19
+# ok COMPILER_INSTALL_DIR = /home/developer/opt/m68k-amigaos_29Dec18
+# bad COMPILER_INSTALL_DIR = /home/developer/opt/m68k-amigaos_14Jan19
+# bad COMPILER_INSTALL_DIR = /home/developer/opt/m68k-amigaos_13Jan19
+# ok COMPILER_INSTALL_DIR = /home/developer/opt/m68k-amigaos_09Jan19
+# OK --> COMPILER_INSTALL_DIR = /home/developer/opt/m68k-amigaos_11Jan19
+# ok COMPILER_INSTALL_DIR = /home/developer/opt/m68k-amigaos_06Jan19
+# bad, wird nicht fertig bei Coverage  COMPILER_INSTALL_DIR = /home/developer/opt/m68k-amigaos_10Feb19
+# ok COMPILER_INSTALL_DIR = /home/developer/opt/m68k-amigaos_04Feb19
+# OK COMPILER_INSTALL_DIR = /home/developer/opt/m68k-amigaos_07Feb19
+# OK COMPILER_INSTALL_DIR = /home/developer/opt/m68k-amigaos_12Feb19
+# OK
+COMPILER_INSTALL_DIR = /home/developer/opt/m68k-amigaos_16Feb19
+
 COMPILER_DIR         = $(COMPILER_INSTALL_DIR)/bin
 CC                   = $(COMPILER_DIR)/m68k-amigaos-gcc #gcc
 STRIP                = $(COMPILER_DIR)/m68k-amigaos-strip
@@ -13,25 +29,24 @@ CPUFLAGS=-m68000
 CFLAGS =  -DDATE="\"$(shell /bin/date +'%d.%m.%Y')\""
 CFLAGS += -DPLATFORM_IS_BIG_ENDIAN -DSTATIC_FUNC= -DUSESDL
 CFLAGS += -DTOOLCHAIN_VER="\"$(TOOLCHAIN_VER)\""
-#CFLAGS += -DDEBUG
+CFLAGS += -DDEBUG
 CFLAGS += -Iamiga/ -Iamiga/portaudio/ -I. -I$(COMPILER_INSTALL_DIR)/include/SDL
 CFLAGS += $(CPUFLAGS)
 CFLAGS += -Os  # all but render.c arecompiled for size. Only render.c will be compiled for speed
 CFLAGS += -Wall -fomit-frame-pointer -noixemul -g #`sdl-config --cflags`
-#CFLAGS += -Wa,-adhln   #produce nice Assemby output
 
-#CFLAGS += -resident
+CFLAGS += -resident
 CFLAGS += -msmall-code
 
 LFLAGS = -g -noixemul $(CPUFLAGS) -Wl,-Map=sam.map,--trace -ldebug #-lSDL  #`sdl-config --libs`
-#LFLAGS += -resident
-
+LFLAGS += -resident
 
 #coverage
-#CFLAGS += -fprofile-generate=VBox:$(shell pwd | cut -c2-)  # remove first "/" from pwd -> VBox:home/...
-#CFLAGS += -ftest-coverage
-#CFLAGS += -fprofile-arcs      #-pg  # Profiler
-#LFLAGS += -lgcov
+ CFLAGS += -fprofile-generate=VBox:$(shell pwd | cut -c2-)  # remove first "/" from pwd -> VBox:home/...
+ CFLAGS += -ftest-coverage
+ CFLAGS += -fprofile-arcs      #-pg  # Profiler
+ LFLAGS += -lgcov
+
 #CFLAGS += -g -pg -fno-omit-frame-pointer
 #LFLAGS += -pg
 
@@ -57,18 +72,18 @@ strip: sam
 	sync
 
 render000.o: src/render2.c
-	$(CC) $(CFLAGS)          -O2 -c $< -o render000.o     # this one is compiled with -O2 as it is the time critical part
+	$(CC) $(CFLAGS)         -O2 -c $< -o render000.o     # this one is compiled with -O2 as it is the time critical part
 
 render020.o: src/render2.c
-	$(CC) $(CFLAGS)  -m68020 -O2 -c $< -o render020.o     # this one is compiled with -O2 as it is the time critical part
+	$(CC) $(CFLAGS) -m68020 -O2 -c $< -o render020.o     # this one is compiled with -O2 as it is the time critical part
 %.o: src/%.c
-	$(CC) $(CFLAGS)  -c $<
+	$(CC) $(CFLAGS) -c $<
 
 package:
 	tar -cvzf sam.tar.gz README.md Makefile sing src/
 
 clean:
-	rm -f *.o *.wav sam sam.map
+	rm -f *.o *.wav sam sam.map *.gcno *.gcda
 
 archive:
 	rm -f sam_windows.zip
