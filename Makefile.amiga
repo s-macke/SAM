@@ -21,6 +21,7 @@ COMPILER_INSTALL_DIR = /home/developer/opt/m68k-amigaos_16Feb19
 COMPILER_DIR         = $(COMPILER_INSTALL_DIR)/bin
 CC                   = $(COMPILER_DIR)/m68k-amigaos-gcc #gcc
 STRIP                = $(COMPILER_DIR)/m68k-amigaos-strip
+GCOV                 = $(COMPILER_DIR)/m68k-amigaos-gcov
 
 TOOLCHAIN_VER=$(shell cat $(COMPILER_DIR)/toolchain_commit.txt)
 
@@ -42,10 +43,12 @@ LFLAGS = -g -noixemul $(CPUFLAGS) -Wl,-Map=sam.map,--trace -ldebug #-lSDL  #`sdl
 LFLAGS += -resident
 
 #coverage
+ifneq ($(COVERAGE),)
  CFLAGS += -fprofile-generate=VBox:$(shell pwd | cut -c2-)  # remove first "/" from pwd -> VBox:home/...
  CFLAGS += -ftest-coverage
  CFLAGS += -fprofile-arcs      #-pg  # Profiler
  LFLAGS += -lgcov
+endif
 
 #CFLAGS += -g -pg -fno-omit-frame-pointer
 #LFLAGS += -pg
@@ -88,3 +91,12 @@ clean:
 archive:
 	rm -f sam_windows.zip
 	cd ..; zip SAM/sam_windows.zip	SAM/sam.exe SAM/SDL.dll SAM/README.md SAM/demos/*.bat
+
+coverage:
+	make -f Makefile.amiga COVERAGE=true
+	[ "15" = "$(shell ls *.gcno | wc --w)" ]    # 15 gcno-Files should have been created
+	vamos -V VBox:/home/developer/ -- sam -wav hello.wav "Hello, my name is sam. 1 2 3 4 5 6 7 8 9 0"  # start sam
+	$(GCOV) main.c
+	# argument-loop must have been ececuted 3 times in our example 
+	cat main.c.gcov | grep "while(i < argc)" | awk -F: '{if( $$1 >=3){ print "Coverage OK";} else{ print "Coverage failed!!!"; exit 1;}}'
+
