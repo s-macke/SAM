@@ -94,7 +94,9 @@ archive:
 
 coverage:
 	make -f Makefile.amiga COVERAGE=true
-	[ "15" = "$(shell ls *.gcno | wc --w)" ]    # 15 gcno-Files should have been created
+	find | grep gcno | wc --w > count.txt    # 15 gcno-Files should have been created
+	echo Found $$(cat count.txt) gcno-Files.
+	[ $$(cat count.txt) = "15" ] || (echo Wrong number of gcno-Files!; exit 1)
 	vamos -V VBox:/home/developer/ -- sam -wav hello.wav "Hello, my name is sam. 1 2 3 4 5 6 7 8 9 0"  # start sam
 	$(GCOV) main.c
 	# argument-loop must have been ececuted 3 times in our example 
