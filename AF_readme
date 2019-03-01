@@ -213,3 +213,16 @@ angelegt.
 
 --> const aus render2.c rausgenommen. 32 Bytes kleineres Programm.
 Compiler vom 28.12.18 genommen.
+
+
+1.Mar.2019
+----------
+Der gcc kann jetzt auch mit  
+make update
+make v date=2019-02-18
+make all PREFIX=/here/or/there
+
+aufgerufen werden. dann wird (in alle Projekten) )ausgechecked, was am 18.Feb.2019 gueltig war. (auch, wenn es z.B. am 12.Jan. das letzte checkin/push gab)
+
+
+
