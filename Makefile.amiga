@@ -2,22 +2,28 @@
 OBJS_ORDERED = reciter.o sam.o debug.o endian.o sdlwrapper.o portaudio_audev.o render.o render000.o render020.o main.o portaudio_ahidev.o  portaudio.o  subtask_support.o amiga_version.o stopwatch.o
 
 # 7.552 Seconds
-# COMPILER_INSTALL_DIR = /home/developer/opt/m68k-amigaos_23Dec18
+# COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_23Dec18
  # 7.58  Seconds for 21Jan19
-# bad COMPILER_INSTALL_DIR = /home/developer/opt/m68k-amigaos_21Jan19
-# ok COMPILER_INSTALL_DIR = /home/developer/opt/m68k-amigaos_29Dec18
-# bad COMPILER_INSTALL_DIR = /home/developer/opt/m68k-amigaos_14Jan19
-# bad COMPILER_INSTALL_DIR = /home/developer/opt/m68k-amigaos_13Jan19
-# ok COMPILER_INSTALL_DIR = /home/developer/opt/m68k-amigaos_09Jan19
-# OK --> COMPILER_INSTALL_DIR = /home/developer/opt/m68k-amigaos_11Jan19
-# ok COMPILER_INSTALL_DIR = /home/developer/opt/m68k-amigaos_06Jan19
-# bad, wird nicht fertig bei Coverage  COMPILER_INSTALL_DIR = /home/developer/opt/m68k-amigaos_10Feb19
-# ok COMPILER_INSTALL_DIR = /home/developer/opt/m68k-amigaos_04Feb19
-# OK COMPILER_INSTALL_DIR = /home/developer/opt/m68k-amigaos_07Feb19
-# OK COMPILER_INSTALL_DIR = /home/developer/opt/m68k-amigaos_12Feb19
+# bad COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_21Jan19
+# OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_29Dec18
+# bad COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_14Jan19
+# bad COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_13Jan19
+# ok COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_09Jan19
+# OK --> COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_11Jan19
+# ok COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_06Jan19
+# bad, wird nicht fertig bei Coverage  COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_10Feb19
+# ok COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_04Feb19
+# OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_07Feb19
+# OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_12Feb19
 # OK
-# OK COMPILER_INSTALL_DIR = /home/developer/opt/m68k-amigaos_16Feb19
-COMPILER_INSTALL_DIR = /home/developer/opt/m68k-amigaos_25Feb19
+# OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_16Feb19
+# OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_25Feb19
+# OK 
+COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_26Feb19
+# BAD, Linker Errors COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_28Feb19
+# bad coverage failed (vamos illegal memory access) COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_01Mar19
+# bad coverage failed (vamos illegal memory access) COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_02Mar19
+# bad coverage failed (vamos illegal memory access) COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_04Mar19
 
 COMPILER_DIR         = $(COMPILER_INSTALL_DIR)/bin
 CC                   = $(COMPILER_DIR)/m68k-amigaos-gcc #gcc

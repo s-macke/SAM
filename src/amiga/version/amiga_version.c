@@ -40,11 +40,11 @@
 
 
 #define      VERSION       "1"
-#define      REVISION      "1"                     /* Revision always starts with 1 ! */
+#define      REVISION      "2"                     /* Revision always starts with 1 ! */
 //#define      DATE          "15.07.2017"   /* comes from make-command line as CXXFLAGS+=-DDATE=\\\"$(date +'%d.%m.%Y')\\\" */
 #define      PROGNAME      "sam"
-//#define      COMMENT       "BETA-Version, Alexander Fritsch, selco, based on SAM C-conversion by Sebastian Macke"
-#define      COMMENT                   "Alexander Fritsch, selco, based on SAM C-conversion by Sebastian Macke"
+#define      COMMENT       "BETA-Version, Alexander Fritsch, selco, based on SAM C-conversion by Sebastian Macke"
+//#define      COMMENT                   "Alexander Fritsch, selco, based on SAM C-conversion by Sebastian Macke"
 
 #define      VERS          PROGNAME" " VERSION "." REVISION
 #define      VERSTAG       "\0$VER: " PROGNAME " " VERSION "." REVISION " (" DATE ") " COMMENT //", compiled for " __CPU__  __FPU__
