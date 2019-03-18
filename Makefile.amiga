@@ -25,8 +25,12 @@ OBJS_ORDERED = reciter.o sam.o debug.o endian.o sdlwrapper.o portaudio_audev.o r
 # bad coverage failed (vamos illegal memory access) COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_04Mar19
 # bad coverage failed (vamos illegal memory access) COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_07Mar19
 # OK now again. Coverage works
-COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_12Mar19
-
+# OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_12Mar19
+# OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_13Mar19
+# OK
+COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_15Mar19
+# BAD fatal error: SDL.h: No such file or directory COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_16Mar19
+# BAD fatal error: SDL.h: No such file or directory COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_17Mar19
 
 COMPILER_DIR         = $(COMPILER_INSTALL_DIR)/bin
 CC                   = $(COMPILER_DIR)/m68k-amigaos-gcc #gcc
