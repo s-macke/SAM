@@ -27,10 +27,11 @@ OBJS_ORDERED = reciter.o sam.o debug.o endian.o sdlwrapper.o portaudio_audev.o r
 # OK now again. Coverage works
 # OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_12Mar19
 # OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_13Mar19
-# OK
-COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_15Mar19
-# BAD fatal error: SDL.h: No such file or directory COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_16Mar19
-# BAD fatal error: SDL.h: No such file or directory COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_17Mar19
+# OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_15Mar19
+# OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_16Mar19  # changed include for SDL starting 16Mar19
+# OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_17Mar19
+# OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_18Mar19
+COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_21Mar19
 
 COMPILER_DIR         = $(COMPILER_INSTALL_DIR)/bin
 CC                   = $(COMPILER_DIR)/m68k-amigaos-gcc #gcc
@@ -45,7 +46,9 @@ CFLAGS =  -DDATE="\"$(shell /bin/date +'%d.%m.%Y')\""
 CFLAGS += -DPLATFORM_IS_BIG_ENDIAN -DSTATIC_FUNC= -DUSESDL
 CFLAGS += -DTOOLCHAIN_VER="\"$(TOOLCHAIN_VER)\""
 CFLAGS += -DDEBUG
-CFLAGS += -Iamiga/ -Iamiga/portaudio/ -I. -I$(COMPILER_INSTALL_DIR)/include/SDL
+CFLAGS += -Iamiga/ -Iamiga/portaudio/ -I.
+CFLAGS += -I$(COMPILER_INSTALL_DIR)/include/SDL                # for toolchain up to    15Mar19
+CFLAGS += -I$(COMPILER_INSTALL_DIR)/m68k-amigaos/include/SDL   # for toolchain starting 16Mar19
 CFLAGS += $(CPUFLAGS)
 CFLAGS += -Os  # all but render.c arecompiled for size. Only render.c will be compiled for speed
 CFLAGS += -Wall -fomit-frame-pointer -noixemul -g #`sdl-config --cflags`
