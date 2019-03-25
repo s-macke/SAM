@@ -31,7 +31,8 @@ OBJS_ORDERED = reciter.o sam.o debug.o endian.o sdlwrapper.o portaudio_audev.o r
 # OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_16Mar19  # changed include for SDL starting 16Mar19
 # OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_17Mar19
 # OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_18Mar19
-COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_21Mar19
+# OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_21Mar19
+COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_23Mar19
 
 COMPILER_DIR         = $(COMPILER_INSTALL_DIR)/bin
 CC                   = $(COMPILER_DIR)/m68k-amigaos-gcc #gcc
