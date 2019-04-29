@@ -15,7 +15,6 @@ OBJS_ORDERED = reciter.o sam.o debug.o endian.o sdlwrapper.o portaudio_audev.o r
 # ok COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_04Feb19
 # OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_07Feb19
 # OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_12Feb19
-# OK
 # OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_16Feb19
 # OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_25Feb19
 # OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_26Feb19
@@ -32,7 +31,19 @@ OBJS_ORDERED = reciter.o sam.o debug.o endian.o sdlwrapper.o portaudio_audev.o r
 # OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_17Mar19
 # OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_18Mar19
 # OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_21Mar19
-COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_23Mar19
+# OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_23Mar19
+# OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_02Apr19
+# BAD ld: internal error /home/developer/amiga-gcc_07Apr19/projects/binutils/ld/ldlang.c 6644 COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_07Apr19
+# BAD ld: internal error /home/developer/amiga-gcc_08Apr19/projects/binutils/ld/ldlang.c 6644 COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_08Apr19
+# BAD ld: internal error /home/developer/amiga-gcc_12Apr19/projects/binutils/ld/ldlang.c 6644 COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_12Apr19
+# BAD ld: internal error /home/developer/amiga-gcc_13Apr19/projects/binutils/ld/ldlang.c 6644 COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_13Apr19
+# BAD ld: internal error /home/developer/amiga-gcc_14Apr19/projects/binutils/ld/ldlang.c 6644COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_14Apr19
+# BAD machine:  ERROR COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_15Apr19
+# BAD machine:  ERROR COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_16Apr19
+# BAD machine:  ERROR COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_23Apr19
+# OK 
+COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_28Apr19
+
 
 COMPILER_DIR         = $(COMPILER_INSTALL_DIR)/bin
 CC                   = $(COMPILER_DIR)/m68k-amigaos-gcc #gcc
