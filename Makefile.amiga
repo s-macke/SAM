@@ -41,9 +41,9 @@ OBJS_ORDERED = reciter.o sam.o debug.o endian.o sdlwrapper.o portaudio_audev.o r
 # BAD machine:  ERROR COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_15Apr19
 # BAD machine:  ERROR COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_16Apr19
 # BAD machine:  ERROR COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_23Apr19
-# OK 
-COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_28Apr19
-
+# OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_28Apr19
+# OK
+COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_01May19
 
 COMPILER_DIR         = $(COMPILER_INSTALL_DIR)/bin
 CC                   = $(COMPILER_DIR)/m68k-amigaos-gcc #gcc
