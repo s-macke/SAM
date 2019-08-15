@@ -7,3 +7,6 @@
 *.html
 *.lha
 *.map
+render000.c
+render020.c
+

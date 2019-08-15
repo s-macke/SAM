@@ -225,4 +225,7 @@ make all PREFIX=/here/or/there
 aufgerufen werden. dann wird (in alle Projekten) )ausgechecked, was am 18.Feb.2019 gueltig war. (auch, wenn es z.B. am 12.Jan. das letzte checkin/push gab)
 
 
+15.Aug.2019
+-----------
+Neues Target fuer Profiling. Der Linker hat gemeckert doppelte definitionen angemeckert. Anscheinend wird beim Profiling eine Variable mit dem Quellfilenamen angelegt. Bei uns wurde zwei mal render2.c benutz (fuer 68000 und 68020), damit gab es die Variable wohl doppelt. Deshalb kopiert das Makefile jetzt render2.c nach render000.c und render020.c und compiliert diese beiden temporaeren Quellen. Sie werden anschliessend geloescht. In .gitignore sind sie auch eingetragen.
 

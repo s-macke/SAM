@@ -53,6 +53,7 @@ COMPILER_DIR         = $(COMPILER_INSTALL_DIR)/bin
 CC                   = $(COMPILER_DIR)/m68k-amigaos-gcc #gcc
 STRIP                = $(COMPILER_DIR)/m68k-amigaos-strip
 GCOV                 = $(COMPILER_DIR)/m68k-amigaos-gcov
+GPROF                = $(COMPILER_DIR)/m68k-amigaos-gprof
 
 TOOLCHAIN_VER=$(shell cat $(COMPILER_DIR)/toolchain_commit.txt)
 
@@ -83,8 +84,14 @@ ifneq ($(COVERAGE),)
  LFLAGS += -lgcov
 endif
 
-#CFLAGS += -g -pg -fno-omit-frame-pointer
-#LFLAGS += -pg
+#profiling
+ifneq ($(PROFILE),)
+# CFLAGS += -fprofile-generate=VBox:$(shell pwd | cut -c2-)  # remove first "/" from pwd -> VBox:home/...
+# CFLAGS += -fprofile-arcs
+# LFLAGS += -lgcov
+ CFLAGS += -g -pg -fno-omit-frame-pointer
+ LFLAGS += -pg
+endif
 
 
 vpath sdlwrapper.c       src/amiga/
@@ -108,10 +115,15 @@ strip: sam
 	sync
 
 render000.o: src/render2.c
-	$(CC) $(CFLAGS)         -O2 -c $< -o render000.o     # this one is compiled with -O2 as it is the time critical part
+	cp src/render2.c src/render000.c
+	$(CC) $(CFLAGS)         -O2 -c src/render000.c -o render000.o     # this one is compiled with -O2 as it is the time critical part
+	rm src/render000.c
 
 render020.o: src/render2.c
-	$(CC) $(CFLAGS) -m68020 -O2 -c $< -o render020.o     # this one is compiled with -O2 as it is the time critical part
+	cp src/render2.c src/render020.c
+	$(CC) $(CFLAGS) -m68020 -O2 -c src/render020.c -o render020.o     # this one is compiled with -O2 as it is the time critical part
+	rm src/render020.c
+
 %.o: src/%.c
 	$(CC) $(CFLAGS) -c $<
 
@@ -119,11 +131,7 @@ package:
 	tar -cvzf sam.tar.gz README.md Makefile sing src/
 
 clean:
-	rm -f *.o *.wav sam sam.map *.gcno *.gcda *.gcov coverage*.html
-
-archive:
-	rm -f sam_windows.zip
-	cd ..; zip SAM/sam_windows.zip	SAM/sam.exe SAM/SDL.dll SAM/README.md SAM/demos/*.bat
+	rm -f *.o *.wav sam sam.map *.gcno *.gcda *.gcov gmon.out coverage*.html src/render000.c src/render020.c
 
 coverage:
 	make -f Makefile.amiga COVERAGE=true
@@ -135,6 +143,11 @@ coverage:
 	# argument-loop must have been ececuted 3 times in our example. Red if string not found (|| nothing) or count <3, green if all OK
 	cat main.c.gcov | (grep "while(i < argc)" || echo nothing) | awk -F: '{if( strtonum($$1) >=3){ print "\033[92mCoverage OK\033[0m";} else{ print "\033[91mCoverage failed!!!\033[0m"; exit 1;}}'	
 
+profile:
+	make -f Makefile.amiga PROFILE=true
+	vamos -V VBox:/home/developer/ -- sam -wav hello.wav "Hello, my name is sam. 1 2 3 4 5 6 7 8 9 0"  # start sam
+	ls -la gmon.out  # check gmon.out has been created
+	$(GPROF) sam | awk '/RenderSample_000$$/{Count=$$4; if( strtonum(Count) ==55){ print "\033[92mProfile OK\033[0m";} else{ print "\033[91mProfile failed!!!\033[0m"; exit 1;}}'   # profile output ok? RenderSample_000() should be called 55 times
 
 test: sam
 	vamos -v -V VBox:/home/developer/ -- sam -wav hello.wav "Hello, my name is sam. 1 2 3 4 5 6 7 8 9 0"  # start sam
