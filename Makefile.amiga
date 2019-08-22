@@ -47,7 +47,11 @@ OBJS_ORDERED = reciter.o sam.o debug.o endian.o sdlwrapper.o portaudio_audev.o r
 # OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_18May19
 # OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_26May19
 # OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_30Jun19
-COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_07Aug19
+#COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_07Aug19
+# BAD Coverage geht nicht mehr COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_15Aug19
+# BAD Coverage geht nicht mehr COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_18Aug19
+# BAD Coverage geht nicht mehr 
+COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_20Aug19
 
 COMPILER_DIR         = $(COMPILER_INSTALL_DIR)/bin
 CC                   = $(COMPILER_DIR)/m68k-amigaos-gcc #gcc
@@ -138,7 +142,7 @@ coverage:
 	find | grep gcno | wc --w > count.txt    # 15 gcno-Files should have been created
 	echo Found $$(cat count.txt) gcno-Files.
 	[ $$(cat count.txt) = "15" ] || (echo Wrong number of gcno-Files!; exit 1)
-	vamos -V VBox:/home/developer/ -- sam -wav hello.wav "Hello, my name is sam. 1 2 3 4 5 6 7 8 9 0"  # start sam
+	vamos -s 100 -V VBox:/home/developer/ -- sam -wav hello.wav "Hello, my name is sam. 1 2 3 4 5 6 7 8 9 0"  # start sam, -s -> coverage needs more stack
 	$(GCOV) main.c
 	# argument-loop must have been ececuted 3 times in our example. Red if string not found (|| nothing) or count <3, green if all OK
 	cat main.c.gcov | (grep "while(i < argc)" || echo nothing) | awk -F: '{if( strtonum($$1) >=3){ print "\033[92mCoverage OK\033[0m";} else{ print "\033[91mCoverage failed!!!\033[0m"; exit 1;}}'	
