@@ -93,7 +93,12 @@ void Init()
     bufferpos = 0;
     // TODO, check for free the memory, 10 seconds of output should be more than enough
     buffer = malloc(22050*10);
-
+    if(NULL==buffer)  // AF
+    {
+    	printf("Not enough memory to allocate 220500 bytes\n");
+    	exit(1);
+    }
+    memset(buffer,128,22050*10); //AF: avoid "hiss" at the end of sound playback
     /*
     freq2data = &mem[45136];
     freq1data = &mem[45056];

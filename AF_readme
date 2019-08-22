@@ -1,0 +1,231 @@
+18.11.2018
+----------
+sudo apt-get install libsdl1.2-dev
+make
+
+sdl-config ist ein Programm, das die Parameter ausgibt, die dann im Makefile benutzt werden.
+
+sdl-config --cflags
+-I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT
+
+sdl-config --libs
+-L/usr/lib/x86_64-linux-gnu -lSDL
+
+./sam -wav sam.wav My name is sam.
+play sam.wav
+
+oder direkt
+
+./sam My name is sam.
+
+
+Amiga
+-----
+Im Makefile erst mal das SDL-Zeug auskommentieren. -noixemul bei Compiler- und Linker-Flags! (newlib hat falsches argc !???)
+make CC=~/opt/m68k-amigaos_24Oct18/bin/m68k-amigaos-gcc
+
+Das erzeugte Wav-File hat Endian-Fehler. Alles wird direkt geschrieben, ohne auf Endianes zu achten!
+
+20.11.2018
+----------
+* eigenes Makefile fuer Amiga (wegen -noixemul un anderer SDL-Einstellungen)
+* make CC=~/opt/m68k-amigaos_14Nov18/bin/m68k-amigaos-gcc -f Makefile.amiga
+
+Fixed WriteWav() in main.c (changed endianess where necessary)
+-> Amiga Executable works!
+
+enabled SDL. -> Funktioniert!
+ABER: sam wird viel groesser.
+
+ohne SDL (gestripped) 44 kBytes
+mit SDL (gestripped) 256 kBytes !
+
+Der linkt alles moegliche ran, z.B. sind Youstick-Meldungen im Executable...
+
+24.11.2018
+----------
+Inzwischen geht alles mit eigenem SDL->Portaudio-Wrapper.
+CTRL-C Behandlung feht noch.
+
+gcovr --object-directory=. -r . --html --html-details -o coverage.html
+
+25.11.2018
+----------
+Auf nackten Amigas is SAM sehr langsam!
+
+sam_old_render_O2          67564 ----rwed Heute      17:30:44
+sam_Os                     57576 ----rwed Heute      17:30:41
+sam_O3                     73528 ----rwed Heute      17:30:38
+sam_old_render_Os          57760 ----rwed Heute      17:30:36
+sam_O2                     66800 ----rwed Heute      17:30:34
+
+A2000
+8.Ram Disk:> ; sam_Os  49
+8.Ram Disk:> ; sam_O2  44
+8.Ram Disk:> ; sam_O3  41
+8.Ram Disk:> ; sam_old_render_Os 32
+8.Ram Disk:> ; sam_old_render_O2 30
+8.Ram Disk:> ; sam_old_render_O3 28
+8.Ram Disk:> ;
+8.Ram Disk:> ; sam_O2 Hello, my name is sam. 1 2 3 4 5 6 7 8 9 0
+8.Ram Disk:> 
+8.Ram Disk:> 
+
+A1200, no FastMem
+sam_Os 15s
+sam_O2 14s
+sam_O3 14s
+sam_old_render_Os 10s
+sam_old_render_O2 8s
+sam_old_render_O3 8s
+
+Die alte Renderfunktion mit multable und 4 Bit bekomme ich mit
+git checkout 760786f13b79ddf5b519131925863181d224b839 src/RenderTabs.h
+git checkout 760786f13b79ddf5b519131925863181d224b839 src/render.c
+
+
+Profiling
+,it -pg linken und uebersetzen
+/home/osboxes/opt/m68k-amigaos_14Nov18/bin/m68k-amigaos-gprof sam | gprof2dot -n0 -e0 | dot -Tsvg -o output.svg
+mirage output.svg &
+
+4.Dec.2018
+----------
+Die alten Versionen von RenderTabs.h und render.c jetzt wieder hergestellt wie am 25.11. getestet. 
+Damit steigt die Geschwindigkeit deutlich an.
+
+Neue Funktionen : 46 Sekunden
+alte Funktionen : 30 Sekunden
+
+Fuer
+gprof test | gprof2dot  -n0 -e0  | dot -Tpng -o output2.png && mirage output2.png 
+(gemessen ohne Soundausgabe oder Wave-File-schreiben, compiliert mit -O2, -pg und auf WinUAE Cycleexact A500 getestet)
+
+5.Dec.2018
+----------
+In render.c gibt es mehrere Stellen, an denen BufferPos/50 berechnet wird. Bufferpos ist ein int. Das Dauert. Wenn ich testweise statt dessen Bufferpos >> 6 rechne, also /64, dann ist das Ergebnis zwar falsch, aber statt 30 Sekunden werden nur noch 10 Sekunden benoetigt! 
+
+8.12.2018
+---------
+-msmall-code saves a few bytes 2k oder so.
+-fbaserel spart 8k oder so, das Programm wird aber langsamer 12..13 Sekunden statt 10..11 Sekunden.
+-resident bekomme ich nur compiliert, wenn ich __ctypes.c patche. Sonst passiert sam: .text reloc for __ctype_ is out of range: 00000000
+Aber auch mit patch stürzt das Programm immer ab.
+
+10.12.2018
+----------
+Demos fuer Amiga angepasst. Neues Verzeichnis demos_amiga
+
+11.12.2018
+----------
+Makefile geaendert. Alles ausser render.c wird mit -Os compiliert. rendr.c mit -O2. Alles mir -msamll-code.
+SAM ist jetzt 59912 Bytes gross. 
+
+* Portaudio: debug-code entfern. (getMilliseconds(), File
+* Audiotask muss __saveds sein, wenn mit -fbaserel uebersetzt wird.
+* Programm ist nicht GPL, entsprechenden Header in meinen Audiofiles entfernt.
+
+14.12.2018
+----------
+Render() und RenderSample() gibt es jetzt als 68000 und 68020 Version, die automatisch ausgewaehlt werden. guess_number.rexx gemacht. Portaudio warnings behoben.
+
+16.12.2018
+----------
+Resident geht jetzt. Vorschlag von Bebbo zum Weitergeben von A4 ueber np_Input bzw pr_CIS gemacht
+
+21.12.2018
+----------
+Stopwatch fuer genauere Zeitmessung
+
+inline von Output() bringt 1,4 Sekunden bei Hello, my name is sam. 1 2 3 4 5 6 7 8 9 0
+timeTable[5][8] bringt nochmal 0,13 Sekunden
+
+-> 10,77 Sekunden
+
+ASM-inline fuer SDivMod32 in OutPut 10,77 -> 10,09 Sekunden
+
+22.Dec.2018
+-----------
+*327>>14, also *327/16384 statt durch 50 in Output(). Jetzt ca 7,74 Skunden! Deutlich besser als die ASM Variante.
+-resident stuerzt ab, wenn mit meinem Debug-Define compiliert wird. Wird da was zu gross? Fehler im Compiler?
+- Es scheint nicht resident zu sein, sondern -msmall-code, was zum Absturz fuehrt.
+- 327U i der Multiplikation, sonst stuerzt sam bei langen Texten ab. 
+- Test fuer Linux und Amiga: sam  Hello, my name is sam. 1 2 3 4 5 6 7 8 9 0 0 9 8 7 6 5 4 3 2 1
+Damit dann auch nochmal A1200 testen und dort ev fiv lassen? Dort ev anders optimieren?
+
+27.Dec.2018
+-----------
+Der Code enthaelt viele globale Variablen, die ev. die Optimierung beeintraechtigen?
+
+Alle globalen Variablen finden
+
+~/opt/m68k-amigaos_23Dec18/bin/m68k-amigaos-gdb sam
+info variables 
+
+Dann die C-Files finden, in denen dieses Variablen benutzt werden. Manche koenen vielleicht zu lokalen Variablen gemacht werden.
+z.B. finde alle Verwendungen von mem39 finden
+
+find src -name "*.c" -exec grep -nH "mem39[^(0-9)]" {} \;
+
+
+28.Dec.28
+---------
+WinUAE
+A1200 ohne FastRam: 1111ms  (1286ms bei 68000-code)
+A1200 mit FastRam: 423ms (474ms bei 68000-code)
+Die 68020-Erkennung bringt also nicht wirklich viel...
+
+A500 ohne FastRam: 7572ms
+A500 mit FastRam: 7569ms
+Beim A500 spielt FastRam also keine Rolle. 
+
+Sam Groesse: 49900 Bytes
+
+Aminet:
+;http://aminet.net/util/arc/lha.run  ; lha genommen: LhA 2.15 68000+  Jan 3 2011
+wget http://aminet.net/util/arc/lha.run
+
+in WinUAE:
+protect demos_amiga/#? +s
+protect sam +p
+lha_68k a sam.lha sam sam.readme README.md 
+lha_68k a sam.lha demos_amiga/#? -r
+
+in Linux:
+ftp -p   # -p passive mode, falls ftp durch NAT
+open main.aminet.net
+Name (main.aminet.net:developer): anonymous
+Password: selco@t-online.de
+cd new
+pwd
+put sam.lha
+put sam.readme    # keine Verzeichnisse! also nicht z.B. amiga/espeak.readme!
+quit
+
+Aminet Release 1.1
+
+29.Dec.2018
+-----------
+Kommentar von Gunther Nikl:
+Anbei noch ein Patch für render2.c: Dort importierst Du sinus und
+rectangle als "const". Diese sind in RenderTabs.h aber OHNE const
+angelegt.
+
+--> const aus render2.c rausgenommen. 32 Bytes kleineres Programm.
+Compiler vom 28.12.18 genommen.
+
+
+1.Mar.2019
+----------
+Der gcc kann jetzt auch mit  
+make update
+make v date=2019-02-18
+make all PREFIX=/here/or/there
+
+aufgerufen werden. dann wird (in alle Projekten) )ausgechecked, was am 18.Feb.2019 gueltig war. (auch, wenn es z.B. am 12.Jan. das letzte checkin/push gab)
+
+
+15.Aug.2019
+-----------
+Neues Target fuer Profiling. Der Linker hat gemeckert doppelte definitionen angemeckert. Anscheinend wird beim Profiling eine Variable mit dem Quellfilenamen angelegt. Bei uns wurde zwei mal render2.c benutz (fuer 68000 und 68020), damit gab es die Variable wohl doppelt. Deshalb kopiert das Makefile jetzt render2.c nach render000.c und render020.c und compiliert diese beiden temporaeren Quellen. Sie werden anschliessend geloescht. In .gitignore sind sie auch eingetragen.
+

@@ -1,15 +1,56 @@
+
+#ifdef mc68020
+	#warning __mc68020__
+	#define CPU_TYPE(x) x##_020      // https://stackoverflow.com/questions/1253934/c-pre-processor-defining-for-generated-function-names
+	#define CPU(x) CPU_TYPE(x)
+#elif __mc68000__
+	#warning 68000
+	#define CPU_TYPE(x) x##_000      // https://stackoverflow.com/questions/1253934/c-pre-processor-defining-for-generated-function-names
+	#define CPU(x) CPU_TYPE(x)
+#else
+#warning NO valid CPU defined
+	#define CPU_TYPE(x) x##_standard  // https://stackoverflow.com/questions/1253934/c-pre-processor-defining-for-generated-function-names
+	#define CPU(x) CPU_TYPE(x)
+#endif
+
+#ifdef DEBUG
+    #define D(x) x
+#else
+   // for debug-prints. Can be activated with -DDEBUG in Makefile
+    #define D(x)
+#endif
+
+
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
-
-#include "render.h"
-#include "RenderTabs.h"
-
 #include "debug.h"
+
+/* from RenderTas.h */
+extern unsigned char multtable[256];
+extern unsigned char tab48426[5];
+extern unsigned char sampleTable[0x500];
+extern unsigned char tab47492[11];
+extern unsigned char amplitudeRescale[17];  // 17 also in RenderTab.h
+extern unsigned char blendRank[80];
+extern unsigned char outBlendLength[80];
+extern unsigned char inBlendLength[80];
+
+extern unsigned char sampledConsonantFlags[256];
+extern unsigned char freq1data[80];
+extern unsigned char freq2data[80];
+extern unsigned char freq3data[80];
+extern unsigned char ampl1data[80];
+extern unsigned char ampl2data[80];
+extern unsigned char ampl3data[80];
+extern unsigned char sinus[256];
+extern unsigned char rectangle[256];
+
+
+
 extern int debug;
 
-unsigned char wait1 = 7;
-unsigned char wait2 = 6;
+extern unsigned char wait2;
+
 
 extern unsigned char A, X, Y;
 extern unsigned char mem44;
@@ -25,52 +66,67 @@ extern unsigned char speed;
 extern unsigned char pitch;
 extern int singmode;
 
-
 extern unsigned char phonemeIndexOutput[60]; //tab47296
 extern unsigned char stressOutput[60]; //tab47365
 extern unsigned char phonemeLengthOutput[60]; //tab47416
 
-unsigned char pitches[256]; // tab43008
+extern unsigned char pitches[256]; // tab43008
 
-unsigned char frequency1[256];
-unsigned char frequency2[256];
-unsigned char frequency3[256];
+extern unsigned char frequency1[256];
+extern unsigned char frequency2[256];
+extern unsigned char frequency3[256];
 
-unsigned char amplitude1[256];
-unsigned char amplitude2[256];
-unsigned char amplitude3[256];
-
-unsigned char sampledConsonantFlag[256]; // tab44800
-
+extern unsigned char amplitude1[256];
+extern unsigned char amplitude2[256];
+extern unsigned char amplitude3[256];
 
 void AddInflection(unsigned char mem48, unsigned char phase1);
-unsigned char trans(unsigned char mem39212, unsigned char mem39213);
+unsigned char Read(unsigned char p, unsigned char Y);
+void Write(unsigned char p, unsigned char Y, unsigned char value);
 
 
 // contains the final soundbuffer
 extern int bufferpos;
 extern char *buffer;
 
-
+extern unsigned char sampledConsonantFlag[256]; // tab44800
 
 //timetable for more accurate c64 simulation
-int timetable[5][5] =
+static int timetable[5][8] =
 {
-	{162, 167, 167, 127, 128},
-	{226, 60, 60, 0, 0},
-	{225, 60, 59, 0, 0},
-	{200, 0, 0, 54, 55},
-	{199, 0, 0, 54, 54}
+	{162, 167, 167, 127, 128,0,0,0},
+	{226, 60, 60, 0, 0,0,0,0},
+	{225, 60, 59, 0, 0,0,0,0},
+	{200, 0, 0, 54, 55,0,0,0},
+	{199, 0, 0, 54, 54,0,0,0}
 };
 
-void Output(int index, unsigned char A)
+inline void CPU(Output)(int index, unsigned char A)
 {
+	extern struct UtilityBase *UtilityBase;
 	static unsigned oldtimetableindex = 0;
 //	int k;
 	int local_bufferpos;                                 // much faster if we use a local copy here  30s --> 13s for sam -wav hello.wav Hello, my name is sam. 1 2 3 4 5 6 7 8 9 0
 	char *local_buffer_ptr;
 	bufferpos += timetable[oldtimetableindex][index];
-	local_bufferpos=bufferpos/50;
+//	local_bufferpos=bufferpos/50;
+local_bufferpos=((bufferpos*327U)>>14); //16384);   // Durch 50,1  mal 327 durch 16384  // das beste!
+//local_bufferpos=((bufferpos*327U)/16384);          // Durch 50,1  mal 327 durch 16384
+
+//	local_bufferpos=((bufferpos<<8)+(bufferpos<<6)+(bufferpos<<3)-bufferpos)  >>14;
+
+/*
+	asm(
+	"     move.l  %1,d0;"
+	"     moveq   #50,d1;"
+	"     move.l   %2,a0;"     // UtilityBase
+	"     jsr     a0@(-150:W);"
+	"     move.l  d0,%0"
+	: "=r" (local_bufferpos)
+	: "r"  (bufferpos), "r" (UtilityBase)
+	: "d0","d1", "a0"
+	);
+*/
 	local_buffer_ptr=&buffer[local_bufferpos];
 	oldtimetableindex = index;
 	// write a little bit in advance
@@ -81,77 +137,6 @@ void Output(int index, unsigned char A)
 	*local_buffer_ptr++ = (A & 15)*16;    // much faster if we use a local copy here
 	*local_buffer_ptr++ = (A & 15)*16;    // much faster if we use a local copy here
 }
-
-
-
-
-
-
-
-//written by me because of different table positions.
-// mem[47] = ...
-// 168=pitches
-// 169=frequency1
-// 170=frequency2
-// 171=frequency3
-// 172=amplitude1
-// 173=amplitude2
-// 174=amplitude3
-unsigned char Read(unsigned char p, unsigned char Y)
-{
-	switch(p)
-	{
-	case 168: return pitches[Y];
-	case 169: return frequency1[Y];
-	case 170: return frequency2[Y];
-	case 171: return frequency3[Y];
-	case 172: return amplitude1[Y];
-	case 173: return amplitude2[Y];
-	case 174: return amplitude3[Y];
-	}
-	printf("Error reading to tables");
-	return 0;
-}
-
-void Write(unsigned char p, unsigned char Y, unsigned char value)
-{
-
-	switch(p)
-	{
-	case 168: pitches[Y] = value; return;
-	case 169: frequency1[Y] = value;  return;
-	case 170: frequency2[Y] = value;  return;
-	case 171: frequency3[Y] = value;  return;
-	case 172: amplitude1[Y] = value;  return;
-	case 173: amplitude2[Y] = value;  return;
-	case 174: amplitude3[Y] = value;  return;
-	}
-	printf("Error writing to tables\n");
-}
-
-
-
-#ifdef __AMIGA__
-
-	#include <exec/execbase.h>
-	void Render_000(void);
-	void Render_020(void);
-
-	void (*Render_Function)(void);
-
-	void SetCpuSpecificFunctions(void)
-	{
-		extern struct ExecBase *SysBase;
-		if(SysBase->AttnFlags&AFF_68020)
-		{
-			Render_Function=Render_020;
-		}
-		else
-		{
-			Render_Function=Render_000;
-		}
-	}
-#endif
 
 
 // -------------------------------------------------------------------------
@@ -210,8 +195,13 @@ void Write(unsigned char p, unsigned char Y, unsigned char value)
 
 
 // Code48227()
-void RenderSample(unsigned char *mem66)
+void CPU(RenderSample)(unsigned char *mem66)  // 68000 or 68020 Version of this function
 {
+	D({
+		static int Firsttime=1;
+		if(Firsttime) {Firsttime=0; printf("%s()\n",__FUNCTION__); }
+	})
+
 	int tempA;
 	// current phoneme's index
 	mem49 = Y;
@@ -270,13 +260,13 @@ pos48280:
 		X = mem53;
 		//mem[54296] = X;
         // output the byte
-		Output(1, X);
+		CPU(Output)(1, X);
 		// if X != 0, exit loop
 		if(X != 0) goto pos48296;
 	}
 
 	// output a 5 for the on bit
-	Output(2, 5);
+	CPU(Output)(2, 5);
 
 	//48295: NOP
 pos48296:
@@ -333,13 +323,13 @@ pos48315:
 			{
                 // if bit set, output 26
 				X = 26;
-				Output(3, X);
+				CPU(Output)(3, X);
 			} else
 			{
 				//timetable 4
 				// bit is not set, output a 6
 				X=6;
-				Output(4, X);
+				CPU(Output)(4, X);
 			}
 
 			mem56--;
@@ -362,8 +352,6 @@ pos48315:
 	return;
 }
 
-
-
 // RENDER THE PHONEMES IN THE LIST
 //
 // The phoneme list is converted into sound through the steps:
@@ -381,11 +369,13 @@ pos48315:
 
 
 //void Code47574()
-void Render()
+void CPU(Render)(void) // 68000 or 68020 Version of this function
 {
-#ifdef __AMIGA__
-	Render_Function();
-#else
+	D({
+		static int Firsttime=1;
+		if(Firsttime) {Firsttime=0; printf("%s()\n",__FUNCTION__); }
+	})
+
 	unsigned char phase1 = 0;  //mem43
 	unsigned char phase2;
 	unsigned char phase3;
@@ -834,6 +824,7 @@ if (debug)
 	//pos48078:
 	while(1)
 	{
+		unsigned char *local_multtable=multtable;
         // get the sampled information on the phoneme
 		A = sampledConsonantFlag[Y];
 		mem39 = A;
@@ -843,7 +834,7 @@ if (debug)
 		if(A != 0)
 		{
             // render the sample for the phoneme
-			RenderSample(&mem66);
+			CPU(RenderSample)(&mem66);  // call 68000 or 68020 Version of this function
 
 			// skip ahead two in the phoneme buffer
 			Y += 2;
@@ -854,14 +845,14 @@ if (debug)
 			mem56 = multtable[sinus[phase1] | amplitude1[Y]];
 
 			carry = 0;
-			if ((mem56+multtable[sinus[phase2] | amplitude2[Y]] ) > 255) carry = 1;
-			mem56 += multtable[sinus[phase2] | amplitude2[Y]];
-			A = mem56 + multtable[rectangle[phase3] | amplitude3[Y]] + (carry?1:0);
+			if ((mem56+local_multtable[sinus[phase2] | amplitude2[Y]] ) > 255) carry = 1;
+			mem56 += local_multtable[sinus[phase2] | amplitude2[Y]];
+			A = mem56 + local_multtable[rectangle[phase3] | amplitude3[Y]] + (carry?1:0);
 			A = ((A + 136) & 255) >> 4; //there must be also a carry
 			//mem[54296] = A;
 
 			// output the accumulated value
-			Output(0, A);
+			CPU(Output)(0, A);
 			speedcounter--;
 			if (speedcounter != 0) goto pos48155;
 			Y++; //go to next amplitude
@@ -912,7 +903,7 @@ pos48159:
 		// voiced sampled phonemes interleave the sample with the
 		// glottal pulse. The sample flag is non-zero, so render
 		// the sample for the phoneme.
-		RenderSample(&mem66);
+		CPU(RenderSample)(&mem66);    // call 68000 or 68020 Version of this function
 		goto pos48159;
 	} //while
 
@@ -967,167 +958,4 @@ pos48159:
 	mem66 = Y;
 	Y = mem49;
 	return;
-#endif
-}
-
-
-// Create a rising or falling inflection 30 frames prior to
-// index X. A rising inflection is used for questions, and
-// a falling inflection is used for statements.
-
-void AddInflection(unsigned char mem48, unsigned char phase1)
-{
-	//pos48372:
-	//	mem48 = 255;
-//pos48376:
-
-    // store the location of the punctuation
-	mem49 = X;
-	A = X;
-	int Atemp = A;
-
-	// backup 30 frames
-	A = A - 30;
-	// if index is before buffer, point to start of buffer
-	if (Atemp <= 30) A=0;
-	X = A;
-
-	// FIXME: Explain this fix better, it's not obvious
-	// ML : A =, fixes a problem with invalid pitch with '.'
-	while( (A=pitches[X]) == 127) X++;
-
-
-pos48398:
-	//48398: CLC
-	//48399: ADC 48
-
-	// add the inflection direction
-	A += mem48;
-	phase1 = A;
-
-	// set the inflection
-	pitches[X] = A;
-pos48406:
-
-    // increment the position
-	X++;
-
-	// exit if the punctuation has been reached
-	if (X == mem49) return; //goto pos47615;
-	if (pitches[X] == 255) goto pos48406;
-	A = phase1;
-	goto pos48398;
-}
-
-/*
-    SAM's voice can be altered by changing the frequencies of the
-    mouth formant (F1) and the throat formant (F2). Only the voiced
-    phonemes (5-29 and 48-53) are altered.
-*/
-void SetMouthThroat(unsigned char mouth, unsigned char throat)
-{
-	unsigned char initialFrequency;
-	unsigned char newFrequency = 0;
-	//unsigned char mouth; //mem38880
-	//unsigned char throat; //mem38881
-
-	// mouth formants (F1) 5..29
-	unsigned char mouthFormants5_29[30] = {
-		0, 0, 0, 0, 0, 10,
-		14, 19, 24, 27, 23, 21, 16, 20, 14, 18, 14, 18, 18,
-		16, 13, 15, 11, 18, 14, 11, 9, 6, 6, 6};
-
-	// throat formants (F2) 5..29
-	unsigned char throatFormants5_29[30] = {
-	255, 255,
-	255, 255, 255, 84, 73, 67, 63, 40, 44, 31, 37, 45, 73, 49,
-	36, 30, 51, 37, 29, 69, 24, 50, 30, 24, 83, 46, 54, 86};
-
-	// there must be no zeros in this 2 tables
-	// formant 1 frequencies (mouth) 48..53
-	unsigned char mouthFormants48_53[6] = {19, 27, 21, 27, 18, 13};
-
-	// formant 2 frequencies (throat) 48..53
-	unsigned char throatFormants48_53[6] = {72, 39, 31, 43, 30, 34};
-
-	unsigned char pos = 5; //mem39216
-//pos38942:
-	// recalculate formant frequencies 5..29 for the mouth (F1) and throat (F2)
-	while(pos != 30)
-	{
-		// recalculate mouth frequency
-		initialFrequency = mouthFormants5_29[pos];
-		if (initialFrequency != 0) newFrequency = trans(mouth, initialFrequency);
-		freq1data[pos] = newFrequency;
-
-		// recalculate throat frequency
-		initialFrequency = throatFormants5_29[pos];
-		if(initialFrequency != 0) newFrequency = trans(throat, initialFrequency);
-		freq2data[pos] = newFrequency;
-		pos++;
-	}
-
-//pos39059:
-	// recalculate formant frequencies 48..53
-	pos = 48;
-	Y = 0;
-    while(pos != 54)
-    {
-		// recalculate F1 (mouth formant)
-		initialFrequency = mouthFormants48_53[Y];
-		newFrequency = trans(mouth, initialFrequency);
-		freq1data[pos] = newFrequency;
-
-		// recalculate F2 (throat formant)
-		initialFrequency = throatFormants48_53[Y];
-		newFrequency = trans(throat, initialFrequency);
-		freq2data[pos] = newFrequency;
-		Y++;
-		pos++;
-	}
-}
-
-
-//return = (mem39212*mem39213) >> 1
-unsigned char trans(unsigned char mem39212, unsigned char mem39213)
-{
-	//pos39008:
-	unsigned char carry;
-	int temp;
-	unsigned char mem39214, mem39215;
-	A = 0;
-	mem39215 = 0;
-	mem39214 = 0;
-	X = 8;
-	do
-	{
-		carry = mem39212 & 1;
-		mem39212 = mem39212 >> 1;
-		if (carry != 0)
-		{
-			/*
-						39018: LSR 39212
-						39021: BCC 39033
-						*/
-			carry = 0;
-			A = mem39215;
-			temp = (int)A + (int)mem39213;
-			A = A + mem39213;
-			if (temp > 255) carry = 1;
-			mem39215 = A;
-		}
-		temp = mem39215 & 1;
-		mem39215 = (mem39215 >> 1) | (carry?128:0);
-		carry = temp;
-		//39033: ROR 39215
-		X--;
-	} while (X != 0);
-	temp = mem39214 & 128;
-	mem39214 = (mem39214 << 1) | (carry?1:0);
-	carry = temp;
-	temp = mem39215 & 128;
-	mem39215 = (mem39215 << 1) | (carry?1:0);
-	carry = temp;
-
-	return mem39215;
 }

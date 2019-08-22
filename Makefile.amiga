@@ -1,0 +1,157 @@
+# All the o-Files in Link-Order
+OBJS_ORDERED = reciter.o sam.o debug.o endian.o sdlwrapper.o portaudio_audev.o render.o render000.o render020.o main.o portaudio_ahidev.o  portaudio.o  subtask_support.o amiga_version.o stopwatch.o
+
+# 7.552 Seconds
+# COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_23Dec18
+ # 7.58  Seconds for 21Jan19
+# bad COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_21Jan19
+# OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_29Dec18
+# bad COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_14Jan19
+# bad COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_13Jan19
+# ok COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_09Jan19
+# OK --> COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_11Jan19
+# ok COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_06Jan19
+# bad, wird nicht fertig bei Coverage  COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_10Feb19
+# ok COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_04Feb19
+# OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_07Feb19
+# OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_12Feb19
+# OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_16Feb19
+# OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_25Feb19
+# OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_26Feb19
+# BAD, Linker Errors COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_28Feb19
+# bad coverage failed (vamos illegal memory access) COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_01Mar19
+# bad coverage failed (vamos illegal memory access) COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_02Mar19
+# bad coverage failed (vamos illegal memory access) COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_04Mar19
+# bad coverage failed (vamos illegal memory access) COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_07Mar19
+# OK now again. Coverage works
+# OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_12Mar19
+# OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_13Mar19
+# OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_15Mar19
+# OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_16Mar19  # changed include for SDL starting 16Mar19
+# OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_17Mar19
+# OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_18Mar19
+# OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_21Mar19
+# OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_23Mar19
+# OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_02Apr19
+# BAD ld: internal error /home/developer/amiga-gcc_07Apr19/projects/binutils/ld/ldlang.c 6644 COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_07Apr19
+# BAD ld: internal error /home/developer/amiga-gcc_08Apr19/projects/binutils/ld/ldlang.c 6644 COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_08Apr19
+# BAD ld: internal error /home/developer/amiga-gcc_12Apr19/projects/binutils/ld/ldlang.c 6644 COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_12Apr19
+# BAD ld: internal error /home/developer/amiga-gcc_13Apr19/projects/binutils/ld/ldlang.c 6644 COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_13Apr19
+# BAD ld: internal error /home/developer/amiga-gcc_14Apr19/projects/binutils/ld/ldlang.c 6644COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_14Apr19
+# BAD machine:  ERROR COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_15Apr19
+# BAD machine:  ERROR COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_16Apr19
+# BAD machine:  ERROR COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_23Apr19
+# OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_28Apr19
+# OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_01May19
+# OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_07May19
+# OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_18May19
+# OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_26May19
+# OK COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_30Jun19
+#COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_07Aug19
+# BAD Coverage geht nicht mehr COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_15Aug19
+# BAD Coverage geht nicht mehr COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_18Aug19
+# BAD Coverage geht nicht mehr 
+COMPILER_INSTALL_DIR ?= /home/developer/opt/m68k-amigaos_20Aug19
+
+COMPILER_DIR         = $(COMPILER_INSTALL_DIR)/bin
+CC                   = $(COMPILER_DIR)/m68k-amigaos-gcc #gcc
+STRIP                = $(COMPILER_DIR)/m68k-amigaos-strip
+GCOV                 = $(COMPILER_DIR)/m68k-amigaos-gcov
+GPROF                = $(COMPILER_DIR)/m68k-amigaos-gprof
+
+TOOLCHAIN_VER=$(shell cat $(COMPILER_DIR)/toolchain_commit.txt)
+
+CPUFLAGS=-m68000
+
+CFLAGS =  -DDATE="\"$(shell /bin/date +'%d.%m.%Y')\""
+CFLAGS += -DPLATFORM_IS_BIG_ENDIAN -DSTATIC_FUNC= -DUSESDL
+CFLAGS += -DTOOLCHAIN_VER="\"$(TOOLCHAIN_VER)\""
+CFLAGS += -DDEBUG
+CFLAGS += -Iamiga/ -Iamiga/portaudio/ -I.
+CFLAGS += -I$(COMPILER_INSTALL_DIR)/include/SDL                # for toolchain up to    15Mar19
+CFLAGS += -I$(COMPILER_INSTALL_DIR)/m68k-amigaos/include/SDL   # for toolchain starting 16Mar19
+CFLAGS += $(CPUFLAGS)
+CFLAGS += -Os  # all but render.c arecompiled for size. Only render.c will be compiled for speed
+CFLAGS += -Wall -fomit-frame-pointer -noixemul -g #`sdl-config --cflags`
+
+CFLAGS += -resident
+CFLAGS += -msmall-code
+
+LFLAGS = -g -noixemul $(CPUFLAGS) -Wl,-Map=sam.map,--trace -ldebug #-lSDL  #`sdl-config --libs`
+LFLAGS += -resident
+
+#coverage
+ifneq ($(COVERAGE),)
+ CFLAGS += -fprofile-generate=VBox:$(shell pwd | cut -c2-)  # remove first "/" from pwd -> VBox:home/...
+ CFLAGS += -ftest-coverage
+ CFLAGS += -fprofile-arcs      #-pg  # Profiler
+ LFLAGS += -lgcov
+endif
+
+#profiling
+ifneq ($(PROFILE),)
+# CFLAGS += -fprofile-generate=VBox:$(shell pwd | cut -c2-)  # remove first "/" from pwd -> VBox:home/...
+# CFLAGS += -fprofile-arcs
+# LFLAGS += -lgcov
+ CFLAGS += -g -pg -fno-omit-frame-pointer
+ LFLAGS += -pg
+endif
+
+
+vpath sdlwrapper.c       src/amiga/
+vpath portaudio.c        src/amiga/portaudio/
+vpath portaudio_ahidev.c src/amiga/portaudio/ 
+vpath portaudio_audev.c  src/amiga/portaudio/
+vpath portaudio.c        src/amiga/portaudio/
+vpath subtask_support.c  src/amiga/portaudio/
+vpath amiga_version.c    src/amiga/version/
+vpath stopwatch.c        src/amiga/stopwatch/
+
+
+sam: $(OBJS_ORDERED)
+	$(CC) -o sam $(OBJS_ORDERED) $(LFLAGS)
+	ls -la sam
+	sync
+
+strip: sam
+	$(STRIP) $<
+	ls -la sam
+	sync
+
+render000.o: src/render2.c
+	cp src/render2.c src/render000.c
+	$(CC) $(CFLAGS)         -O2 -c src/render000.c -o render000.o     # this one is compiled with -O2 as it is the time critical part
+	rm src/render000.c
+
+render020.o: src/render2.c
+	cp src/render2.c src/render020.c
+	$(CC) $(CFLAGS) -m68020 -O2 -c src/render020.c -o render020.o     # this one is compiled with -O2 as it is the time critical part
+	rm src/render020.c
+
+%.o: src/%.c
+	$(CC) $(CFLAGS) -c $<
+
+package:
+	tar -cvzf sam.tar.gz README.md Makefile sing src/
+
+clean:
+	rm -f *.o *.wav sam sam.map *.gcno *.gcda *.gcov gmon.out coverage*.html src/render000.c src/render020.c
+
+coverage:
+	make -f Makefile.amiga COVERAGE=true
+	find | grep gcno | wc --w > count.txt    # 15 gcno-Files should have been created
+	echo Found $$(cat count.txt) gcno-Files.
+	[ $$(cat count.txt) = "15" ] || (echo Wrong number of gcno-Files!; exit 1)
+	vamos -s 100 -V VBox:/home/developer/ -- sam -wav hello.wav "Hello, my name is sam. 1 2 3 4 5 6 7 8 9 0"  # start sam, -s -> coverage needs more stack
+	$(GCOV) main.c
+	# argument-loop must have been ececuted 3 times in our example. Red if string not found (|| nothing) or count <3, green if all OK
+	cat main.c.gcov | (grep "while(i < argc)" || echo nothing) | awk -F: '{if( strtonum($$1) >=3){ print "\033[92mCoverage OK\033[0m";} else{ print "\033[91mCoverage failed!!!\033[0m"; exit 1;}}'	
+
+profile:
+	make -f Makefile.amiga PROFILE=true
+	vamos -V VBox:/home/developer/ -- sam -wav hello.wav "Hello, my name is sam. 1 2 3 4 5 6 7 8 9 0"  # start sam
+	ls -la gmon.out  # check gmon.out has been created
+	$(GPROF) sam | awk '/RenderSample_000$$/{Count=$$4; if( strtonum(Count) ==55){ print "\033[92mProfile OK\033[0m";} else{ print "\033[91mProfile failed!!!\033[0m"; exit 1;}}'   # profile output ok? RenderSample_000() should be called 55 times
+
+test: sam
+	vamos -v -V VBox:/home/developer/ -- sam -wav hello.wav "Hello, my name is sam. 1 2 3 4 5 6 7 8 9 0"  # start sam
