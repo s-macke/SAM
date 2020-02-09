@@ -156,11 +156,6 @@ int main(int argc, char **argv)
     char* wavfilename = NULL;
     char input[256];
 
-#ifdef USESDL
-        freopen("CON", "w", stdout);
-        freopen("CON", "w", stderr);
-#endif
-
     for(i=0; i<256; i++) input[i] = 0;
 
     if (argc <= 1)
