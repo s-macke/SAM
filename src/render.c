@@ -398,7 +398,7 @@ do
     // period phoneme *.
     if (A == 1)
     {
-       // add rising inflection
+       // add falling inflection
         A = 1;
         mem48 = 1;
         //goto pos48376;
@@ -411,7 +411,7 @@ do
     // question mark phoneme?
     if (A == 2)
     {
-        // create falling inflection
+        // create rising inflection
         mem48 = 255;
         AddInflection(mem48, phase1);
     }
