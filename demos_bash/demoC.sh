@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ../sam -mouth 145 -throat 125 -pitch 40 -speed 72 "This is the original file extracted from the Commodore 64.";
-../sam -mouth 145 -throat 125 -pitch 40 -speed 72 "O.K. ../sam. You can take it from here.";
+../sam -mouth 145 -throat 125 -pitch 40 -speed 72 "O.K. sam. You can take it from here.";
 ../sam -mouth 145 -throat 135 -pitch 40 -speed 72 -phonetic "SWIY5TIY.";
 
 ../sam -mouth 128 -throat 128 -pitch 64 -speed 72 -phonetic "AY4 WIHL NAW4 KWOWT-DHAX GEHTIYZBERG AXDREH3S.";
