@@ -3,8 +3,8 @@ OBJS = reciter.o sam.o render.o main.o debug.o
 CC = gcc
 
 # libsdl present
-CFLAGS =  -Wall -Os -DUSESDL `sdl-config --cflags`
-LFLAGS = `sdl-config --libs`
+CFLAGS =  -Wall -Os -DUSESDL `sdl2-config --cflags`
+LFLAGS = `sdl2-config --libs`
 
 # no libsdl present
 #CFLAGS =  -Wall -Os
